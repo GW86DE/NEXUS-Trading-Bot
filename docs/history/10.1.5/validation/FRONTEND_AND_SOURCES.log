@@ -1,0 +1,10 @@
+{'release_files': 797, 'local_files_excluded': 0}
+........                                                                 [100%]
+=============================== warnings summary ===============================
+tests/test_v1012_source_receipts.py::test_fmp_receipt_route_requires_authentication
+  /workspace/scratch/33592271b955/implementation_10_1_2/testenv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+8 passed, 1 warning in 0.66s
+Network tripwire: no external network attempts

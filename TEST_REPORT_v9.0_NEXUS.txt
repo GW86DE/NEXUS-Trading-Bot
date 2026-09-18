@@ -1,0 +1,64 @@
+TradingBot NEXUS 9.0 – Testprotokoll
+====================================
+
+Stand: 27.08.2026
+
+Testumgebung
+- Isolierte Python-3.12.13-Umgebung im Build-Container (x86_64)
+- Keine echten Brokerzugänge und keine echten Orders
+- Keine Dienste installiert, gestartet oder aktiviert
+- Keine echten Telegram-, GPT- oder News-Anfragen; Schnittstellen testdoppelt
+
+Gesamtergebnis
+- Pytest: 699 Tests bestanden
+- zusätzliche unittest-Subtests: 184 bestanden
+- statische Release-Hygiene: OK
+- Self-Test: OK
+- compileall: OK
+- Raspberry-Pi-Preflight host-neutral: OK
+- Shell-Syntax aller ausgelieferten .sh-Dateien: OK
+- Release-Volltest: VOLLTEST OK
+
+Priorität-1-Korrekturen
+- eToro-Submit/404: referenceId vor POST, getrennte orderId-/referenceId-
+  Wiederherstellung, dauerhafter 404, Neustart und Doppelorder-Sperre
+- profilübergreifende Reconciliation-Sperre und terminale Submitfehler
+- exakte Ownership ohne Zuordnung allein nach Symbol/Menge
+- Teilausführung mit korrekter filled-/remaining-Trennung
+- wiederhergestellte BUY-Fills nach Neustart
+- DecisionSnapshot bleibt bei SYSTEM_ERROR erhalten; decision_id wird bis
+  Order, Fill, Position, Trade und Ergebnis fortgeführt
+- strukturierte Strategie-, Risiko-, Konto-, Order- und Ausführungsfelder
+- Telegram-Deduplizierung und chronologische Entscheidungssortierung
+- OBSERVE read-only mit brokerbestätigten Kurs-/Schutzdaten
+- CORE_VOLUME_20: keine 1-Tages-Aktivierung, eindeutige Tagesabdeckung,
+  beschädigte Historie fail-closed, harte Filter und gemeinsames Aktivlimit
+
+NEXUS-9.0-SampleStrategy
+- offizielles Long-Signal und Exit-Signal aus RSI/TEMA/Bollinger/Volumen
+- feste 5m-/200-Kerzen-Regel und TA-Lib-kompatible Indikatorinitialisierung
+- Stop −10 %, ROI 4 % / 2 % ab 30 min / 1 % ab 60 min
+- unveränderlicher Modus-/Versions-/Hash-/Parameter-Snapshot je Position
+- globale Umschaltung verändert offene Positionen nicht
+- Strategieversions-/Hashkonflikt führt zu BEOBACHTEN statt falschem Exit
+- 8.3.1-Migration bindet nur belegte BOT/AUTO/decision_id-Positionen
+- WebUI-Wechsel ohne Neustart und bestätigungspflichtige Aktivierung
+- Telegram-Sitzungsbestätigung und sofortige /cryptopause-Notbremse
+- Krypto-Pause stoppt neue Einstiege, nicht eToro oder bestehende Schutzpfade
+- kein GPT, keine News, keine Second Opinion und keine AI-Attention im Modus
+- Backtest: Signal erst am nächsten Kerzen-Open, Gebühren/Slippage und
+  konservativ Stop vor ROI bei unbekannter Intrabar-Reihenfolge
+- Historie speichert entry_strategy_mode und Parameter-Hash direkt abfragbar
+
+Installationsprüfung
+- Version.txt und config.VERSION_NEXUS stimmen auf 9.0.0-NEXUS überein
+- alle neuen Module, Tests und deutschen Dokumente sind Installer-Pflichtdateien
+- Sicherheitsmigration erzwingt eToro-Paper und OKX-Demo
+- Service-/Desktop-Vorlagen und Pi-Pfade durch bestehende Regressionen geprüft
+
+Bewusst nicht behauptet
+- kein Test auf echter Raspberry-Pi-5-/ARM64-Hardware
+- kein echter eToro-Demo-/Live-Ordertest
+- kein echter OKX-Demo-/Live-Ordertest
+- kein echter Telegram-, GPT- oder News-Versand
+- keine Aussage zur Profitabilität der SampleStrategy

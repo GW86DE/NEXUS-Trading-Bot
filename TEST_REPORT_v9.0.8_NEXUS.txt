@@ -1,0 +1,28 @@
+TRADINGBOT NEXUS 9.0.8 - TESTPROTOKOLL
+======================================
+
+Datum: 28.08.2026
+Modus: vollstaendig offline, keine Brokerorder
+
+ERGEBNISSE
+----------
+- Pytest: 760 bestanden
+- Subtests: 186 bestanden
+- Gezielte 9.0.8-Regressionen: bestanden
+- Self-Test: bestanden
+- Compileall: bestanden
+- Pi-Preflight host-neutral: bestanden
+- Shell-Syntax: bestanden
+- Release-Hygiene: bestanden
+
+NEUE REGRESSIONEN
+-----------------
+- OrderStatusUnklar ist im Namespace von live_trader vorhanden.
+- Der eToro-Limiter taktet Folgeaufrufe gleichmaessig.
+- Der Scanner laedt den Bestand erst nach der Signalauswertung.
+
+GRENZE
+------
+Echte eToro-/OKX-Latenzen, WebSocket-Ereignisse und ARM64-Hardware werden
+offline nicht vollstaendig simuliert. Der erste Lauf bleibt PAPER/DEMO.
+

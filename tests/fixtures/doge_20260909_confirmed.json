@@ -1,0 +1,113 @@
+{
+  "source": "NEXUS_DOGE_API_20260909T175632_545313Z.zip / confirmed DEMO buy; other account data excluded",
+  "order": {
+    "instId": "DOGE-USD",
+    "ordId": "3907950705910681600",
+    "clOrdId": "N93014580555928578048",
+    "side": "buy",
+    "state": "filled",
+    "accFillSz": "533.522547",
+    "avgPx": "0.0892342103405614",
+    "fee": "-1.8673289145",
+    "feeCcy": "DOGE",
+    "tradeQuoteCcy": "USD",
+    "ordType": "fok",
+    "px": "0.08938",
+    "cTime": "1788968406812",
+    "uTime": "1788968406812",
+    "fillTime": "1788968406812",
+    "tag": "NEXUS"
+  },
+  "fills": [
+    {
+      "instId": "DOGE-USD",
+      "ordId": "3907950705910681600",
+      "clOrdId": "N93014580555928578048",
+      "side": "buy",
+      "tradeId": "1528391",
+      "billId": "3907950705910681611",
+      "fillSz": "426.806256",
+      "fillPx": "0.08924",
+      "fee": "-1.493821896",
+      "feeCcy": "DOGE",
+      "ts": "1788968406812"
+    },
+    {
+      "instId": "DOGE-USD",
+      "ordId": "3907950705910681600",
+      "clOrdId": "N93014580555928578048",
+      "side": "buy",
+      "tradeId": "1528390",
+      "billId": "3907950705910681609",
+      "fillSz": "11.236593",
+      "fillPx": "0.08924",
+      "fee": "-0.0393280755",
+      "feeCcy": "DOGE",
+      "ts": "1788968406812"
+    },
+    {
+      "instId": "DOGE-USD",
+      "ordId": "3907950705910681600",
+      "clOrdId": "N93014580555928578048",
+      "side": "buy",
+      "tradeId": "1528389",
+      "billId": "3907950705910681607",
+      "fillSz": "11.236593",
+      "fillPx": "0.08924",
+      "fee": "-0.0393280755",
+      "feeCcy": "DOGE",
+      "ts": "1788968406812"
+    },
+    {
+      "instId": "DOGE-USD",
+      "ordId": "3907950705910681600",
+      "clOrdId": "N93014580555928578048",
+      "side": "buy",
+      "tradeId": "1528388",
+      "billId": "3907950705910681605",
+      "fillSz": "28.081035",
+      "fillPx": "0.08923",
+      "fee": "-0.0982836225",
+      "feeCcy": "DOGE",
+      "ts": "1788968406812"
+    },
+    {
+      "instId": "DOGE-USD",
+      "ordId": "3907950705910681600",
+      "clOrdId": "N93014580555928578048",
+      "side": "buy",
+      "tradeId": "1528387",
+      "billId": "3907950705910681603",
+      "fillSz": "28.081035",
+      "fillPx": "0.0892",
+      "fee": "-0.0982836225",
+      "feeCcy": "DOGE",
+      "ts": "1788968406812"
+    },
+    {
+      "instId": "DOGE-USD",
+      "ordId": "3907950705910681600",
+      "clOrdId": "N93014580555928578048",
+      "side": "buy",
+      "tradeId": "1528386",
+      "billId": "3907950705910681601",
+      "fillSz": "28.081035",
+      "fillPx": "0.08918",
+      "fee": "-0.0982836225",
+      "feeCcy": "DOGE",
+      "ts": "1788968406812"
+    }
+  ],
+  "instrument": {
+    "instId": "DOGE-USD",
+    "baseCcy": "DOGE",
+    "quoteCcy": "USD",
+    "tickSz": "0.00001",
+    "lotSz": "0.000001",
+    "minSz": "10",
+    "state": "live",
+    "tradeQuoteCcyList": [
+      "USD"
+    ]
+  }
+}

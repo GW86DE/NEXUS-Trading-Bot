@@ -1,0 +1,4 @@
+# Pflichtabhaengigkeiten fuer volltest.py, inklusive WebUI-Authentifizierungstest.
+# Nur Testwerkzeuge; requirements-lock.txt fuer den Handelsbetrieb bleibt unveraendert.
+pytest==9.0.2
+httpx==0.28.1

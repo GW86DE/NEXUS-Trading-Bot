@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=TradingBot stoppen
+Comment=Kontrollierter Vollstopp mit Sicherheitsbestaetigung
+Exec=__BOTDIR__/Pi_Service_Stoppen.sh
+Path=__BOTDIR__
+Icon=process-stop
+Terminal=true
+Categories=Utility;Finance;

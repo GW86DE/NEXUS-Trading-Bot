@@ -1,0 +1,10 @@
+{
+  "status": "PASSED",
+  "exit_code": 0,
+  "seconds": 72.2,
+  "source_files": 770,
+  "network_events": [],
+  "targets": [],
+  "full": true,
+  "test_directory": "/workspace/scratch/33592271b955/implementation/test_runs/release1011_final_3318984db6"
+}

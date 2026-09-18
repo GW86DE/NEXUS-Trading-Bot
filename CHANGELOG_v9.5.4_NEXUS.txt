@@ -1,0 +1,177 @@
+TradingBot NEXUS -- Version 9.5.4
+=================================
+
+Vier Befunde vom 02.09.2026, alle an echten Kontodaten nachgewiesen.
+
+
+1. EINSTIEGSORDERS WURDEN VOM MARKT ABGEHAENGT  (Kernpunkt)
+-----------------------------------------------------------
+Befund
+  ETH, SOL und DOGE bestanden alle Pruefungen, wurden als FOK-Order
+  gesendet und mit 0 gefuellt storniert. Vorher schon FET.
+
+Ursache
+  Der Limitpreis war der exakt gemessene schlechteste Orderbuchpreis,
+  aufgerundet um EINEN Tick (bei ETH 0,00042 %). Zwischen Messung und
+  Matching liegen Zyklusrest und Netzlaufzeit. Bewegte sich der Brief um
+  einen einzigen Tick nach oben, war die Menge zum alten Preis weg -- und
+  FOK heisst: ganz oder gar nicht.
+
+  Das Slippage-Budget von 0,6 % wurde dabei ausschliesslich als
+  Ablehnungsschwelle benutzt, nie als Spielraum. Gemessen waren 0,0147 %,
+  also das Vierzigstel des Erlaubten.
+
+  Der VERKAUFSpfad machte es laengst richtig (best * (1 - Budget)). Nur
+  der Kaufpfad war der Ausreisser.
+
+Aenderung
+  broker/okx.py   Limit = worst * (1 + OKX_ENTRY_PREIS_PUFFER_PCT),
+                  hart gedeckelt auf best * (1 + OKX_MAX_ENTRY_SLIPPAGE_PCT).
+  config.py       OKX_ENTRY_PREIS_PUFFER_PCT = 0.0015 (0,15 %)
+                  ETORO_MAX_ENTRY_SLIPPAGE_PCT 0,3 % -> 0,5 %
+
+  Der Deckel wird gegen den BESTEN Brief gerechnet, nicht gegen den
+  gemessenen VWAP -- sonst koennte die Summe aus Buchtiefe und Puffer die
+  Grenze ueberschreiten. Ein Einstieg kann damit nie teurer werden, als
+  die Slippage-Pruefung ohnehin erlaubt.
+
+  Einstiege bleiben strenger als Ausstiege. Das ist gewollt: aussteigen
+  muss man koennen, einsteigen nicht.
+
+  Bei eToro bleibt der Risikodeckel (ETORO_MAX_ENTRY_RISK_MULTIPLIER,
+  1,10) unveraendert. Bei engen Stops bindet er weiterhin zuerst; dort
+  aendert die Anhebung nichts. Die Blockademeldung nennt jetzt Referenz,
+  Abweichung und WELCHE der beiden Grenzen gebunden hat.
+
+
+2. NEXUS VERLOR DIE KENNUNG SEINES EIGENEN SCHUTZES
+----------------------------------------------------
+Befund
+  BNB, LINK und XLM standen gleichzeitig auf
+      broker_schutz = True, protection_status = "PENDING", algoId = ""
+  Fuer LINK lag nachweislich eine lebende Schutzorder im Konto
+  (algoId 3879429521221038081). NEXUS kannte ihre Kennung nicht.
+
+  Ohne algoId laesst sich der eigene Schutz weder wiederfinden noch
+  pruefen noch vor einem Verkauf stornieren. Die Flagge behauptet dann
+  nur Sicherheit.
+
+Drei Ursachen
+  a) Der Wiederaufsetzpfad (reconcile_order_evidence) meldete "Schutz
+     steht", warf die algoId aber weg.
+  b) Der gesamte Schutzblock hing an "if trade_id:". Schlug der
+     Ledger-Schreibvorgang fehl (er faengt Exception und loggt nur eine
+     Warnung), entstand gar keine Schutzorder. Das passt exakt zu den
+     560,88 XLM (rund 98 USDC), die ohne jede Schutzorder im Konto lagen.
+  c) Der periodische Abgleich lief nur bei "not broker_schutz". Positionen
+     mit gesetzter Flagge sah er nie an -- der einzige Heilungspfad war
+     fuer genau diesen Zustand blind. Derselbe Fehlertyp wie der in
+     v8.1.3 behobene, eine Ebene hoeher.
+
+Aenderung
+  broker/okx.py     algoId und algoClOrdId werden weitergereicht.
+  crypto_engine.py  Status und Flagge stammen aus demselben Beweis.
+                    Der Schutzblock laeuft unabhaengig von der
+                    Ledger-Zeile: Buchhaltung darf Sicherheit nie
+                    abschalten.
+                    Ein Schutz ohne algoId gilt als unbelegt und wird
+                    abgeglichen. Bleibt er unbestaetigt, faellt die Flagge
+                    und es gibt eine kritische Meldung.
+                    Der stumme Rueckweg in _ledger_schutz_synchronisieren
+                    meldet sich jetzt.
+
+
+3. STAUBREST HIELT EINE GESCHLOSSENE POSITION OFFEN
+----------------------------------------------------
+Befund
+  BNB wurde am 02.09. um 16:50:24 UTC vollstaendig verkauft
+  (0,15443 von 0,15443757 zu 684,25; Einstieg 694,60; -1,60 USDC).
+  Im Konto blieben 0,00000757 BNB liegen.
+
+Ursache
+  Der Abgleich zwischen Konto und Buch prueft nur "Guthaben > 0". Ein
+  Staubrest ist positiv. Die Position wurde deshalb nicht geschlossen,
+  sondern auf den Staub heruntergeschrieben -- und blieb dort haengen:
+  unter der OKX-Mindestmenge nie wieder verkaeuflich, belegt einen
+  Positionsplatz, blockiert den Wiedereinstieg.
+
+  Die Staubgrenze existierte bereits (_rest_lohnt_sich), wurde aber nur
+  im Verkaufspfad benutzt. Dieser Verkauf lief ueber die brokerseitige
+  Schutzorder und damit nie durch _schliesse.
+
+Aenderung
+  crypto_engine.py  Ein nicht handelbarer Kontorest zaehlt im Abgleich
+                    wie "kein Guthaben" -- durch DIESELBE Bestaetigung
+                    (zwei Schnappschuesse plus Mindestalter), damit ein
+                    unvollstaendiger Snapshot nie eine echte Position
+                    schliesst. Der Rest wird als Kontobestand benannt,
+                    nicht als 0 verschwiegen.
+
+  Massstab bleibt die Handelbarkeit, nicht die Eroeffnungsschwelle: eine
+  kleine, aber verkaeufliche Restmenge bleibt gefuehrt.
+
+
+4. SCHUTZORDER IM KONTO OHNE POSITION IM BUCH
+----------------------------------------------
+Befund
+  Lebende OCO-Order algoId 3873284120214450177, ETH-EUR, Menge 1,043377,
+  SL 1894,9, TP 2205,1 -- rund 2530 EUR. Keine Position im Buch. An keiner
+  Stelle sichtbar: verwaiste_orders_aufraeumen sieht nur Schutzorders OHNE
+  Guthaben an, und hier lag Guthaben vor.
+
+Aenderung
+  broker/okx.py     alle_schutzorders() liest alle Algo-Arten ueber alle
+                    Instrumente. Nur lesend. Eine nicht abrufbare Art
+                    wirft, statt als "keine Schutzorder" durchzugehen.
+  crypto_engine.py  Erkennung, kritische Meldung (nur bei Aenderung, kein
+                    Dauerspam) und gezielte Sperre des Wiedereinstiegs in
+                    genau dieses Symbol. Im Status unter
+                    "verwaiste_schutzorders".
+
+  Bewusst NICHT: uebernehmen (Bestand ohne Eigentumsbeweis -- der Fehler
+  vom 25.08.2026 mit 0,94 fremden BTC) und NICHT stornieren (das liesse
+  einen echten Bestand ungeschuetzt). Die Entscheidung trifft Georg.
+
+
+TESTS
+-----
+  tests/test_v954_einstiegs_preisfenster.py    7 Tests
+  tests/test_v954_schutzbuchhaltung.py         5 Tests
+  tests/test_v954_staub_nach_verkauf.py        4 Tests
+  tests/test_v954_verwaiste_schutzorder.py     6 Tests
+
+  Alle treiben echten Code. Keiner durchsucht Quelltext nach
+  Zeichenketten. Wo es echte Pi-Daten gibt, werden sie benutzt
+  (tests/fixtures/echt_runtime_status_okx.json).
+
+  Zwei ALTE Zusicherungen wurden korrigiert, weil sie den Fehler
+  festgeschrieben hatten:
+    test_v9013_okx_execution_identity.py  px "0.0735"  -> "0.07362"
+    test_v70_okx.py                       px "60010"   -> "60100.1"
+
+  Ein alter Test wurde ersetzt, weil er Quelltext nach der woertlichen
+  if-Bedingung durchsuchte und deshalb fehlschlug, sobald die Bedingung
+  korrekt erweitert wurde:
+    test_v910_geldpfad.py::test_unterbrochener_verkauf_loest_einen_schutzabgleich_aus
+    -> tests/test_v954_schutzbuchhaltung.py (treibt pruefe_positionen wirklich an)
+
+  Gesamt: 1134 Tests, 1 uebersprungen, 185 Subtests. Alle gruen.
+
+
+NICHT IN DIESER VERSION
+-----------------------
+  * Parken der verzoegerten eToro-Kurse aus dem aktiven Universum
+    (24 Symbole 21 min, GOOGL/AIR 74 min, EVER kaputte Zeitmarke,
+    6 nicht unterstuetzte deutsche Symbole). Der Kursalter-Riegel
+    (stale_quote, 180 s) blockiert diese Einstiege bereits sicher --
+    es ist Universumsqualitaet, kein Sicherheitsloch.
+  * Doppelte Eintraege im Orderregister (jede eToro-Order unter orderId
+    UND referenceId).
+  * OKX-Fehlercode 50001 samt msg in den Fehlertext uebernehmen.
+
+UNVERAENDERT
+------------
+  Verbindungseinstellungen, Einstellungsuebernahme, Universums- und
+  Logbuchseiten, WebUI-Kacheln, Freqtrade-Modus als Zusatzfunktion,
+  GPT/Terra-Grenzen. Die Order wird weiterhin ausschliesslich durch die
+  festen Regeln, Live-Freigabe und Broker-Schutz ausgeloest.

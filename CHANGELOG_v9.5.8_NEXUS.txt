@@ -1,0 +1,365 @@
+================================================================================
+TRADINGBOT 9.5.8 NEXUS -- Kauf und Verkauf laufen wieder durch
+================================================================================
+Datum: 07.09.2026
+Vorversion: 9.5.7-NEXUS
+Tests: 1229 bestanden, 1 uebersprungen, 186 Subtests (9.5.7: 1185/1/185)
+Statische Pruefung: 21 Befunde -- identisch mit 9.5.7, kein neuer
+
+Grundlage ist der Befundbericht "Warum Kauf und Verkauf nicht sauber laufen"
+(Befund_Kauf_Verkauf_NEXUS_9_5_7.md). Diese Version setzt Stufe 1 daraus um:
+den Betrieb stabilisieren, ohne die Architektur umzubauen.
+
+Drei Verhaltensentscheidungen hat Georg dabei ausdruecklich getroffen:
+  * Ein Verkauf darf teurer werden als bisher, damit er ueberhaupt ausfuehrt.
+  * Ein ungeklaerter Posten sperrt nicht mehr den gesamten Kryptohandel.
+  * Der Bot meldet, wenn eine Handelsseite gestorben ist.
+
+--------------------------------------------------------------------------------
+1. DER AKTIENKERN STIRBT NICHT MEHR ENDGUELTIG          nexus_start.py
+--------------------------------------------------------------------------------
+BEFUND (04.09.2026, 15:58 UTC)
+  Eine nicht zuordenbare KO-Verkaufsmeldung liess die Ledgerbuchung
+  fail-closed werfen. ``starte_aktien`` hatte KEINE Neustartschleife -- der
+  Faden war danach endgueltig tot. Der Aktienhandel stand bis zum Neustart von
+  Hand, und niemand sah es:
+
+    * ``any(t.is_alive() ...)`` war durch den lebenden Kryptofaden erfuellt,
+      der Prozess lief also weiter und systemd startete nichts neu.
+    * Die Gesundheitspruefung war ein ``or`` -- die gesunde OKX-Domaene allein
+      hielt den systemd-Watchdog gruen.
+
+  Die Kryptoseite hatte diese Schleife die ganze Zeit. Die Asymmetrie war nie
+  beabsichtigt.
+
+AENDERUNG
+  * Neustart mit wachsender Wartezeit: 45 s, 90 s (Obergrenze). Nach 10 Minuten
+    stabilem Lauf faengt die Wartezeit wieder bei 45 s an.
+    - 45 s ist die Basis, weil ein haengender Telegram-Long-Poll bis zu 35 s
+      braucht. Startet der neue Kern frueher, holen zwei Poller gleichzeitig
+      Updates und Telegram antwortet mit 409 Conflict.
+    - 90 s ist die Obergrenze, weil der systemd-Dienst WatchdogSec=180 setzt.
+      Waehrend der Pause schreibt der Aktienkern keinen Herzschlag; eine
+      laengere Pause wuerde den Dienst per SIGABRT mitten in einem
+      Brokeraufruf abschiessen.
+  * Ein sauberes Ende von ``run()`` (Strg-C, SIGTERM, /shutdownbot) startet
+    NICHT neu -- das ist ein gewollter Halt.
+  * Jeder Abbruch wird gemeldet; ab dem 6. Fehler in Folge nur noch jede
+    zehnte Meldung, damit ein dauerhaft nicht startbarer Kern kein Telegram
+    flutet. Im Protokoll steht weiterhin jeder Versuch.
+  * Melde- und Druckaufruf sind gekapselt. Die Schleife darf an nichts
+    scheitern -- sonst waere genau der Zustand zurueck, den sie verhindert.
+  * Der Supervisor meldet eine gestorbene Handelsdomaene ausdruecklich, statt
+    sie zu verdecken. Beim gewollten Halt bleibt er still.
+  * ``live_trader.run()`` trennt den Broker jetzt BEDINGUNGSLOS im
+    finally-Block. Vorher stand dort ``if broker.is_connected()`` -- und genau
+    im Absturzumfeld ist ``_connected`` bereits False, weil der Transport
+    verloren ging. Reconciliation-Thread, WebSocket und requests-Session
+    blieben offen. Solange der Kern danach endgueltig starb, war das folgenlos;
+    mit der Neustartschleife haetten sie sich bis an TasksMax=256 summiert --
+    und daran waere auch die gesunde Kryptoseite gestorben.
+
+--------------------------------------------------------------------------------
+2. EINE UNZUORDENBARE BUCHUNG STOPPT DEN HANDEL NICHT MEHR
+                                              trade_ledger.py, live_trader.py
+--------------------------------------------------------------------------------
+BEFUND
+  Jede gescheiterte Ledgerbuchung eines eigenen Verkaufs wurde gleich
+  behandelt: Prozessstopp. Fuer einen technischen Fehler (Datenbank gesperrt,
+  Platte voll) ist das richtig -- ein Neuversuch kann gelingen. Fuer einen
+  fachlichen Befund ist es falsch: die Daten reichen nicht zur Zuordnung, und
+  beim naechsten Poll reichen sie genauso wenig. Der Fill blieb unquittiert,
+  kam wieder, und der Kern starb erneut -- eine Absturzschleife ohne
+  Fortschritt.
+
+AENDERUNG
+  * Neue Ausnahme ``trade_ledger.LedgerZuordnungUnklar`` (weiterhin ein
+    RuntimeError, aber unterscheidbar). Sie wird an den 15 Stellen geworfen,
+    an denen die Zuordnung fachlich unmoeglich ist -- nicht bei
+    "Offener Trade wurde parallel bereits veraendert": das ist ein paralleler
+    Schreibzugriff, dort kann ein Neuversuch gelingen.
+  * ``live_trader`` behandelt den Befund lokal: Buchungsluecke vermerken
+    (``etoro_reconciliation.melde_buchungsluecke``), Telegram-Meldung, Fill
+    quittieren, weiterhandeln.
+  * Es wird ausdruecklich NICHTS geraten: keine fremde Ledgerzeile wird
+    geschlossen, kein Ersatztrade angelegt, kein zweiter Verkauf gesendet.
+    Der Test ``test_es_entsteht_kein_zweiter_finanztrade`` haelt das fest.
+  * Der Tages-PnL wird nur dann als unvollstaendig markiert, wenn der Einstand
+    wirklich unbekannt war. Sonst wuerden alle weiteren Verkaufsmeldungen des
+    Tages faelschlich "unvollstaendig" melden.
+  * Das Exit-Journal wird im Lueckenpfad TROTZDEM quittiert. Der Fill ist
+    bewiesen -- nur seine Ledgerzeile fehlt. Bliebe der Intent offen, fragte
+    der eToro-Adapter ihn alle 10 s erneut ab, fuer eine laengst geschlossene
+    Position, unbegrenzt; ein spaeterer Verkauf derselben positionId liefe in
+    OrderStatusUnklar.
+
+--------------------------------------------------------------------------------
+3. DER FOK-VERKAUF KANN WIEDER AUSFUEHREN                    broker/okx.py
+--------------------------------------------------------------------------------
+BEFUND (XLM, 03.09.2026, 17:13-17:14)
+  "0 von 560.88 ausgefuehrt, OKX cancelSource=13" -- wortgleich wiederholt.
+  Der Limitpreis war ``best * (1 - max_slippage)``, die Zulassungspruefung
+  misst aber den VWAP (Durchschnitt ueber die gesamte Menge). Liegt ``worst``
+  (der tiefste Bid, der zum Fuellen gebraucht wird) weiter als max_slippage
+  unter ``best``, besteht die Order das Gate muehelos und kann trotzdem
+  strukturell nicht fuellen.
+
+  Nachgerechnet mit dem Buch aus dem Test:
+      best 0,18347 x 500 | 0,18000 x 200,  Menge 560,88
+      VWAP-Slippage 0,205 %  gegen Grenze 1,000 %  ->  Gate BESTANDEN
+      Limit alt = 0,181635  ->  fuellbar 500 von 560,88  ->  0 gefuellt
+
+  Es ist derselbe Fehler, den 9.5.4 auf der Kaufseite behoben hat, nur
+  spiegelverkehrt. Der Kommentar im Kaufpfad behauptete sogar, der
+  Verkaufspfad mache es "seit laengerem richtig" -- das stimmte nur, solange
+  ``worst >= best * (1 - max_slippage)`` war.
+
+AENDERUNG
+  * ``limit = min(worst, best * (1 - max_slippage))``. Der DURCHSCHNITT bleibt
+    durch die unveraenderte VWAP-Pruefung im Budget; nur das schlechteste
+    einzelne Level darf tiefer liegen.
+  * NEU: harte Untergrenze ``OKX_MAX_EXIT_SLIPPAGE_HARD_PCT`` (3,0 %). Traegt
+    das Buch die Menge nicht einmal bis dorthin, wird gar nicht gesendet --
+    der Schutz bleibt liegen, die naechste Runde misst neu. Ein Verkauf zu
+    jedem Preis ist kein Ausstieg.
+    Der Grund fuer diese Grenze: die Zusage "nicht schlechter als das
+    gemessene Buch" gilt nur fuer den Messzeitpunkt. Bricht die Tiefe
+    zwischen Messung und Ordereingang weg (das Buch darf bis zu 3 s alt sein),
+    kann die tatsaechliche Slippage groesser ausfallen.
+  * Wird das Limit unter die normale Slippage-Grenze gesenkt, steht das als
+    WARNUNG im Protokoll -- sonst bliebe genau der Fall unsichtbar, in dem der
+    Verkauf teurer war als das eingestellte Budget.
+  * Jeder Verkaufsversuch protokolliert jetzt sz, best, vwap, worst,
+    slippage, limit und tradeQuoteCcy. Nach einem 0-Fill war bisher nicht zu
+    entscheiden, ob das Buch zu duenn war, das Limit falsch lag oder die Menge
+    nicht stimmte. Der Hinweis im Ergebnis nennt die Zahlen ebenfalls.
+
+--------------------------------------------------------------------------------
+4. DER SCHUTZ WARTET AUF DIE GUTHABENFREIGABE                broker/okx.py
+--------------------------------------------------------------------------------
+BEFUND (XLM, 03.09.2026, 17:14:24)
+  "OKX-Schutzorder XLM-USDC abgelehnt (51008): available XLM balance is
+  insufficient" -- Sekunden nach dem stornierten FOK.
+
+  Der Verkaufspfad hatte aus dem LINK/ONDO-Vorfall gelernt und pollte bis zu
+  10 s auf die tatsaechliche Freigabe; sein eigener Kommentar sagt: "OKX
+  bestaetigt die Stornierung VOR der Freigabe des eingefrorenen Guthabens."
+  Der Schutz-Erneuerungspfad las genau EINMAL -- und lief damit in genau den
+  Fehler, vor dem dieser Kommentar warnt.
+
+AENDERUNG
+  * Neue gemeinsame Funktion ``OKXBroker.warte_auf_guthabenfreigabe``. Beide
+    Pfade benutzen jetzt dieselbe Regel.
+  * Gewartet wird nur, wenn fuer das Instrument gerade eine Freigabe
+    aussteht (``_freigabe_vormerken`` nach Storno, nach einem beendeten FOK
+    und zu Beginn eines Verkaufs). Sonst kostet der Aufruf genau einen Read --
+    ein Zyklus, der alle Positionen prueft, wird dadurch nicht langsamer.
+  * Das Vormerkfenster ist DREIMAL so gross wie der Polltimeout. Waeren beide
+    gleich, traefe der wichtigste Fall daneben: der Verkaufspfad pollt nach
+    dem Storno die vollen 10 s vergeblich, bricht ab -- und der unmittelbar
+    folgende Schutzabgleich saehe die Vormerkung schon als abgelaufen, also
+    genau dort einen einzigen Read, wo die Position ungeschuetzt im Konto
+    liegt.
+  * Monotone Uhr statt Wanduhr: ein NTP-Ruecksprung wuerde sonst jede
+    Schutzpruefung unnoetig sekundenlang pollen lassen.
+  * "Waehrung fehlt in der Antwort" heisst weiterhin "keine Aussage", nicht
+    "null frei" (Korrektur aus 9.5.4, unveraendert).
+
+--------------------------------------------------------------------------------
+5. "OKX KENNT DIESE ORDER NICHT" IST EIN ENDZUSTAND          broker/okx.py
+--------------------------------------------------------------------------------
+BEFUND (APT, ab 04.09.2026)
+  "Kaufzustand UNKLAR (clOrdId N9196...)" im Minutentakt, dazu
+  "Handelsbereitschaft verloren". OKX antwortet auf eine unbekannte Order mit
+  51603. Das ist die endgueltigste Antwort, die es gibt -- NEXUS behandelte
+  sie wie "keine Antwort": ``except BrokerFehler: return None``, der Aufrufer
+  machte daraus ein stilles ``continue``. Der Registereintrag blieb auf
+  UNKNOWN_AFTER_SUBMIT, verfaellt per TTL nie, und ein ungeklaerter Eintrag
+  sperrte ALLE Kryptoeinstiege.
+
+AENDERUNG
+  * 51603 wird als Auskunft gewertet -- und NUR 51603. Bewusst nicht dabei:
+      51400: heisst laut der eigenen Codetabelle "bereits AUSGEFUEHRT, schon
+             storniert oder nicht mehr vorhanden" -- "bereits ausgefuehrt" ist
+             das Gegenteil von "nie ausgefuehrt".
+      51001: betrifft das INSTRUMENT, nicht die Order.
+  * Der Code wird an seiner festen Stelle in der Meldung gelesen
+    ("OKX-Fehler <code>:"), nicht irgendwo im Text. Sonst haette dieselbe
+    Ziffernfolge in einer ordId oder einem Preis gereicht, um einen
+    Transportfehler zu einer verbindlichen Auskunft zu machen.
+  * NEU im Kaufpfad: Rueckfall auf die archivierten Fills ueber die clOrdId --
+    denselben, den der Verkaufspfad seit Langem hat.
+  * Der Beweis, dass nichts ausgefuehrt wurde, verlangt DREI Dinge:
+      1. OKX kennt die Order nicht (51603),
+      2. das Fill-Archiv hat GEANTWORTET und kennt zu dieser Kennung nichts,
+      3. der Eintrag ist aelter als OKX_ORDER_UNBEKANNT_MINDESTALTER_SEKUNDEN
+         (300 s; eine gerade abgesendete Order ist sekundenlang nicht
+         abfragbar).
+    Ein nicht erreichbares Archiv (Netz, Ratenbegrenzung) und ein
+    mehrdeutiges Archiv (Fills ohne oder mit mehreren ordIds) sind
+    ausdruecklich KEIN Beweis. Ohne diese Unterscheidung haette eine
+    Ratenbegrenzung einen echten, gefuellten Kauf als "nie ausgefuehrt"
+    verbucht -- die Coins laegen dann ohne Positionsbuch, ohne Ledgerzeile und
+    ohne Stop im Konto.
+  * Die fail-open-Luecke in ``_offene_order_symbole`` ist geschlossen: der
+    ``pending_for``-Zweig gab bei einem Fehler ``[]`` zurueck ("nichts offen"),
+    waehrend zwei Zweige darueber fuer denselben Fehlerfall bewusst zumachen.
+    Ein Zeitueberlauf am Zustandsschloss machte die Sperre damit sporadisch
+    gruen. Jetzt melden beide ``<REGISTER-UNLESBAR>``.
+
+--------------------------------------------------------------------------------
+6. EINE SPERRE TRIFFT NUR DEN BETROFFENEN WERT
+                              crypto_engine.py, exposure_klassifizierung.py
+--------------------------------------------------------------------------------
+BEFUND
+  Ein einziger RESIDUAL-Posten (XLM) oder eine ungeklaerte Order (APT) legte
+  den KOMPLETTEN Kryptoeinstieg still -- alle Coins. Die Klassifizierung wusste
+  dabei genau, um welche Waehrung es geht, gab es aber nur als Fliesstext
+  heraus.
+
+AENDERUNG
+  * ``klassifiziere()`` liefert zusaetzlich ``gesperrte_waehrungen``.
+  * ``scan()`` bricht nicht mehr global ab, solange die betroffenen Werte
+    benennbar sind; ``pruefe_kandidat`` sperrt sie einzeln.
+    Ist die Herkunft nicht benennbar, bleibt es bei der globalen Sperre.
+  * Die Bereitschaftsampel ``keine_unklare_order`` steht nur noch bei einem
+    UNLESBAREN Register rot. Der Schutz vor einem zweiten Kauf desselben Werts
+    sitzt im Kandidatengate (``duplicate_open_order``, symbolgenau).
+  * Damit dabei keine Luecke entsteht:
+    - ``duplicate_open_order`` prueft ausdruecklich auch auf
+      ``<REGISTER-UNLESBAR>``. Der Platzhalter passt auf kein echtes Symbol --
+      ohne diese Pruefung waere die Sperre offen in genau dem Fall, fuer den
+      sie eingefuehrt wurde.
+    - ``_portfolio_erlaubt`` zaehlt ungeklaerte eigene Orders gegen
+      OKX_MAX_OPEN_POSITIONS mit. Eine ungeklaerte Order kann beim Broker
+      gefuellt sein und steht noch nicht im Buch; bis 9.5.7 fing die globale
+      Sperre das mit ab.
+
+--------------------------------------------------------------------------------
+7. EINE GUTHABENQUELLE JE DURCHLAUF                        crypto_engine.py
+--------------------------------------------------------------------------------
+BEFUND
+  Der Mengenabgleich (der das Buch an die Realitaet anpasst und damit eine
+  Sperre aufloesen wuerde) las ueber ``positionen()`` die Stream-/Cachesicht;
+  die Exposure-Klassifizierung (die sperrt) las einen frischen REST-Aufruf.
+  Beide Schwellen liegen bei 2 %. Loeste nur eine aus, koennen die Zahlen
+  nicht dieselben gewesen sein -- und der einzige Pfad, der den Zustand haette
+  beenden koennen, sah die Abweichung nie. Genau so blieb XLM am 03.09.2026
+  dauerhaft auf RESIDUAL_EXPOSURE.
+
+AENDERUNG
+  * ``OKXBroker.guthaben_schnappschuss()`` gibt dieselbe Sicht heraus, aus der
+    auch ``positionen()`` gebaut wird.
+  * ``pruefe_positionen`` nimmt EINEN Schnappschuss am Anfang des Durchlaufs
+    und benutzt ihn fuer beide Entscheidungen. Wer sperrt, liest dieselbe Zahl
+    wie der, der heilt.
+
+--------------------------------------------------------------------------------
+8. ESKALATION STATT ENDLOSSCHLEIFE                        crypto_engine.py
+--------------------------------------------------------------------------------
+BEFUND
+  Ausgangssignal -> FOK 0 gefuellt -> Schutz abgelehnt -> 5 Minuten warten ->
+  von vorn, unbegrenzt. Kein Zaehler, keine wachsende Wartezeit, kein Abbruch.
+  Nur die Telegram-Meldung war gedrosselt -- die Sperre begrenzte also die
+  FREQUENZ der Meldung, nicht die Dauer des Zustands.
+
+AENDERUNG
+  * Neues Feld ``KryptoPosition.exit_fehlversuche``. Bewusst getrennt von
+    ``exit_recovery_checks``, das die Klaerungsversuche eines UNKLAREN
+    Ausstiegs zaehlt -- dieselbe Zahl fuer zwei Zwecke wuerde beide
+    verfaelschen. Alte crypto_positions.json laufen unveraendert weiter.
+  * Wartezeit verdoppelt sich: 5, 10, 20, 40, 60 Minuten (Obergrenze
+    OKX_EXIT_RETRY_MAX_MINUTES). Der Exponent ist gedeckelt -- 2**1024 waere
+    ein OverflowError mitten im Ausstiegspfad, und die Schleife gibt bewusst
+    nie auf.
+  * Ab OKX_EXIT_ESKALATION_VERSUCHE (5) sagt die Meldung ausdruecklich, dass
+    Handarbeit noetig ist, und wird nicht mehr gedrosselt.
+  * Nach einem erfolgreichen Verkauf faengt die Kette wieder bei der
+    Grundwartezeit an.
+  * Aufgegeben wird der Verkauf NICHT: eine Position ohne funktionierenden
+    Ausstieg still liegenzulassen waere schlimmer als ein weiterer Versuch.
+
+--------------------------------------------------------------------------------
+NEUE KONFIGURATIONSWERTE
+--------------------------------------------------------------------------------
+OKX_MAX_EXIT_SLIPPAGE_HARD_PCT            = 0.03    harte Verkaufs-Untergrenze
+OKX_EXIT_RETRY_MAX_MINUTES                = 60.0    Obergrenze der Wartezeit
+OKX_EXIT_ESKALATION_VERSUCHE              = 5       ab hier Klartext-Meldung
+OKX_ORDER_UNBEKANNT_MINDESTALTER_SEKUNDEN = 300.0   Frist fuer den 51603-Beweis
+OKX_FREIGABE_FENSTER_SEKUNDEN             = 45.0    Vormerkfenster Guthaben
+
+Hinweis: Die Konfigurationsliterale sind NICHT zwingend die laufenden Werte --
+das Risikoprofil kann sie ueberschreiben. Wer den tatsaechlichen Wert wissen
+will, liest ihn zur Laufzeit aus, nicht aus dieser Datei.
+
+--------------------------------------------------------------------------------
+GEGENPRUEFUNG DER EIGENEN KORREKTUR
+--------------------------------------------------------------------------------
+Eine adversariale Durchsicht der 9.5.8-Aenderungen fand ACHT echte Fehler in
+der ersten Fassung, zwei davon kritisch. Alle sind behoben und mit
+Regressionstests festgehalten (tests/test_v958_gegenpruefung.py):
+
+  KRITISCH  Ein nicht erreichbares Fill-Archiv galt als "kein Fill" -- ein
+            echter, gefuellter Kauf waere als "nie ausgefuehrt" verbucht
+            worden, die Coins laegen ohne Buch und ohne Stop im Konto.
+  KRITISCH  51001 und 51400 galten als "Order unbekannt", obwohl 51400 laut
+            der eigenen Codetabelle "bereits AUSGEFUEHRT" heissen kann.
+  WICHTIG   Der abgesenkte Verkaufs-Limitpreis hatte keinen Boden.
+  WICHTIG   Der Buchungsluecken-Pfad liess den Exit-Intent dauerhaft offen.
+  WICHTIG   Vormerkfenster und Polltimeout waren gleich gross -- der
+            Schutzpfad wartete genau dann nicht, wenn er sollte.
+  WICHTIG   ``disconnect()`` lief im Absturzfall nicht; mit der neuen
+            Neustartschleife haetten sich Threads bis an TasksMax summiert.
+  WICHTIG   AKTIEN_NEUSTART_MAXIMUM lag ueber WatchdogSec.
+  WICHTIG   ``<REGISTER-UNLESBAR>`` wirkte im Kandidatengate nicht, und
+            ungeklaerte Orders zaehlten nicht gegen die Positionsgrenze.
+
+Dazu sechs kleinere Befunde (Ueberlauf der Wartezeit, falsche
+PnL-Unvollstaendigkeitsmarkierung, ungeschuetzter Meldeaufruf, Alarm beim
+gewollten Halt, Wanduhr statt monotoner Uhr, unsichtbarer Preisabschlag) --
+ebenfalls behoben.
+
+--------------------------------------------------------------------------------
+NICHT IN DIESER VERSION -- offene Punkte
+--------------------------------------------------------------------------------
+* Die KRYPTOSEITE hat die Unterscheidung fachlich/technisch NICHT bekommen.
+  Dort faengt weiterhin ein breites ``except Exception`` und setzt
+  ``exit_state = "ACCOUNTING_PENDING"``. Ein fachlich unaufloesbarer
+  Krypto-Verkauf bleibt damit dauerhaft in diesem Zustand -- dieselbe
+  Asymmetrie, die 9.5.8 fuer eToro beseitigt hat.
+* ``exposure_klassifizierung`` legt die Klasse UNKNOWN ohne
+  ``sperrt_einstiege=True`` an, obwohl UNKNOWN in SPERRENDE_KLASSEN steht. Ein
+  Bestand mit lebender fremder Schutzorder sperrt deshalb nichts. Die
+  Korrektur wuerde MEHR sperren -- das braucht eine Entscheidung.
+* Die Punkte aus Abschnitt 11 des Aenderungsprotokolls 9.5-9.5.7 bleiben offen
+  (doppelte Ordereintraege, 6 nicht unterstuetzte deutsche Symbole,
+  EVER-Zeitstempel, Verkauf auf einem anderen Quote-Markt, die ETH-EUR-
+  Waise algoId 3873284120214450177).
+* Stufe 2 des Befundberichts -- ``orders`` als einziges Journal, Position als
+  Ableitung statt fortgeschriebener Zustand -- ist NICHT umgesetzt. Sie ist
+  die eigentliche Ursachenbehebung.
+
+--------------------------------------------------------------------------------
+KONTROLLE NACH DER INSTALLATION
+--------------------------------------------------------------------------------
+1. Im Logbuch muss bei jedem OKX-Verkaufsversuch eine Zeile stehen:
+       "OKX-Verkauf XLM-USDC: sz=... best=... vwap=... worst=...
+        slippage=...% limit=... quote=USDC"
+   Fehlt sie, laeuft noch 9.5.7.
+
+2. Die Wiederholung "0 von 560.88 ausgefuehrt" muss aufhoeren. Bleibt sie,
+   nennt der Hinweis jetzt Limit, best und worst -- damit ist entscheidbar, ob
+   das Buch zu duenn ist oder etwas anderes klemmt.
+
+3. Die Meldung "Ungeklaerte eigene OKX-Order: APT" darf den Handel nicht mehr
+   anhalten. Erwartet: andere Coins werden weiter gescannt und gekauft; im
+   Detailtext steht "nur diese Werte gesperrt".
+
+4. Nach spaetestens 5 Minuten sollte der APT-Eintrag verschwinden, sofern OKX
+   auf die clOrdId mit 51603 antwortet und das Fill-Archiv leer ist. Passiert
+   das nicht, sagt das Protokoll jetzt warum ("Fill-Archiv nicht lesbar" oder
+   "nicht eindeutig").
+
+5. Stirbt der Aktienkern erneut, kommt eine Telegram-Meldung
+   "Aktienkern abgebrochen ... Neustart in 45 s" -- und er kommt zurueck.
+================================================================================

@@ -1,0 +1,40 @@
+TradingBot NEXUS 9.0.2 – Testprotokoll
+======================================
+
+Status: BESTANDEN
+Datum: 27.08.2026
+
+ERGEBNIS IM ARBEITSBAUM
+- 720 Pytest-Tests bestanden.
+- 186 parametrische Untertests bestanden.
+- Vollständige Python-Compile-Prüfung bestanden.
+
+NEUE REGRESSIONEN
+- USD als erlaubte, tatsächlich instrumentgebundene OKX-Spotquote.
+- tradeQuoteCcy=USD in Kauf, Schutzorder und Verkauf eines USD-Paars.
+- beobachtete USD/EUR-Umrechnung für vergleichbare Volumenrangfolge.
+- Ledger-Restbestand wird als RESIDUAL_EXPOSURE klassifiziert und sperrt neue
+  Krypto-Einstiege, ohne automatisch verkauft zu werden.
+- verwaister offener Ledger-Trade braucht zwei leere Broker-Snapshots;
+  Kurs und P&L bleiben bei administrativer Schließung NULL.
+- parallele Telegram-Worker senden denselben Queue-Eintrag nur einmal.
+- exakte Telegram-Duplikate werden im 25-Sekunden-Fenster unterdrückt.
+- eToro-Schutzexits von AMD/UNH werden am gespeicherten Stop erkannt.
+- nicht passende eToro-Schließungen bleiben manuell und ausdrücklich benannt.
+- Teilverkäufe behalten Strategiemodus, Parameter-Hash und Parametersnapshot.
+
+BESTEHENDE REGRESSIONEN
+- Alle vorhandenen Tests für eToro-Reconciliation, OKX-Geldpfad, Telegram-
+  Persistenz, 20+30-Universum, Trade-Webseite und Trade-Ledger bestanden.
+
+SICHERHEITSGRENZEN
+- Keine echten eToro- oder OKX-Orders.
+- Keine echten Telegram-, GPT- oder News-Anfragen.
+- Brokerantworten, Parallelität und Neustartzustände wurden offline simuliert.
+- Reale Brokerlatenz und Raspberry-Pi-Hardware bleiben durch Demo-Betrieb,
+  Pi-Preflight und die Laufzeitdiagnosen zusätzlich abzusichern.
+
+PAKETTEST
+- Die getrennt entpackte Paketkopie bestand erneut 720 Pytest-Tests und 186
+  Untertests sowie self_test.py, statische Release-Hygiene, Compile-Prüfung,
+  host-neutralen Pi-Preflight und Shell-Syntax. Ergebnis: VOLLTEST OK.

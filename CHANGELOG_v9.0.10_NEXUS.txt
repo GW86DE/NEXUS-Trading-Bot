@@ -1,0 +1,36 @@
+TRADINGBOT NEXUS 9.0.10 - AENDERUNGSPROTOKOLL
+================================================
+Version: 9.0.10-NEXUS
+Datum: 29.08.2026
+
+OKX-EQUITY-BREMSE
+-----------------
+- Behoben: Ein OKX-Kauf wurde als Kontoverlust missverstanden, wenn Cash in
+  eine Krypto-Position umgewandelt oder eine alte Position bei der Migration
+  neu als Konto-Asset eingestuft wurde.
+- Die Equity-Bremse speichert nun eine eindeutige Berechnungsbasis. Aendert
+  sich die Menge der bewiesenen Botpositionen oder wird erstmals von einem
+  alten Zustand migriert, wird der Tagesvergleich kontrolliert auf derselben
+  Basis neu begonnen.
+- Der Schutzwert von 3 % bleibt unveraendert. Bei gleichbleibender Basis loest
+  ein echter Equity-Rueckgang weiterhin die Kaufbremse aus.
+- Der konkrete Praxisfall 73.242,94 EUR Gesamtbasis -> ETH-Kauf -> 71.043,50
+  EUR Cash wird nicht mehr als -3,0-%-Verlust bewertet.
+
+STATUS UND ENTSCHEIDUNGSLOGBUCH
+------------------------------
+- Die Risikoanzeige verwendet jetzt exakt dieselbe darf_kaufen-Pruefung wie
+  der Orderpfad. Equity-Bremse, Cooldown, Trade- und Positionslimit koennen
+  nicht mehr trotz Sperre als "darf kaufen: ja" erscheinen.
+- Globale OKX-Scanblockaden werden als `OKX_SCAN / BLOCKED` mit dem konkreten
+  Grund gespeichert. `/decisions` und das Entscheidungslog bleiben deshalb
+  auch sichtbar aussagekraeftig, wenn kein Coin bis zur Signalpruefung kommt.
+- Krypto-Pause, ungeklärte Exposure und Risikobremse verwenden getrennte
+  Blockierer im DecisionSnapshot; nicht ausgefuehrte Gates bleiben markiert.
+
+NICHT VERAENDERT
+----------------
+- Keine Lockerung von Risiko-, Kosten-, Liquiditaets- oder Brokerregeln.
+- 3-%-Equity-Grenze, OKX DEMO, eToro PAPER und die Brokerrollen bleiben gleich.
+- Der vom Nutzer gewaehlte Krypto-Strategiemodus wird nicht umgestellt.
+

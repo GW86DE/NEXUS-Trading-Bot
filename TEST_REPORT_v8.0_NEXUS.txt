@@ -1,0 +1,55 @@
+TradingBot 8.0 NEXUS - Release-Abnahme
+Datum: 2026-08-24
+Ziel: Raspberry Pi 5 / 8 GB, eToro Aktien + OKX EEA Spot-Krypto
+
+BESTANDEN
+==========
+- 194 Python-Dateien per AST geprueft: 0 Syntaxfehler.
+- Shell-Syntax aller mitgelieferten .sh-Dateien: bestanden.
+- Statische Release-Hygiene: bestanden.
+- Eingebauter self_test.py: bestanden.
+- compileall: bestanden.
+- Host-neutraler Raspberry-Pi-Preflight: bestanden.
+- 13 gezielte, netzwerkfreie Regressionen: bestanden.
+
+Die gezielten Regressionen prueften:
+1. Krypto-Scheduler 24/7, Aktien-Scan bei geschlossenem Markt blockiert.
+2. OKX-EEA-REST-Endpunkt.
+3. Item-Level-sCode trotz top-level code=0.
+4. Offizielle EEA-Demo-/Live-WebSocket-Adressen.
+5. WebSocket-Login und Account-/Order-Abonnements.
+6. EUR-Prioritaet vor USDC und Deduplizierung pro Basiswaehrung.
+7. Migration setzt eToro und OKX auf Paper/Demo und entfernt altes Arming.
+8. Brokergetrenntes, kurzlebiges LIVE-Arming.
+9. Luna-/Terra-Aufgabentrennung.
+10. PBKDF2-Passwortpruefung und WebUI-Bind-Guard.
+11. Logbuch-Pagination: Seite 2 liefert bei 55 Eintraegen exakt 5 Restzeilen.
+12. Finnhub/FMP/MASSIVE-Konfiguration, Alpha-Status und GDELT-492-Backoff.
+13. Ein Krypto-Favorit ueberspringt die Bewaehrungszeit nicht.
+
+IN DIESER BAUUMGEBUNG NICHT VOLLSTAENDIG AUSFUEHRBAR
+====================================================
+Der komplette pytest-Lauf wurde hier nicht als bestanden gewertet, weil in
+der bereitgestellten Ausfuehrungsumgebung pytest und mehrere gepinnte
+Runtime-Pakete (requests, FastAPI, uvicorn, websocket-client und yfinance)
+nicht installiert sind und kein Paket-Download zur Verfuegung stand.
+
+Pi_Installieren.sh erzeugt eine eigene virtuelle Umgebung, installiert zuerst
+requirements-lock.txt und requirements-test.txt und startet danach den
+kompletten pytest-/Volltest. Bei einem Fehler werden die systemd-Dienste nicht
+installiert oder gestartet.
+
+NICHT DURCH OFFLINE-TESTS BEWIESEN
+=================================
+- echte eToro- oder OKX-Order und echte Broker-Fills;
+- reale Telegram-Zustellung und Inline-Callback;
+- reale News-/OpenAI-Abfragen mit privaten API-Schluesseln;
+- WireGuard-Konfiguration des Zielnetzes;
+- ARM64-Hardwareverhalten auf dem konkreten Raspberry Pi.
+
+FREIGABESTATUS
+==============
+Release-Paket technisch und statisch abgenommen. Erste Inbetriebnahme nur in
+eToro Paper und OKX Demo. LIVE erst nach bestandenem Pi-Volltest, separatem
+Verbindungstest, kontrollierter Paper-/Demo-Abnahme und bewusster erneuter
+Freigabe je Broker.

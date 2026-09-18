@@ -1,0 +1,55 @@
+TRADINGBOT NEXUS 9.0.15 - TESTBERICHT
+=====================================
+Datum: 30.08.2026
+
+ERGEBNIS
+--------
+Pytest:              808 bestanden
+Subtests:            190 bestanden
+Python-Syntax:       OK
+JavaScript-Syntax:   OK
+self_test.py:        OK
+volltest.py:         OK
+Compileall:          OK
+Shell-Syntax:        OK
+Pi-Preflight:        OK (host-neutral)
+Release-Hygiene:     OK
+
+NEUE REGRESSIONSFAELLE
+----------------------
+- Der LINK-Exit wartet nach einem Schutzstorno auf die tatsaechliche
+  Guthabenfreigabe und sendet danach genau eine Verkaufsorder.
+- Eine nicht freigegebene oder weiterhin geschuetzte Menge wird nicht
+  verkauft.
+- Eine manuelle TP/SL-Aenderung setzt die exakte Position auf MANUELL:
+  Freqtrade-ROI und Strategie-Exit sind aus, harter SL/TP bleibt aktiv.
+- Eine Schutzaenderung verwendet die eindeutige algoId und gilt erst nach
+  erfolgreichem Readback als bestaetigt.
+- Manuelle Auftraege verlangen Trade-, Konto-, Instrument- und
+  Eigentumsnachweis sowie die exakte Bestaetigungsphrase.
+- Ein beim Neustart veralteter PROCESSING-Auftrag wird UNCLEAR und niemals
+  automatisch erneut gesendet.
+- Wiedereinstiegssperren gelten fuer den Basiswert im exakten OKX-Konto und
+  ueber verschiedene Abrechnungswaehrungen hinweg.
+- Ein bereits unter 9.0.14 auf Dust reduzierter ONDO-Eintrag wird mit echtem
+  OKX-Verkaufsfill geschlossen; Preis und Gebuehren werden nicht geraten.
+- Fehlgeschlagene Exits erhalten einen persistenten Retry-Abstand und
+  deduplizierte kritische Meldungen.
+
+WEITERE BESTAETIGTE PFADE
+-------------------------
+- Exakte instId-, Account-, Order-, Client-Order- und Fill-Zuordnung
+- Preisbegrenzte OKX-FOK-Ausfuehrung
+- Brokerseitige OCO-/Schutzorder
+- Gebühren- und währungsgetrennte Nettobuchung
+- Freqtrade-Sample-ROI/Exit nur bei automatisch verwalteten Positionen
+- WebUI-API mit Anmeldung, CSRF-Schutz und zentraler Engine-Ausführung
+- Bestehende eToro-, Universums-, Risiko-, Telegram- und WebUI-Regressionen
+
+NICHT OFFLINE TESTBAR
+--------------------
+- Echte OKX-/eToro-Netzantworten und brokerseitige DEMO-Ausfuehrung
+- Telegram-Zustellung
+- ARM64-Hardwareverhalten des Raspberry Pi 5
+
+Es wurden keine Brokerorders und keine schreibenden Brokeraufrufe gesendet.

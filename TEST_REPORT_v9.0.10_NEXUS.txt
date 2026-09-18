@@ -1,0 +1,32 @@
+TRADINGBOT NEXUS 9.0.10 - TESTBERICHT
+=====================================
+Version: 9.0.10-NEXUS
+Datum: 29.08.2026
+
+ERGEBNIS
+--------
+- 776 Pytest-Tests bestanden.
+- 188 integrierte Subtests bestanden.
+- SELF TEST: OK.
+- Static Release Hygiene: OK.
+- compileall: OK.
+- Raspberry-Pi-Preflight (host-neutral): OK.
+- Shell-Syntax: OK.
+- Gesamtergebnis: VOLLTEST OK.
+
+GEZIELTE REGRESSIONEN
+---------------------
+- Der Praxiswert 73.242,94 EUR vor dem ETH-Kauf und 71.043,50 EUR Cash danach
+  loest bei geaenderter Kapitalbasis keine falsche Equity-Bremse aus.
+- Cash plus bewiesene ETH-Position ergibt weiterhin denselben Kapitalwert.
+- Ein echter Rueckgang von mehr als 3 % bei unveraenderter Basis aktiviert die
+  Equity-Bremse weiterhin.
+- Eine aktive Equity-Bremse erscheint als `darf_kaufen: false` samt Grund.
+- Eine globale Scanblockade erzeugt einen sichtbaren `OKX_SCAN / BLOCKED`-
+  Eintrag ohne eine Ausfuehrung vorzutäuschen.
+
+GRENZEN DES OFFLINETESTS
+------------------------
+Echte eToro-/OKX-/Telegram-/KI-Netzwerkaufrufe sowie ARM64-Hardware werden
+offline nicht simuliert. Der kontrollierte Demo-Lauf auf dem Raspberry Pi
+bleibt deshalb Bestandteil der Installation.

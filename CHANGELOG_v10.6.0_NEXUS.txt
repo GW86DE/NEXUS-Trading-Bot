@@ -1,0 +1,143 @@
+NEXUS 10.6.0 -- Einsatz je Trade einstellbar, Rueckweg aus der Bestandsluecke
+==============================================================================
+Stand: 18.09.2026. Enthaelt vollstaendig 10.4.0 und 10.5.0; beide waren auf
+dem Pi noch nicht installiert.
+
+ANLASS
+------
+Am 18.09.2026 kamen zwei Dinge zusammen, die auf denselben Punkt zeigten:
+wie viel Geld ein Trade einsetzt und wer das entscheidet.
+
+1. Drei OKX-Kaeufe der Nacht (XRP 22:50, BTC 23:00, ETH 00:55 UTC) lagen bei
+   je rund 20 EUR, obwohl das Konto 172.214,65 EUR wert war.
+
+2. Dieselben drei Positionen waren seit 02:34 UTC gesperrt, weil zwei
+   unvollstaendige Guthaben-Schnappschuesse im Abstand von neun Sekunden sie
+   als verschwunden gemeldet hatten. Verloren war nichts.
+
+
+1. EINSATZ JE TRADE: DREI STUFEN, GETRENNT FUER OKX UND ETORO
+--------------------------------------------------------------
+BEFUND. Das Risikoprofil (konservativ/ausgewogen/offensiv) war fuer Krypto
+wirkungslos. ``TopfGrenzen.fuer_broker`` bevorzugt Werte mit Brokerpraefix,
+und in der Konfiguration stehen feste OKX_RISK_PER_TRADE_PCT und
+OKX_MAX_POSITION_PCT. Das Profil schreibt nur die praefixlosen und die
+CRYPTO_-Namen. Der Start meldete "Profil OFFENSIV | Risiko/Trade 2,00 %",
+gerechnet wurde weiter mit 0,3 %. Die Krypto-Engine kennt weder
+ACTIVE_PROFILE noch CRYPTO_RISK_PER_TRADE_PCT -- beide Namen kommen dort
+nicht vor.
+
+NEU. ``risk_levels.py`` fuehrt je Broker genau drei Einsatzstufen. Die Wahl
+steht in ``risiko_stufen.json`` und wird bei jeder Dimensionierung frisch
+gelesen. Sie wirkt ab dem naechsten Pruefzyklus OHNE Neustart des
+Trading-Core und nur fuer neue Einstiege; offene Positionen behalten ihre
+Groesse.
+
+  OKX (Basis: freies Guthaben der Kaufwaehrung)
+    vorsichtig  0,3 % Risiko je Trade, max.  5 % je Coin   (bisheriger Wert)
+    mittel      0,6 %                  max. 10 %
+    erhoeht     1,2 %                  max. 20 %
+
+  eToro (Basis: Kontowert)
+    vorsichtig  0,5 % Risiko je Trade, max.  3 %   (= Profil KONSERVATIV)
+    mittel      1,0 %                  max.  5 %   (= Profil AUSGEWOGEN)
+    erhoeht     2,0 %                  max. 15 %   (= Profil OFFENSIV)
+
+Zu bedienen unter Einstellungen, Abschnitt "Einsatz je Trade". Jede Stufe
+nennt ihre Zahlen und ihre Wirkung. Die hoechste Stufe verlangt die exakte
+Eingabe EINSATZ ERHOEHEN -- wie das Profil OFFENSIV.
+
+OHNE WAHL AENDERT SICH NICHTS. Das Modul meldet dann ausdruecklich "keine
+Stufe gewaehlt", und Topf wie Aktienpfad rechnen unveraendert mit ihren
+bisherigen Werten. Ein Test prueft das gegen den echten ETH-Kauf vom
+18.09.2026: 649,86 EUR freies EUR-Guthaben, 10 % Stopabstand, 19,50 EUR
+Positionswert -- auf den Cent wie im Beleg.
+
+FAIL-SAFE. Eine unlesbare oder nachtraeglich entfernte Stufendatei fuehrt nie
+zu mehr Einsatz, sondern zur kleinsten Stufe. Gesperrt wird nichts.
+
+ANZEIGE = ENTSCHEIDUNG. Oberflaeche, Statusanzeige und Kaufpfad lesen
+dieselbe Funktion. Die wirksame Stufe steht ausserdem in jeder
+Entscheidungsbegruendung und in jedem Journaleintrag.
+
+WAS DAS PROFIL WEITER TUT. Stop-Abstaende (ATR), Signalschwellen,
+Tagesverlustgrenze sowie Trade- und Positionslimits bleiben beim Profil.
+Nur Einsatz und Positionsdeckel kommen aus der Stufe.
+
+
+2. BESTANDSLUECKE: BESTAETIGEN STATT SOFORT BUCHEN
+---------------------------------------------------
+BEFUND. ``OKX_POSITION_MISSING_CONFIRM_SECONDS`` stand seit Langem in der
+Konfiguration und wurde nirgends abgefragt. Ein einziger unvollstaendiger
+Schnappschuss reichte, um eine gesunde Position als verschwunden zu buchen.
+Die Aktienseite (position_manager) prueft zwei Messungen UND Mindestalter
+seit jeher.
+
+NEU. Auch bei OKX gilt jetzt: zwei Messungen in Folge UND mindestens 30
+Sekunden seit der ersten. Zwei Zyklen im Abstand von neun Sekunden sind
+dieselbe Stoerung, nicht zwei unabhaengige Beobachtungen. Ein belegter
+Verkauf wartet nicht -- er wird sofort gebucht.
+
+Der Verdacht wird trotzdem sofort gemeldet, ausdruecklich als noch NICHT
+bestaetigt und ohne Buchung und ohne Sperre.
+
+
+3. RUECKWEG: BESTAND WIEDER DA
+-------------------------------
+BEFUND. Alle drei Aufloesungswege einer Bestandsluecke setzten einen VERKAUF
+voraus: exakte Exit-Fills, Abrechnung extern geschlossener Positionen,
+manuelle Aussenbuchung. Fuer "der Bestand war nie weg" gab es keinen Pfad
+zurueck. Am 18.09. blieben deshalb sechs Belege offen und sperrten jeden
+weiteren OKX-Kauf, obwohl Guthaben und Schutzorders die Mengen unveraendert
+auswiesen.
+
+NEU. ``okx_accounting.resolve_balance_gap_restored`` schliesst eine Luecke,
+wenn der Bestand selbst wieder messbar da ist. Es wird kein Verkauf
+erfunden: Der Beleg ist der erneut gemessene Bestand, und Menge sowie
+Zeitpunkt bleiben in ``resolution`` nachlesbar (BALANCE_RESTORED:...).
+
+Voraussetzungen, alle gleichzeitig:
+  * ein Guthaben-Schnappschuss der laufenden Runde liegt vor,
+  * der gemessene Bestand erreicht wieder die gebuchte Menge,
+  * es gibt keinen Verkaufsbeleg,
+  * zwei Messungen in Folge mit mindestens 120 Sekunden Abstand.
+
+Entsperren dauert damit bewusst laenger als sperren. Danach gibt der Bot die
+Position frei und laesst den Broker-Schutz im selben Takt ERNEUT bestaetigen;
+der alte Schutzstatus wird nicht geglaubt. Schlaegt die Ledgerbuchung fehl,
+bleibt die Position gesperrt -- eine handelbare Position mit blockiertem
+Ledger waere der schlechteste Zustand.
+
+Fuer die drei Positionen vom 18.09. heisst das: Sie loesen sich nach dem
+Update selbst auf, sobald zwei Messungen mit Mindestabstand den Bestand
+zeigen.
+
+
+4. NEBENBEFUND, MITGEFIXT
+--------------------------
+Eine Ledgerzeile ohne vollstaendige Kontokette liess ``mark_balance_gap``
+werfen, und die Ausnahme riss den GESAMTEN Positionszyklus mit: Schutz-
+abgleich, Ausstiege und Mengenpruefung aller anderen Coins fielen in diesem
+Takt aus. Dieser Fall wandert jetzt in die vorhandene Quarantaene
+(``mark_unanchored``). Verschluckt wird nichts: Der Vorgang bleibt dauerhaft
+festgehalten und sperrt neue Kaeufe weiter.
+
+
+DATEIEN
+-------
+Neu:      risk_levels.py
+          tests/test_v1060_einsatzstufen.py
+          tests/test_v1060_bestandsrueckkehr.py
+Geaendert: risk_pots.py, risk_manager.py, live_trader.py, crypto_engine.py,
+          okx_accounting.py, config.py, settings_migration.py, volltest.py,
+          NEXUS_10_Diagnose.py, webui/app.py, webui/settings_store.py,
+          webui/templates/settings.html, webui/static/settings.js,
+          webui/static/app.css
+Zustand:  risiko_stufen.json (ueberlebt Updates, wird nie ausgeliefert)
+
+
+INVARIANTEN UNVERAENDERT
+------------------------
+UNKNOWN bleibt UNKNOWN. Kein TLS-Bypass. PULSAR, X und GPT haben keine
+Orderbefugnis. CSP script-src 'self', kein CDN. Keine Klarnamen in
+Diagnose-Exporten. Eine fehlende Messung ist kein Beweis.

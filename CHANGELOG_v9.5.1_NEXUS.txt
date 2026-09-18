@@ -1,0 +1,145 @@
+NEXUS 9.5.1 - eToro Zustands- und Ausfuehrungsreparatur
+=======================================================
+
+Ausgangslage
+------------
+Der reale ADBE-Ablauf vom 01.09.2026 enthielt bereits die vollstaendige
+Brokerkette decisionId -> referenceId -> orderId -> positionId und den echten
+Fill. Trotzdem blieb der lokale Datensatz auf UNKNOWN/AWAITING stehen und
+sperrte weitere Kaeufe noch nach dem brokerseitigen Stop-Verkauf. Parallel
+meldete die WebUI sinngemaess "keine ungeklaerte Order", obwohl eine andere
+Readiness-Bedingung weiterhin rot war.
+
+Behobene Grundursachen
+----------------------
+
+* Der eToro-Reconciliation-Worker wird beim ersten Connect garantiert
+  gestartet, nach Reconnect generationssicher erneuert und per Heartbeat
+  ueberwacht. Eine Exception beendet nicht mehr den gesamten Worker.
+* Ein Hauptzyklus fuehrt zusaetzlich einen synchronen Abgleich durch. Worker
+  und Hauptpfad verwenden pro Entscheidung denselben frischen PnL-Snapshot.
+* Brokerbelege wachsen monoton. Ein spaeter 404/Timeout darf einen bereits
+  bekannten Fill oder eine bekannte positionId nicht wieder auf UNKNOWN
+  herabstufen.
+* Die eigentliche widerspruechliche Kaufsperre ist behoben: Bereits vor dem
+  Upgrade geschlossene, kontolose Altdatensaetze werden nicht mehr als neue
+  `CLOSED_ACCOUNTING_PENDING`-Faelle in jedes aktuelle eToro-Konto projiziert.
+  Sie bleiben terminal, sichtbar und ohne Eigentumszuweisung. Ein kontoloser
+  noch offener Altsatz kann dagegen nur durch einen exakten Order-/positionId-
+  Beleg an das richtige Konto gebunden werden.
+* eToro-Status 5 (PartiallyFilled) und 10 (RejectedPartiallyFilled) werden
+  korrekt behandelt. Status 10 ohne positionExecutions bleibt fail-closed in
+  der Recovery und wird nie als sichere Ablehnung freigegeben.
+* PnL und vollstaendig paginierte Trade-History koennen eine fehlende
+  positionId exakt ueber orderId rekonstruieren. Symbol oder Mengenaehnlichkeit
+  bleiben als Eigentumsbeweis verboten.
+* History-Pagination besitzt jetzt ein Vollstaendigkeitsmerkmal; ein lokales
+  Seitenlimit darf keinen negativen Brokerbeweis erzeugen. Der Rueckblick ist
+  auf die von eToro erlaubten 364 Tage begrenzt.
+* Der grosse History-Wiederanlauf wird erst dann auf das kurze Normalfenster
+  umgestellt, wenn jede erwartete History-Fill-ID im Ledger und im
+  Fill-Tracker committed beziehungsweise dort bereits dedupliziert ist. Ein
+  Absturz und ein danach leerer Zwischenpoll koennen den Cursor nicht mehr
+  vorzeitig quittieren.
+* Order-Lookup nutzt bei bekannter orderId zusaetzlich den offiziellen
+  v1-order-by-id-Fallback.
+* Der Kontofingerabdruck wird nach /api/v1/me aus der ausgewaehlten DEMO-/LIVE-
+  CID gebildet. Orderregister, Reconciliation, Position und Ledger bleiben
+  damit an dasselbe Konto und dieselbe Umgebung gebunden.
+
+Kaufpfad
+--------
+
+* Die persistente POST-Grenze wird unmittelbar vor dem Netzwerkaufruf gesetzt.
+  HTTP 202 mit leerer/defekter Antwort oder ein Transportabbruch nach dem POST
+  bleibt ungeklaert; NEXUS sendet niemals blind ein zweites Mal.
+* Neue eToro-Einstiege werden als limitIOC mit einem Preisdeckel gesendet.
+  Standardmaessig gelten maximal 0,30 % Abweichung vom Entscheidungspreis und
+  maximal das 1,10-Fache des geplanten Risikos; die strengere Grenze gewinnt.
+* Ein Brokerfill oberhalb des gesendeten Deckels wird als
+  ENTRY_FILL_ABOVE_PRICE_CAP dauerhaft zur manuellen Pruefung markiert und
+  nicht in die automatische Geldpipeline weitergereicht.
+
+Positions- und Verkaufspfad
+---------------------------
+
+* OPEN/CLOSED gilt nur fuer dieselbe positionId im selben Konto und in
+  derselben DEMO-/LIVE-Umgebung.
+* Ein leerer oder unvollstaendiger PnL-JSON-Wrapper ist kein leeres Depot mehr.
+  Fuer negative Positionsaussagen sind ein gueltiges `clientPortfolio`, ein
+  explizites Positionsarray sowie die passende CID und DEMO-/LIVE-Kennung
+  erforderlich.
+* Ein SELL-Fill schliesst die Entry-Reconciliation erst, wenn ein vollstaendiger
+  frischer PnL-Snapshot die positionId nicht mehr offen fuehrt. Ein Teilverkauf
+  mit verbleibender positionId bleibt korrekt OPEN.
+* Mehrere History-Teilverkaufszeilen derselben positionId werden nicht mehr auf
+  die letzte Zeile reduziert. Jede Ausfuehrung wird mit eigener stabiler
+  Fill-ID, Menge, Preis und Gebuehr genau einmal verbucht; erst der vollstaendige
+  Ledger-Commit darf die Kaufdomain freigeben.
+* Close-Info und Trade-History erzeugen fuer dieselbe eToro-Execution dieselbe
+  kontogebundene Fill-ID. Eine optionale oder spaeter angereicherte Close-
+  orderId kann keinen zweiten Verkauf erzeugen.
+* Close-Info wird vollstaendig gegen den gespeicherten Intent geprueft:
+  orderId, positionId und instrumentId muessen zusammenpassen. Gemischte oder
+  widerspruechliche Antworten bleiben `UNCLEAR` und werden nicht erneut
+  gesendet.
+* Ein echter Full Close wird ohne `UnitsToDeduct` gesendet; nur ein
+  Teilverkauf enthaelt eine numerische Menge. Verbindungs-, HTTP-, Auth- und
+  unklare Antwortzustaende werden dauerhaft und unterscheidbar journalisiert.
+* Trade-History-orderId ist die Entry-Order. Sie wird nicht mehr als
+  exit_order_id oder Verkaufsgrund missbraucht. Eine echte Close-ID wird nur
+  aus ausdruecklichen Close-Feldern gespeichert; lokale broker-stop-Anker leben
+  ausschliesslich als Fill-/Ereignis-ID.
+* Ein brokerseitiger Stop/TP einer noch PENDING gefuehrten Botposition wird
+  ueber Konto + positionId + decisionId + Entry-Order korrekt als Bot-Exit
+  erkannt. Entry-Texte koennen den echten Exitgrund nicht mehr ueberschreiben.
+* Kritische Ledgerfehler lassen den Fill unquittiert und blockieren den
+  folgenden Kaufpfad, bis die Buchung beim Replay erfolgreich war.
+* Die Commit-Reihenfolge ist jetzt verbindlich:
+  Brokerbeleg -> Trade-Ledger -> Exit-Journal -> Reconciliation/Ownership ->
+  Fill-Tracker. Der Adapter kann eine Position nicht mehr vor der Geldbuchung
+  als geschlossen bestaetigen.
+* Replaypruefung, offene Trade-Aufloesung, Legacy-Fallback, Geldmutation,
+  Teilrest und Exit-Ereignis laufen in einer einzigen `BEGIN IMMEDIATE`-
+  Transaktion. Ein Prozess- oder Parallelrennen kann keinen offenen
+  Phantomtrade und keinen doppelten SELL mehr erzeugen.
+* Die fuer eToro zwingende Identitaet bleibt Konto + positionId + Fill/Event.
+  OKX-Spot verwendet weiterhin Instrument + echte Fill/Event-ID, weil OKX
+  keine eToro-artige positionId fuehrt. Damit bleiben auch alte OKX-
+  Teilverkaufsdaten ohne Kontofingerabdruck replay-sicher verarbeitbar.
+
+Migration realer 9.5.0/9.5-Altdaten
+-----------------------------------
+
+* Bereits geschlossene LEGACY_UNLINKED-Trades werden ausschliesslich ueber
+  Broker + Konto + positionId + Entry-orderId transaktional zur Entscheidung
+  zurueckverknuepft.
+* Die Migration korrigiert die falsche ADBE-exit_order_id, Entry-/Exit-Fill-
+  Anker und Ownership, ohne Preise, Zeiten oder PnL neu zu berechnen.
+* Ein Konflikt, eine Mehrdeutigkeit oder ein Ledgerfehler bleibt als
+  LEDGER_BACKFILL_PENDING sichtbar und wird erneut versucht; Erfolg wird nicht
+  mehr vorgetaeuscht.
+* Ein Broker-Close wird zunaechst als `CLOSED_ACCOUNTING_PENDING` gespeichert.
+  Die Domain bleibt in diesem Crashfenster gesperrt. Ein Neustart schliesst
+  exakt den bereits angelegten Ledgerrest, statt einen neuen Trade anzulegen.
+* Kauf-Reconciliation, Orderregister, Positionsbuch, Decision-History und
+  Trade-Ledger werden gemeinsam auf den belegten terminalen Zustand gebracht.
+
+WebUI und Diagnose
+------------------
+
+* Readiness ist konto- und umgebungsgenau. Rot angezeigte Bedingungen nennen
+  jetzt den tatsaechlichen Sperrgrund sowie decisionId/orderId/referenceId und
+  gegebenenfalls positionId.
+* Die positive Aussage "Keine ungeklaerte eToro-Ausfuehrung" erscheint nur,
+  wenn genau diese Bedingung tatsaechlich erfuellt ist.
+* Worker-Generation, letzter erfolgreicher Tick und letzter Fehler stehen als
+  Runtime-Diagnose bereit.
+
+Unveraendert
+------------
+
+FMP-, Freqtrade-, Analyse- und WebUI-Funktionen sowie alle Strategieparameter
+aus NEXUS 9.5.0 bleiben fachlich erhalten. Der OKX-Handelspfad wurde nur an
+der gemeinsamen Ledger-Replaygrenze kompatibel abgesichert. 9.5.1 aktiviert
+LIVE nicht automatisch.

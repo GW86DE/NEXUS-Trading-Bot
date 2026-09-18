@@ -1,0 +1,68 @@
+NEXUS 10.3.0 - PULSAR-HYPE-LANE (17.09.2026)
+
+TEIL A - OKX-FREIGABE (Prioritaet; Befunde der Diagnose vom 17.09., 12:57 UTC)
+1. risk_manager.resolve_unknown_result_at akzeptiert jetzt auch die
+   Composite-Methodenkennung EUR_REFERENCE_CASHFLOWS_COMPOSITE_V1 der
+   10.2.1-EUR-Referenzbewertung. Vorher wurde der unter 10.2.2 korrekt
+   gespeicherte Beleg fuer Trade 73 (netto 298,73 EUR) vom Risiko-Abgleich
+   mit "Ungueltiger Referenzbewertungsnachweis" abgelehnt.
+2. exposure_klassifizierung: Bei "Offener Trade im Ledger, aber kein Eintrag
+   im Positionsbuch" bindet nur noch die offene Ledger-Restmenge; ein
+   darueber liegender Kontosaldo ist ein getrenntes Konto-Asset, und ein
+   gebundener Rest unter der Staubgrenze (1 EUR) ist Staub. Vorher ordnete
+   die Klassifizierung den kompletten OKX-Demo-Startbestand (1 BTC / 10 ETH)
+   zwei Staub-Restzeilen von 0,00000000279 BTC bzw. 0,000000102 ETH zu und
+   sperrte damit alle Kryptokaeufe. Ohne Kursbeleg gibt es weiterhin keine
+   Staub-Entwarnung; fehlende oder zu kleine Salden sperren weiter.
+3. risk_result_recovery: Ratenbremse fuer die Warnung "Risiko-Ergebnisabgleich
+   ... bleibt offen" (vorher alle ~7 Sekunden; jetzt je Zeile hoechstens alle
+   10 Minuten als WARNING, dazwischen DEBUG).
+
+TEIL B - PULSAR 2.0: HYPE-SPUR (Konzept vom 17.09., freigegeben)
+4. Neue Qualifikation (pulsar/evidence.py, PULSAR-2.0-HYPE-LANE): Ein
+   Kandidat ist eligible, wenn GLEICHZEITIG belegt sind: Social-Spike
+   (Reddit >=100 Erwaehnungen bei >=3x Vortageswachstum, oder Neuzugang
+   >=40 ohne Vortageswert; X-Stichprobe >=8 Beitraege von >=5 Accounts,
+   hoechstens 24 h alt), Kurs-/Volumenbestaetigung aus FMP-Kerzen
+   (Intraday: >=+5 % zum letzten Tagesschluss und heutiges Volumen >= ein
+   Durchschnittstag; sonst letzte Tageskerze >=+5 % bei >=3x Volumen)
+   und die unveraenderten Identitaets-/Qualitaetsbloecke der Karte.
+   Die Kurssprung-Obergrenze (+20 %/Tag, +40 %/5 Tage: "nur beobachten")
+   bleibt bestehen. Luna bleibt Warnfilter (nur ein REJECT blockiert).
+5. Entfallen (Aufraeumen): Score-80-Maschine mit Katalysator-Pflicht und
+   Gewichten, 14/28-Tage-Baselines als Kaufhuerde, vollstaendige
+   X-Tageszaehlungen (COMPLETE_DAILY_X_COUNTS) samt taeglichen
+   Zaehlungsabrufen, Community-Messkriterien, Terra-Vertiefung und
+   Terra-Gegenpruefung im Kaufpfad, Wochen-Beobachtungssimulation.
+   Die Ereignisrecherche (GPT-Websuche + Originaldokument) bleibt als
+   Belegquelle fuer Anzeige und Alarm.
+6. Stabilitaet: stable_candidate verlangt zwei eligible Hype-Messungen im
+   Abstand von mindestens 10 Minuten (juengste hoechstens 1 h alt).
+7. Hype-Alarm: Sofortige Telegram-Meldung je Hype-Kandidat (hoechstens
+   einmal je 24 h) mit Social-, Kurs- und Earnings-Belegen; reine
+   Information ohne Order. Im FREIGABE-Modus folgt die Nominierung ueber
+   den Core im NY-Handelsfenster mit zweistufiger Bestaetigung.
+8. Limits (PULSAR-2.0-Regeln): hoechstens 1 offener/schwebender Trade
+   (vorher 2), hoechstens 1 Nominierung je Kalendertag Europe/Berlin
+   (eine Ablehnung verbraucht den Tag, nicht mehr die Woche), Zeitstop
+   10 Handelstage (vorher 20; Altplaene behalten ihren Wert), Review nach
+   5 Tagen. Uebrige Exit-Policy unveraendert: Stop max(8 %, 2xATR) bis
+   15 %, Break-even ab +1R, Drittel-Teilverkauf + Trailing (Hoch-3xATR)
+   ab +2R, Broker-Take bei 6R, Stop wird nie gesenkt. Earnings-Abstand
+   bleibt Pflicht.
+9. Universums-Zubringer: Entdeckungen mit belegter Identitaet (kein
+   ETF/Profil-Fehler) laufen bis zu 14 Tage als Gaeste (max 10) durch die
+   unveraenderte NEXUS-Standard-Pruefung des eToro-Kandidatenfelds --
+   gleiche Mechanik wie Favoriten, kein PULSAR-Sonderweg.
+10. X-Budget umgeschichtet statt erhoeht: 5 Kandidaten-Suchen/Tag (vorher 3,
+    Slot ~4,8 h) + 2 Makro-/Accountsuchen/Tag (vorher 3, Slot 12 h);
+    taegliche Zaehlungsabrufe entfallen. Neue Obergrenze der Schaetzung:
+    14,11 EUR/Monat im unveraenderten 15-EUR-Limit; hartes
+    BUDGET_PAUSED-Verhalten bleibt.
+11. WebUI: PULSAR-Seite zeigt Hype-Kriterien, Alarm-/Gastlisten statt
+    Belegscore, Community-Messkriterien und Wochensimulation.
+
+Tests: tests/test_v1030_okx_freigabe.py (10) und
+tests/test_v1030_pulsar_hype.py (20) neu; PULSAR-/X-/Risiko-Suiten auf die
+neuen Regeln fortgeschrieben. Massgeblich bleibt der Pi-Volltest der
+Installation.

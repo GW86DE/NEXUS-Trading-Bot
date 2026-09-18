@@ -1,0 +1,318 @@
+TRADINGBOT v8.1.3 NEXUS — AENDERUNGSBERICHT
+================================================================================
+Stand: 24.08.2026        Basis: v8.1.1 (mit den v8.1.2-Aenderungen)
+
+Unveraendert geblieben — auf ausdrueckliche Ansage:
+  * Verbindungseinstellungen (eToro, OKX, Telegram, WireGuard, Web-Login)
+  * Einstellungsuebernahme aus der Vorgaengerversion
+  * Die Handelsuniversum-Uebersicht in der WebUI (Aufbau, Spalten, Filter)
+  * Der Orderpfad selbst: keine neuen Regeln, keine neuen Kaufgruende
+
+
+1. CASH-RESERVE: ORDER VERKLEINERN STATT BLOCKIEREN
+================================================================================
+Gemeldet: "Kauf von BTC blockiert. Cash Reserven reichen nicht."
+
+Vorher   Der Bot pruefte, ob die GEPLANTE Order vollstaendig ins freie
+         Guthaben passt. Passte sie nicht, fiel sie ganz weg — auch wenn eine
+         kleinere, regelkonforme Order moeglich gewesen waere.
+
+Jetzt    Der Ablauf ist siebenstufig:
+           1. geplante Ordergroesse berechnen
+           2. freies Guthaben abfragen
+           3. harte Sicherheitsreserve abziehen (OKX_CASH_RESERVE_PCT, 5 %)
+           4. Taker-Gebuehr zusaetzlich einplanen
+           5. Menge auf das OKX-Lotraster abrunden
+           6. gegen minSz und Mindestordergroesse (15 EUR) pruefen
+           7. kaufen — oder mit konkreten Zahlen ablehnen
+
+         Meldung im Erfolgsfall:
+           "Order von 50.00 EUR auf 32.27 EUR wegen Cash-Reserve reduziert
+            (frei 34.00, Reserve 1.70, Gebuehr 0.10 %)"
+
+         Meldung im Ablehnungsfall — mit Zahlen statt "reicht nicht":
+           "nach Reserve bleiben 11.40 EUR; Mindestordergroesse 15.00 EUR"
+
+Wichtig  Die harte Sicherheitsreserve bleibt unangetastet. Verkleinert wird
+         ausschliesslich die Order, nie die Reserve.
+
+eToro    Der Aktienpfad konnte das bereits — er hat es nur nicht gesagt. Jetzt
+         steht die Verkleinerung im Protokoll und in der Ausgabe.
+
+Neu einstellbar: OKX_CASH_RESERVE_PCT (stand vorher nur als Vorgabewert im Code)
+
+
+2. UNIVERSUM: FESTER KERN + BEGRENZTE DYNAMIK
+================================================================================
+Kein "alles dynamisch". Vier Ebenen, wie besprochen:
+
+    Broker-Katalog  →  Eligible Pool  →  Aktives Universum  →  Focus Set
+
+"Im Universum" heisst ausdruecklich nur: WIRD BEOBACHTET. Nicht: wird gekauft.
+Ueber den Kauf entscheidet weiterhin allein die deterministische Kaufkaskade.
+
+AKTIEN (eToro)
+    Katalog            250 (vorher 160)
+    Fester Kern         75 (STOCK_CORE_SYMBOLS, STOCK_CORE_LIMIT)
+    Dynamisch      hoechstens 25 (STOCK_UNIVERSE_DYNAMIC_LIMIT)
+    Aktiv                 = 100
+    Aufnahme       dynamische Werte NUR nach deiner Freigabe
+    Instrumente    nur Aktien und ETFs; CFDs, Hebelprodukte, SPACs,
+                   Warrants, Units und unklare Instrumente sind gesperrt
+    Favoriten      erhoehen die Prioritaet, nehmen aber NICHTS auf
+    Entfernung     fruehestens nach 24 h, erst nach drei schlechten Pruefungen,
+                   nur bei klarem Rangverlust
+    Offene Positionen bleiben im Monitoring, auch bei schlechtem Rang
+
+KRYPTO (OKX)
+    Kandidaten     hoechstens 100
+    Aktiv          hoechstens  50
+    Focus Set      die besten 12 (nur die bekommen teure Analyse)
+    Fester Kern    BTC, ETH, SOL
+    Nur Spot, nur EUR- und USDC-Paare
+    Einstiegshuerde 30 Tage gelistet, 2 Mio. Quote-Volumen, hoechstens 0,6 %
+                   Spread, keine Futures/Swaps/Optionen
+    Bewaehrung     24 h — NUR der feste Kern darf sie ueberspringen
+                   (bis 8.1.2 durfte das jeder als "etabliert" eingestufte Coin)
+    Mindestaufenthalt 6 h, Abgang nach drei schlechten Pruefungen
+    Hysterese      rein ab Rang 50, raus erst schlechter als Rang 75
+    Hoechstens 8 Aenderungen je Lauf
+
+KI-ROLLE  Unveraendert eng: die KI darf sagen "schau dir diesen Wert zuerst an"
+          oder "hier liegt ein Nachrichtenrisiko". Sie macht keinen Wert
+          handelbar, ersetzt keine Freigabe und hebelt keine Risikoregel aus.
+
+
+3. DER AKTIEN-UNIVERSUMSLAUF FAND NIE STATT
+================================================================================
+Beim Umbau gefunden: StockUniverseSelector und UniverseManager gibt es seit
+v7 — aber NIEMAND hat den Aktienlauf jemals aufgerufen. Die Kryptoseite hatte
+ihren Lauf in crypto_engine.universumslauf(); die Aktienseite hatte nichts.
+
+Folgen bis v8.1.2:
+    * Der Aktien-Universumszustand blieb dauerhaft leer.
+    * Der feste Kern kam nie an.
+    * Der Instrumentenfilter lief nie.
+    * Deine Frage "wie viel Aktien sind jetzt im Universum? 0 oder 80?"
+      hatte keine ehrliche Antwort.
+
+Neu: stock_universe_runner.py, gestartet als eigener, langsamer Faden.
+    * Ohne eigene eToro-Verbindung — der Aktienkern behaelt seine Sitzung
+      allein. Die Daten kommen aus dem FMP-Referenzcache.
+    * Ohne Marktfenster-Bremse: ein Universumslauf platziert keine Order.
+      Sonst waere das Universum am Wochenende leer — genau dann schaut man hin.
+    * Faellt die Datenquelle aus, wird der feste Kern trotzdem gesetzt; die
+      Dynamik pausiert dann ehrlich, statt auf Verdacht zu ranken.
+    * Der Faden haelt den Supervisor NICHT am Leben: er ist ein Hilfsfaden,
+      keine Handelsdomaene.
+
+
+4. DASHBOARD-KARTE "UNIVERSUM"
+================================================================================
+Vorher   Sie zaehlte config.STOCK_SYMBOLS und config.CRYPTO_SYMBOLS — also den
+         statischen Katalog. Weil CRYPTO_SYMBOLS in v8 leer ist (die Coins
+         kommen von OKX), stand dort strukturell IMMER "0 Krypto". Die
+         Ersatzwerte aus runtime_status.json halfen nicht: die schreibt der
+         eToro-Prozess, und der setzt configured_crypto bewusst auf 0.
+
+Jetzt    Beide Oberflaechen lesen dieselbe Quelle (universe_overview.py):
+
+           Aktien 78 aktiv (75 Kern + 3) · Krypto 41 aktiv (3 Kern + 38)
+
+         Vor dem ersten Lauf steht dort "noch kein Lauf (Katalog 250)" — eine
+         Katalogzahl darf nie wie ein aktives Universum aussehen. Ist der
+         Zustand nicht lesbar, steht "unbekannt", nicht "0".
+
+Auch /universum in Telegram nennt jetzt das beobachtete Universum und
+kennzeichnet den Katalog ausdruecklich als Vorauswahl.
+
+WebUI    Die Universumsseite bleibt im Aufbau unveraendert. Korrigiert wurden
+         nur die Zahlen dahinter: die Kern-Markierung gilt jetzt fuer BEIDE
+         Broker (vorher nur Krypto), und die Kachel "Fester Kern" zeigt die
+         Gesamtzahl statt nur die drei Coins.
+
+
+5. STRATEGY EVOLUTION ENGINE — ETAPPE A (reine Aufzeichnung)
+================================================================================
+Etappe A greift nicht in den Geldpfad ein. Kein Shadow, keine Aktivierung,
+kein Auto-Rollback — das ist v8.2 und braucht eine eigene Abnahme.
+
+Die Luecke: decision_history.sqlite speicherte nur die EINSTIEGSSEITE. Kein
+realisiertes Ergebnis, keine Gebuehren, keine Slippage, keine Haltedauer, kein
+Ausstiegsgrund, keine Strategieversion. Trefferquote, Erwartungswert,
+Profitfaktor und Drawdown waren damit schlicht nicht berechenbar.
+
+A1  Trade-Ledger (trade_ledger.py) — neue Tabelle "trades":
+      Einstieg und Ausstieg, Menge, Gebuehren, geschaetzte Slippage,
+      Haltedauer, Exit-Grund, MFE/MAE, Marktphase, Strategieversion, je
+      Broker und getrennt nach Demo/Live. Teilverkaeufe lassen den Rest
+      als offenen Trade stehen.
+      Angebunden an alle vier Stellen: Kauf und Verkauf bei OKX, Kauf und
+      Verkauf bei eToro. Jeder Aufruf ist abgesichert — ein kaputtes Ledger
+      darf niemals einen Kauf oder Verkauf verhindern.
+
+A2  Strategieversion (strategy_version.py) — 12-stelliger Hash ueber die
+      wirksamen Strategie- und Risikoparameter. Gleiche Parameter, gleiche
+      Version. Telegram-Einstellungen und Anzeigeoptionen aendern sie NICHT,
+      sonst zersplittert die Statistik in unbrauchbare Einzelstichproben.
+      Jede Entscheidung in decision_history.sqlite traegt sie jetzt mit.
+
+A3  Kennzahlen — decision_analytics.trade_snapshot(broker, tage):
+      Trefferquote, Erwartungswert je Trade, Profitfaktor, mittlerer Gewinn
+      und Verlust, maximaler Drawdown, Gebuehrensumme und -quote,
+      Slippage-Mittel, Haltedauer — dazu die Aufteilung nach Broker, Symbol,
+      Marktphase, Exit-Grund und Strategieversion. Jede Gruppe mit
+      Stichprobengroesse und sample_quality.
+
+A4  Getrennt je Domaene — eToro und OKX werden nie vermischt: andere
+      Gebuehrenstruktur, anderer Takt, andere Marktzeiten.
+
+Ehrlichkeit bei Luecken (bewusste Entwurfsentscheidung):
+      Ein Trade ohne bekannten Einstand wird NICHT als 0,00 gebucht. Er
+      erscheint als "ohne_ergebnis" und geht in keine Kennzahl ein. Der
+      Profitfaktor ist ohne einen einzigen Verlusttrade nicht definiert und
+      wird dann nicht ausgewiesen, statt "unendlich" zu behaupten. Die
+      Marktphase wird nie geraten — unbekannt bleibt leer.
+
+Der woechentliche Strategiebericht (sonntags 18:00) enthaelt den neuen Block
+"REALISIERTE HANDELSERGEBNISSE". Bis genug Trades vorliegen, steht dort
+ausdruecklich, dass belastbare Kennzahlen einige Wochen Handel brauchen.
+
+Terra darf weiterhin NICHT: Python-Dateien veraendern, Sicherheitsfilter
+abschalten, Broker- oder Instrumentenuniversum freigeben, Orders platzieren,
+Risiko- oder Verlustgrenzen ueberschreiben. Terra bekommt nur das Aggregat,
+nie die Datenbank.
+
+
+6. NEBENBEFUND UND KORREKTUR
+================================================================================
+UniverseZustand loeste einen relativen Pfad gegen das QUELLVERZEICHNIS auf,
+statt gegen das Zustandsverzeichnis. Derselbe Fehlertyp wie frueher in
+news_sources.py. Folge: Testlaeufe schrieben universe_state.json in den
+Release-Baum. Behoben und mit einem Regressionstest abgesichert.
+
+crypto_positions.json wandert jetzt bei der Einstellungsuebernahme mit. Ohne
+das Positionsbuch weiss die Kryptoseite nach einem Wechsel nicht mehr, wo ihre
+Stops liegen — OKX Spot kennt keinen Einstandspreis.
+
+Das zuletzt gemessene Marktregime wird abgelegt, damit der Kryptoprozess die
+Marktphase mitschreiben kann, ohne einen Marktdaten-Download auszuloesen.
+
+
+6b. WAS DIE UNABHAENGIGE NACHPRUEFUNG NOCH GEFUNDEN HAT
+================================================================================
+Nach der Umsetzung wurde der Geldpfad noch einmal unabhaengig gegengelesen.
+Dabei kamen fuenf Punkte heraus — zwei davon ernst. Alle sind behoben und mit
+Regressionstests abgesichert.
+
+ERNST 1 — Kernsperre war dauerhaft und nicht mehr aufzuheben.
+    Reisst ein Kernwert einen harten Sicherheitsfilter, wird er fuer neue
+    Einstiege gesperrt. Es gab aber KEINE Stelle im gesamten Code, die diese
+    Sperre je wieder aufhebt. Einziger Ausweg waere das Loeschen von
+    universe_state.json gewesen.
+    Behoben: wird der Wert wieder regulaer bewertet, ohne dass die Bewertung
+    einen Sicherheitsgrund meldet, loest sich die Sperre — mit Eintrag im
+    Aenderungsprotokoll.
+
+ERNST 2 — Fehlende Bewertung wurde wie ein Sicherheitsproblem behandelt.
+    Faellt ein Wert aus der Rangliste, zaehlte das als Sicherheitsstrike.
+    Nach drei Laeufen griff Ernst 1. Bei 900 s Kryptotakt heisst das: BTC
+    waere nach 45 MINUTEN dauerhaft unkaufbar gewesen — ohne dass irgendetwas
+    passiert ist. Aus der Rangliste zu fallen hat harmlose Gruende:
+    geschlossene Boerse, fehlende Kerzen, ausgefallene Referenzquelle,
+    aufgebrauchtes FMP-Tagesbudget.
+    Behoben: ein Kernwert ohne Bewertung bleibt aktiv und wird im Diff unter
+    "kern_ohne_bewertung" ausgewiesen. Gesperrt wird nur noch, wenn die
+    Bewertung selbst einen Sicherheitsgrund meldet.
+
+3 — Zwei sich widersprechende Aktienkerne.
+    Die erste Fassung von 8.1.3 hatte eine eigene, handgeschriebene
+    Kernliste. Sie stimmte mit STOCK_FIXED_CORE_SYMBOLS — dem Kern, den der
+    Aktienkern tatsaechlich handelt — nur zu zwei Dritteln ueberein: 29 der
+    75 Werte standen gar nicht im Katalog und konnten deshalb nie bewertet
+    werden. Es haette also einen gehandelten und einen angezeigten Kern
+    gegeben.
+    Behoben: STOCK_CORE_SYMBOLS IST jetzt der Anfang des Katalogs. Eine
+    Quelle, kein Abgleich noetig, ein Test bewacht die Uebereinstimmung.
+
+4 — Lotrundung fiel offen aus.
+    Waren die OKX-Instrumentdaten nicht abrufbar, gab _auf_lot_runden die
+    Menge UNGERUNDET zurueck — weder auf dem Lotraster noch gegen minSz
+    geprueft. Behoben: ohne Instrumentdaten wird nicht gekauft (fail closed).
+
+5 — Meldungsflut und Fantasiekosten.
+    Die Verkleinerungsmeldung lief im Pruefpfad, also je Kandidat und Scan —
+    auch fuer Kaeufe, die danach ohnehin nicht stattfanden. Und mit Menge 0
+    schrieb das Kostenmodell eine Huerde von 150 % ins Entscheidungsjournal.
+    Behoben: gemeldet wird beim tatsaechlichen Kauf, einmal, mit den echten
+    Zahlen; die Kostenrechnung nutzt bei Ablehnung die geplante Referenzmenge.
+
+Ausserdem verschoben: die MFE/MAE-Fortschreibung stand vor der Stop- und
+Zielpruefung und haette diese bei blockierter Datenbank verzoegern koennen.
+Sie laeuft jetzt danach.
+
+EHRLICH BENANNTE GRENZE
+    Die Kernsperre wirkt heute nur auf der Kryptoseite. live_trader baut sein
+    Handelsuniversum weiterhin aus config.STOCK_SYMBOLS und fragt den
+    UniverseManager nicht. Der Aktienkern und der Universumskern enthalten
+    jetzt zwar exakt dieselben 75 Werte — eine Sperre wuerde den Aktienhandel
+    aber nicht erreichen. Das zu aendern heisst, den Aktien-Orderpfad an den
+    Universumszustand zu haengen; das ist eine Verhaltensaenderung im
+    Geldpfad und gehoert in ein eigenes Release mit eigener Abnahme.
+    Ebenso offen: MFE/MAE werden nur fuer Krypto gefuehrt. Fuer eToro-Trades
+    bleiben die beiden Felder leer statt falsch.
+
+
+7. NEUE UND GEAENDERTE DATEIEN
+================================================================================
+Neu     universe_overview.py          Kennzahlen des Universums, eine Quelle
+        stock_universe_runner.py      der fehlende Aktien-Universumslauf
+        trade_ledger.py               Trade-Ledger und Kennzahlen
+        strategy_version.py           Fingerabdruck der Strategieparameter
+        tests/test_v813_cash_reserve.py
+        tests/test_v813_universum_karte.py
+        tests/test_v813_trade_ledger.py
+        tests/test_v813_stock_universe_runner.py
+
+Geaendert
+        config.py                     Kernlisten, Limits, Cash-Reserve
+        crypto_engine.py              adaptive Ordergroesse, Ledger-Anbindung
+        live_trader.py                Meldung der Verkleinerung, Ledger
+        universe/manager.py           Kern je Broker, Kern-Sicherstellung,
+                                      Favoriten entkoppelt, Kennzahlen
+        universe/modelle.py           Zustandspfad korrigiert
+        universe/stock_selector.py    Instrumentenfilter
+        decision_analytics.py         Strategieversion, trade_snapshot
+        strategy_analyst.py           realisierte Ergebnisse im Bericht
+        market_regime.py              prozessuebergreifender Zwischenspeicher
+        gui_app.py                    Dashboard-Karte auf die echte Quelle
+        webui/state.py                Kern-Markierung fuer beide Broker
+        webui/static/universe.js      nur die Kachel "Fester Kern"
+        universe_telegram.py          /universum nennt das echte Universum
+        nexus_start.py                Aktien-Universumsfaden
+        settings_migration.py         crypto_positions.json
+        volltest.py                   neue Pflichtdateien
+
+
+8. PRUEFSTAND
+================================================================================
+    410 Tests bestanden, 1 uebersprungen (Tk fehlt in der Testumgebung),
+    156 Subtests
+    volltest.py vollstaendig gruen:
+        STATIC RELEASE HYGIENE / PYTEST GELDPFAD / SELF TEST /
+        COMPILEALL / PI PREFLIGHT / SHELL SYNTAX
+
+Grenze, ehrlich benannt: echte eToro-, Telegram- und KI-Netzaufrufe sowie
+ARM64-Hardware werden offline nicht simuliert. Der erste Lauf auf dem Pi
+bleibt der eigentliche Beweis.
+
+
+9. WAS BEWUSST OFFEN BLEIBT
+================================================================================
+    * Etappe B und C der Strategy Evolution Engine (strukturierter Vorschlag,
+      Backtest-Kopplung, Shadow Strategy, Telegram-Freigabe, Auto-Rollback)
+      → v8.2. Ohne mehrere Wochen echter Trade-Daten haette Terra ohnehin
+      keine belastbare Grundlage. Etappe A sammelt jetzt genau diese Daten.
+    * P0-02 Orderlebenszyklus als Zustandsautomat
+    * P0-03 Vereinheitlichung der Scharfschaltung
+    * P0-04 Watchdog je Brokerdomaene

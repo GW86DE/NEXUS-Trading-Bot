@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "binding": {
+    "broker": "etoro",
+    "paper": 1,
+    "broker_account_fingerprint": "664e7dfbc13e0cd60e493592",
+    "broker_position_id": "3597440106",
+    "entry_order_id": "380127623",
+    "menge": 109.0,
+    "einstieg_preis": 136.35,
+    "ausstieg_preis": 138.59
+  },
+  "notice": "Historische Barbestände; keine Aussage über das Fehlen anderer Geldbewegungen. Keine automatische Freigabe.",
+  "source_archives": [
+    {
+      "name": "NEXUS_10_Diagnose_2026-09-14_21-45-11_801998_UTC_a6bb6e97a8.zip",
+      "sha256": "56a8083bf9c7a8abdfd394767677084833e8e9c328e1287ef6fd8c366f409e2a"
+    },
+    {
+      "name": "NEXUS_eToro_Abschlussbelege_20260914T175523Z_39ed14c9.zip",
+      "sha256": "9e0a3260a352dd4d1f400334228c7717e473dce75014b074ce98abad0ca205a7"
+    }
+  ],
+  "cash_receipts": [
+    {
+      "account": "664e7dfbc13e0cd60e493592",
+      "paper": true,
+      "observed_at": "2026-09-14T09:45:22.259541+00:00",
+      "cash": 84669.33,
+      "positions": [
+        "3597440106"
+      ],
+      "source": "IMPORTED_AUTHENTICATED_ACCOUNT_BALANCE",
+      "source_hash": "bb5565aeaf3ece1dbeaa87cb0db2e59b546b5a5a31cb835b468a10c882966af2",
+      "clean_orders": false
+    },
+    {
+      "account": "664e7dfbc13e0cd60e493592",
+      "paper": true,
+      "observed_at": "2026-09-14T17:55:20.882537+00:00",
+      "cash": 99774.64,
+      "positions": [],
+      "source": "IMPORTED_AUTHENTICATED_PNL_CREDIT",
+      "source_hash": "ac2b384a1f8ab582a37bc50657e54e0cb07dcb5f1e39e6cdf5e058d03b6c4f97",
+      "clean_orders": true
+    }
+  ]
+}

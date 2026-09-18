@@ -1,0 +1,207 @@
+================================================================================
+ TradingBot NEXUS 9.2.0  --  Aenderungsprotokoll
+ Schwerpunkt: Offene Trades ueberstehen einen Versionswechsel unbeschadet
+================================================================================
+
+ANLASS
+------
+Nach dem Update auf 9.1 standen drei bewiesene Krypto-Positionen (BNB, LINK,
+ONDO) in der Oberflaeche als
+
+    "Externer Bestand - ohne identische ID-Kette"
+
+und landeten in der Tabelle "Klaerung noetig". Der Knopf "Erneut mit OKX
+pruefen" aenderte daran nichts, egal wie oft er gedrueckt wurde.
+
+Die Ursache lag NICHT bei OKX. In 9.1 wurde STARTUP_CANDLES von 200 auf 30
+gesenkt (eine sachlich richtige Anpassung an Freqtrade). Dadurch aenderte
+sich der PARAMETER_HASH der Strategie. Der Kern verglich den gespeicherten
+Hash der offenen Position mit dem neuen, fand eine Abweichung, pausierte die
+Position -- und weil "gehoert dem Bot" und "darf automatisch verwaltet
+werden" derselbe Schalter waren, verlor die Position damit zugleich ihren
+Eigentumsnachweis in der Anzeige.
+
+Anders gesagt: eine Codeaenderung konnte im Nachhinein bestimmen, wem ein
+bereits gekaufter Bestand gehoert. Das ist die eigentliche Schwachstelle.
+
+
+1. DIE REGEL
+------------
+Ab 9.2 gilt im Code und maschinell geprueft:
+
+    In den Eigentumsnachweis darf NICHTS eingehen,
+    was ein Software-Update aendern kann.
+
+Eigentum entsteht ausschliesslich aus brokerseitig vergebenen Kennungen:
+orderId, clOrdId und echten tradeId-Fills. Strategieversion, Parameter-Hash,
+Modus und Verwaltungszustand sind daran unbeteiligt.
+
+Der Test test_eigentum_haengt_an_keinem_wert_den_ein_update_aendern_kann
+veraendert der Reihe nach jedes Feld, das ein Update anfassen kann, und
+besteht darauf, dass sich das Eigentum nicht bewegt. Faellt kuenftig ein
+neues Feld in die Eigentumsentscheidung, schlaegt dieser Test fehl.
+
+
+2. DREI GETRENNTE ZUSTAENDE STATT EINEM
+---------------------------------------
+Was bisher ein Schalter war, sind jetzt drei unabhaengige Fragen:
+
+  Eigentum    Gehoert der Bestand dem Bot?      -> nur Broker-IDs
+  Abgleich    Stimmen Ledger und Broker ueberein? -> Mengen, Fills, Konto
+  Verwaltung  Welche Ausstiegslogik darf laufen?  -> AUTO / MANUELL / BEOBACHTEN
+
+Neue Eigenschaften an KryptoPosition:
+
+  ownership_chain_complete    lueckenlose Broker-ID-Kette
+  blocks_reentry              sperrt einen zweiten Kauf desselben Werts
+  safety_monitoring_enabled   Menge, Stop und externe Verkaeufe werden geprueft
+  strategy_execution_enabled  automatische Ein-/Ausstiege duerfen laufen
+
+Praktische Folge: Eine pausierte, aber bewiesene Position
+  - bleibt eine Botposition,
+  - wird weiter ueberwacht (Menge, Stop, externer Verkauf),
+  - sperrt weiterhin den Wiedereinstieg,
+  - wird aber nicht automatisch verkauft.
+
+Bis 9.1 wurde sie in pruefe_positionen komplett uebersprungen. Echtes Geld,
+das niemand mehr angesehen hat.
+
+
+3. AUSDRUECKLICHE STRATEGIE-MIGRATION (neu: strategy_migration.py)
+------------------------------------------------------------------
+Weicht der Hash einer offenen Position ab, wird nicht mehr blind pausiert.
+Geprueft wird in dieser Reihenfolge:
+
+  1. Eigentum       -- ohne vollstaendige Broker-ID-Kette wird nichts migriert
+  2. Konto          -- ein Bestand aus einem anderen OKX-Konto (Demo/Live,
+                       Unterkonto) wird nie stillschweigend uebernommen
+  3. Vorgaenger     -- nur bekannte, ausdruecklich eingetragene Vorgaenger-
+                       Identitaeten (9.0.15 und 9.1) werden migriert
+
+Die Migration schreibt ausschliesslich Strategiefelder. Keine Order, keine
+Stornierung, keine Menge, kein Schutz. Sie ist idempotent und protokolliert:
+
+  strategy_migrated_at, strategy_migrated_from_version,
+  strategy_migrated_from_hash, strategy_migration_reason,
+  strategy_migration_actor
+
+Ist die Identitaet unbekannt, bleibt die Position mit dem Status
+STRATEGY_MIGRATION_REQUIRED stehen -- Eigentum, Broker-Schutz und
+Wiedereinstiegssperre bleiben dabei erhalten.
+
+Neu ist auch das Feld account_fingerprint an der Position selbst. Bis 9.1
+lief die Kontopruefung ins Leere, weil die Position das Konto gar nicht
+gespeichert hat.
+
+
+4. STRATEGIE-IDENTITAET V2 (freqtrade_sample_strategy.py)
+---------------------------------------------------------
+STRATEGY_VERSION: NEXUS-FT-SAMPLE-V1 -> NEXUS-FT-SAMPLE-V2
+
+Der PARAMETER_HASH lief bisher ueber ALLE Felder, auch ueber reine
+Ausfuehrungsdetails wie startup_candles. Jede Feinjustierung der Kerzenzahl
+haette denselben Vorfall erneut ausgeloest.
+
+Ab V2 zaehlt nur noch die Handelssemantik (SEMANTIK_FELDER): Ein- und
+Ausstiegsregeln, minimal_roi, stoploss, Trailing, Exit-Reihenfolge.
+startup_candles ist ausdruecklich NICHT mehr Teil der Identitaet.
+
+Zusaetzlich behoben: Der Hash wurde ueber Werte gebildet, die danach noch
+ueberschrieben wurden -- der gespeicherte Snapshot war deshalb gar nicht
+nachrechenbar. Jetzt ist er es, und ein Test rechnet ihn bei jedem Lauf nach.
+
+Neu als Semantik festgeschrieben: exit_order = "stoploss>roi>signal"
+(die Ausstiegsreihenfolge von Freqtrade), stop_needs_candles = False,
+roi_needs_candles = False.
+
+
+5. "ERNEUT MIT OKX PRUEFEN" MACHT JETZT ETWAS
+----------------------------------------------
+Der Knopf schrieb bis 9.1 nur den Satz "Erneuter OKX-Abgleich im aktuellen
+Zyklus angefordert" und verliess sich auf den naechsten Zyklus -- der
+denselben verwaltungsabhaengigen Vergleich wiederholte.
+
+Ab 9.2 fuehrt er einen echten Abgleich aus: Bestand bei OKX holen, Ledger
+abgleichen, und ein konkretes Ergebnis melden, zum Beispiel
+
+  "Bestaetigte Botposition -- STRATEGY_MIGRATION_REQUIRED.
+   Broker-Schutz und Wiedereinstiegssperre bleiben aktiv."
+
+statt einer Statusmeldung, die nichts aussagt.
+
+
+6. OBERFLAECHE
+--------------
+Trades:
+  - Neue Spalte "Zuordnung" mit den drei Zustaenden getrennt untereinander:
+    Eigentum, Abgleich, Verwaltung -- plus Hinweis, falls die Strategie
+    migriert wurde.
+  - In der Klaerungstabelle steht in der Spalte "Grund" jetzt, was die Zeile
+    konkret braucht, statt denselben Status ein zweites Mal.
+  - Neue Statustexte: "Bestaetigte Botposition", "... Strategie-Migration
+    erforderlich", "Anderes OKX-Konto - keine automatische Uebernahme".
+
+Universum (auf Wunsch ueberarbeitet):
+  - Die Kacheln zeigten fest eingebaute Zahlen ("fester Kern 75 + 20",
+    "eToro 75 max 100"), die nicht mehr zur Version passten. Alle Zahlen
+    kommen jetzt aus der API.
+  - Je Handelsseite eine Kachel mit Kern, dynamisch, aktiv, Bewaehrungszeit
+    und maximalen Aenderungen pro Lauf.
+    Krypto:  Kern 20 + dynamisch 30 = aktiv 50, Bewaehrung 24 h
+    Aktien:  Kern 75 + dynamisch 25 = aktiv 100, Bewaehrung 4 h
+  - Der Erklaertext enthaelt keine fest eingebauten Zahlen und keine
+    Versionsnummern mehr; er verweist auf die Kacheln.
+  - Der falsche Satz "Aufnahme nur mit Telegram-Freigabe" ist ersetzt.
+  - Aufbau und Anordnung der Seite bleiben wie gehabt.
+
+
+7. TAKTGEBER: RASTERLAUF UEBER EINE KERZENGRENZE
+------------------------------------------------
+Freqtrade entscheidet am Kerzenschluss. Zog sich ein Scan ueber die
+Kerzengrenze, galt die zufaellige Uhrzeit am Ende der Schleife.
+
+Neu: rasterlauf_beginnen() / rasterlauf_abschliessen() halten den
+Kerzenschluss des Rasterpunkts fest. Er verschiebt sich waehrend des Laufs
+nicht mehr.
+
+
+8. STOERUNGSMELDUNGEN
+---------------------
+Wiederholte gleiche Stoermeldungen werden gebuendelt
+(STOERUNGS_MELDUNG_COOLDOWN_SEKUNDEN = 900). Faellt der Grund weg, kommt
+eine Entwarnung. Vorher konnte derselbe Hinweis in jedem Zyklus erneut
+gesendet werden.
+
+
+NICHT GEAENDERT (ausdruecklich)
+-------------------------------
+  - Verbindungseinstellungen und der gesamte OKX-Verbindungsaufbau
+  - "Einstellungen uebernehmen"
+  - Aufbau und Anordnung der Kacheln in der WebUI
+  - Logbuch-Seite
+  - Freqtrade-Modus bleibt eine Zusatzfunktion; ist er aus, arbeiten die
+    anderen Modi unveraendert
+  - GPT/Terra aendert weiterhin keine Dateien, keine Filter, kein Universum,
+    keine Orders und keine Risikogrenzen. Orders loesen ausschliesslich die
+    festen Regeln, die Live-Freigabe und der Broker-Schutz aus.
+
+
+TESTS
+-----
+  893 Tests bestanden, 1 uebersprungen, 177 Subtests bestanden.
+  Neu: tests/test_v920_versionswechsel.py (16 Tests)
+
+  Zwei bestehende Tests wurden aufgeteilt bzw. praezisiert, weil sie den
+  alten, vermischten Zustand festgeschrieben hatten. Keine Zusicherung
+  wurde abgeschwaecht; die Gegenprobe kam jeweils hinzu.
+
+
+DATEIEN
+-------
+  neu       strategy_migration.py
+  neu       tests/test_v920_versionswechsel.py
+  geaendert crypto_engine.py, freqtrade_sample_strategy.py, scheduler_v7.py
+  geaendert okx_reconciliation_actions.py, webui/state.py, config.py
+  geaendert webui/static/trades.js, webui/static/universe.js
+  geaendert webui/templates/universe.html, volltest.py
+  Version   config.py, VERSION.txt  9.2.0-NEXUS

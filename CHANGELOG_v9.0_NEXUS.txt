@@ -1,0 +1,64 @@
+TradingBot NEXUS 9.0
+====================
+
+PRIORITAET 1: KORREKTUREN AUS 8.3.1
+- eToro-Reconciliation ist profilunabhaengig gesperrt, speichert referenceId
+  vor dem POST und unterscheidet eindeutig fehlgeschlagenen Submit von einem
+  nach Annahme ungeklärten Auftrag.
+- Dauerhafter 404, Neustart, Referenz-Lookup, exakte Ownership und
+  wiederhergestellte BUY-Fills bleiben persistent und idempotent. Kein
+  automatischer Doppel-POST.
+- Teil-Fills verwenden die tatsächlich gefüllte Menge; Restablehnung und Fill
+  sind getrennt.
+- Entscheidung -> Order -> Fill -> Position -> Ergebnis bleibt über
+  decision_id verbunden. SYSTEM_ERROR überschreibt keinen Snapshot.
+- Strukturierte Strategie-, Risiko-, Konto-, Order- und Ausführungswerte sind
+  auswertbar; Orderstatus und Fillstatus bleiben getrennt.
+- Telegram meldet ungeklärte/bestätigte/fehlgeschlagene Ausführungen genau
+  einmal und neustartfest.
+- Entscheidungslisten sortieren nach Entscheidungszeit statt Schreib-ID.
+- OBSERVE bleibt read-only, zeigt aber Brokerkurs, P&L und bestätigte
+  Schutzwerte; Unbekanntes wird nicht als +0,00 ausgegeben.
+- CORE_VOLUME_20 startet ohne belastbare 30-Tage-Abdeckung fail-closed, nutzt
+  höchstens einen Tagesmesspunkt pro Basiswert und überschreibt keine
+  beschädigte Historie.
+- Top-20 und dynamisches Universum teilen das absolute Aktivlimit; kein Coin
+  umgeht aktuelle OKX-/Produkt-/Liquiditätsfilter.
+
+NEUER OKX-MODUS: FREQTRADE SAMPLESTRATEGY
+- Laufzeitmodi NEXUS_STANDARD, FREQTRADE_SAMPLE und CRYPTO_PAUSED.
+- Umschaltbar in der WebUI ohne Neustart; Sample-Aktivierung verlangt eine
+  ausdrückliche Bestätigung.
+- Telegram: /crypto status, /crypto standard, /crypto freqtrade und die
+  sofortige Notbremse /cryptopause.
+- Moduswechsel werden persistent protokolliert und per Telegram gemeldet.
+- Globaler Modus gilt nur für neue Einstiege. Jede Position speichert
+  Einstiegsmodus, Strategiename, Version, Parameter-Hash, vollständigen
+  Parametersnapshot und decision_id.
+- Positionen werden nach ihrer eigenen Einstiegsstrategie weitergeführt, auch
+  wenn der globale Modus später wechselt.
+- Fehlender oder widersprüchlicher Strategienachweis führt fail-closed zu
+  BEOBACHTEN statt zu einer geratenen automatischen Verwaltung.
+- 8.3.1-BOT/AUTO-Positionen werden nur mit positiver decision_id
+  evidenzbasiert NEXUS_STANDARD zugeordnet.
+
+SAMPLESTRATEGY-REGELN
+- OKX Spot, Long-only, 5m, nur abgeschlossene neue Kerzen, 200 Startkerzen.
+- Kauf: RSI kreuzt 30 aufwärts, TEMA(9) <= BB-Mitte(20), TEMA steigt,
+  Volumen > 0.
+- Verkaufssignal: RSI kreuzt 70 aufwärts, TEMA > BB-Mitte, TEMA fällt,
+  Volumen > 0.
+- Stop -10 %, ROI +4 %, ab 30 Minuten +2 %, ab 60 Minuten +1 %.
+- Keine GPT-, News-, Second-Opinion- oder AI-Attention-Entscheidung.
+- NEXUS-Risiko-, Broker-, Kosten-, Liquiditäts-, Datenfrische-, OCO-,
+  Ownership- und Reconciliation-Sicherheiten bleiben verbindlich.
+- Bestehende getestete OKX-Market-/OCO-Ausführung bleibt erhalten; es wird
+  kein zweiter Freqtrade-Ordermanager in NEXUS eingebaut.
+
+BACKTEST UND ANALYSE
+- Deterministischer CSV-Backtest mit identischer Signalberechnung,
+  Next-Candle-Open, Gebühren, Slippage und konservativer Stop-vor-ROI-Regel.
+- Decision-History und Trade-Ledger speichern Strategie-Modus und Hash als
+  direkt abfragbare Felder sowie vollständige Parameter als JSON.
+- Keine automatische Strategieoptimierung oder GPT-Entscheidung.
+

@@ -1,0 +1,13 @@
+# Prüfgegenstand 9.7.3
+
+Die endgültige ZIP wird nach dem Packen erneut entpackt und mit `volltest.py` geprüft. Das vollständige, zu ihrem SHA-256 gehörende Abschlussprotokoll wird zusätzlich als `NEXUS_9.7.3_PAKETPRUEFUNG.txt` bereitgestellt. Ältere TEST_REPORT-Dateien im Projekt sind historische Dokumentation, keine Freigabe dieser Version.
+
+Im Build bereits gezielt geprüft: 67 neue automatisierte Grenzfall-/Verhaltensprüfungen; alle sieben WebUI-Seiten bei 1440×1000, 1024×900 und 390×844. Chromium rendert die echten HTML/CSS/JS-Dateien mit einem rein lokalen, authentifizierten HTTP-Lesebridge und synthetischen Brokerzuständen. Dieser Browserlauf prüft Layout, Anzeigen, Filter und JavaScript, nicht die echte Browser-Cookie-/Netzwerk-/CSP-Kette oder Broker-POSTs. API-Authentifizierung wird separat automatisiert geprüft. Die System-Browserpolicy wurde nicht verändert.
+
+Die hochgeladene Reconciliation-Datei wurde mit einer Kopie des älteren, ebenfalls hochgeladenen 206-MB-Datenbankstands geprüft: ADBE/CRM werden belegt verknüpft, MSFT/SPGI bleiben Legacy-Audit ohne Kontozuschreibung. Erste Diagnoseaktualisierung: vier, zweiter Durchlauf: null. Datenbank bytegleich, alle vier Originalwarnungen und Originalrecords erhalten. Das ist ausdrücklich nicht der Nachweis eines frisch aus dem Pi gelesenen Datenstands.
+
+KO wurde auf einer weiteren DB-Kopie mit dem aktuellen alternativen technischen Verkaufsbeleg zweimal eingespielt: zweimal Trade 44; finanzielle Felder aller 44 Trades unverändert. Beim ersten Lauf wurde ein zusätzlicher technischer Aliasbeleg gespeichert, beim zweiten keiner. Kein zweiter Trade und keine zweite Gewinnbuchung.
+
+Grenzen: keine echten Brokerorders/-stornierungen, keine echte ARM64-Installation, kein Pi-systemd-Langzeittest und kein tatsächlich erfolgreicher Yahoo-Datenabruf. Das Buildsystem besitzt Python 3.13.5, jedoch nicht exakt den Pi-Lockfile-Umfang; insbesondere fehlt echtes yfinance. Dessen Import ist jetzt nur für historische Yahoo-Operationen erforderlich, bei denen Abwesenheit ausdrücklich einen Fehler bzw. UNKNOWN auslöst. Kein Testshim, kein künstlicher Kursfeed. Auf dem Pi ist vor der Abnahme der Import der echten Abhängigkeiten und der Volltest in der Zielumgebung Pflicht.
+
+Keine bestehenden Tests wurden gelöscht oder pauschal übersprungen. Angepasste Assertions/Fixtures betreffen den neuen Tablet-Breakpoint, explizite Kontobindung, eindeutig gespeicherte Instrumente und passende Abrechnungswährungen sowie neue klare Überschriften. Die getrennten negativen Grenzfalltests schützen gegen eine Wiederherstellung der alten Heuristiken.

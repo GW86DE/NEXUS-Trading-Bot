@@ -1,0 +1,35 @@
+NEXUS 9.8.6 – 11. September 2026
+Basis: vollständiger manifestierter Quellstand NEXUS 9.8.5.
+
+PULSAR
+- Erweiterte ApeWisdom-Abdeckung (drei Aggregatseiten, stocks und investing),
+  getrennte Historien je Feed und sichtbare Teilausfälle.
+- Identische Fakten behalten ihre Beleg-ID; Abrufzeit erzeugt keine neue
+  kostenpflichtige Textanalyse. Historische Beobachtungen bleiben erhalten.
+- Eigene GPT-Websuche: Quellen-Domainfilter, verpflichtendes Suchwerkzeug,
+  höchstens zwei Toolaufrufe, tatsächliche API-Quellenbelege statt Modell-URLs.
+- Neue SEC-Submissions-/Originaldokument-Abfrage einschließlich Exhibit 99.1;
+  alternative Originalmeldung auf durch FMP zugeordneter Unternehmensdomain.
+- Wortlaut, Dokumenthash, Identität und Meldungsdatum an die KI-Einordnung gebunden.
+- Suche und Einordnung für einen vorausgewählten Kandidaten pro Durchlauf;
+  Luna-Vorauswahl, Terra-Analyse und getrennte Gegenprüfung bleiben erhalten.
+- Eigene GPT-Weboption in der WebUI, Quellenabdeckung und Kostenübersicht.
+- PULSAR 1.1 gemäß Nutzerfreigabe: Community-Nachweis optional, ersetzte
+  Scorekomponente ist messbare Aufmerksamkeit gegen eigene Historie.
+- Regelversion und gleicher Ereignisbeleg für die zeitliche Bestätigung;
+  alte grüne Bewertungen zählen nicht als neue Freigaben.
+- Finanzdaten müssen zum Symbol gehören; Textprüfungen zum aktuellen Quellenpaket.
+- Höchstens zwei neue Webrecherchen/Tag und acht/Woche; reservierte Kosten
+  einschließlich Suchgebühr, Rückbuchung nur bei bestätigtem Verbrauch.
+
+ÜBERNOMMENE KORREKTUREN
+Universum-/Underdog-Menüs, Underdog-Kataloganzeige, Kaufdarstellung getrennt
+von externem Guthaben, Klärung abgeschlossener Ergebnisse, Brutto-/Netto-
+Kurven, Broker-/Kontozuordnung, EUR-Präferenz und feste Trade-Abrechnungswährung
+bleiben erhalten. Die regressionsgeprüften Geldpfade und persönlichen
+Freigaben werden nicht durch die GPT-Recherche ersetzt.
+
+INSTALLATION
+Versionsgebundenes vollständiges ZIP, Manifest und selbstenthaltender Installer.
+Alle bisherigen Prüfschritte bleiben Pflicht. Neue Quellen-/Budget-/Ereignis-
+und Migrationstests ergänzen die vorhandene Regression; keine Tests übersprungen.

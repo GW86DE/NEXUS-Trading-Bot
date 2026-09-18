@@ -1,0 +1,30 @@
+TRADINGBOT NEXUS 9.0.7 - TESTPROTOKOLL
+======================================
+
+Version: 9.0.7-NEXUS
+Datum: 28.08.2026
+
+Automatisierter Gesamttest:
+  757 Tests bestanden
+  186 Untertests bestanden
+  0 fehlgeschlagen
+
+Neue Regressionen in 9.0.7:
+- OrderStatusUnklar ist kein VerbindungVerloren.
+- eToro v3 wird verwendet; Status 5 beendet den kurzen Submit-Wartepfad.
+- Hintergrund-Reconciliation bestaetigt exakt orderId/referenceId/positionId.
+- Spaeter Bot-Fill stuft OBSERVE zu AUTO hoch, ohne Menge zu verdoppeln.
+- OKX liest tradeQuoteCcyList aus /api/v5/account/instruments.
+- USD->EUR wird aus beobachteten Spot-Kreuzkursen berechnet; keine Peg-Annahme.
+- Botmenge und zusaetzliches Spot-Konto-Asset bleiben getrennt.
+- Standard-Bot-Cashwaehrungen sind exakt EUR und USDC.
+
+Zusaetzliche Freigabepruefungen:
+- Python-Kompilierung ohne Syntaxfehler.
+- self_test.py bestanden.
+- volltest.py bestanden.
+- Release-Pflichtdateien und Versionsstand geprueft.
+- Release auf Zugangsdaten und Laufzeitartefakte geprueft.
+
+Nicht ausgefuehrt:
+- Keine echte Brokerorder. eToro bleibt PAPER, OKX bleibt DEMO.

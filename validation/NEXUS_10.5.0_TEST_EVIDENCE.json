@@ -1,0 +1,169 @@
+{
+  "release": "10.5.0-NEXUS",
+  "build": "10.5.0-PULSAR-SOURCES-MEASUREMENT",
+  "based_on": "10.4.0-NEXUS Revision 2",
+  "package_revision": 2,
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "approval": "Georg 18.09.2026: Quellen ohne Reddit-Schluessel, messen und gleich handeln, PULSAR ueber WebUI abschaltbar, PULSAR-Seite aufraeumen mit Messergebnis, Messungen in der Diagnose, aufbereiteter Diagnosebericht in der WebUI, saubere Install-Datei",
+  "source_reachability_check_2026_09_18": {
+    "apewisdom": "HTTP 200, 100 Eintraege/Seite",
+    "tradestie": "HTTP 200, 50 Eintraege",
+    "stocktwits_trending": "HTTP 200, 30 Symbole (ueber oeffentlichen DNS; lokaler Resolver 198.18.0.33 loeste den Namen nicht auf)",
+    "stocktwits_stream": "HTTP 200, 30 Nachrichten mit Zeitstempel/Autor/Sentiment",
+    "reddit_rss": "HTTP 200, 25 Eintraege, aber 1 Abfrage/Minute (weitere 429) -> nicht aufgenommen",
+    "reddit_json_ohne_login": "HTTP 403 -> nicht nutzbar",
+    "finra_short_interest": "HTTP 200 (POST, Partition settlementDate); 2026-08-31 verfuegbar, 2026-09-15 noch 204",
+    "nasdaq_short_interest_seite": "Verbindung abgebrochen (Bot-Schutz) -> nicht nutzbar"
+  },
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "node": "v18.4.0 (PyPI nodejs-bin) fuer die Frontendsuite und JS-Renderer-Tests"
+  },
+  "checks": {
+    "bom_scan_tree": {
+      "files_with_bom": 0
+    },
+    "ast_syntax": {
+      "errors": 0
+    },
+    "static_hygiene_full": {
+      "findings": 0,
+      "note": "volltest._static_hygiene() komplett vor dem Bau (Bauskript-Schritt seit 10.4.0 Rev 2)"
+    },
+    "node_frontend_suite_local": {
+      "tests": 28,
+      "passed": 28,
+      "failed": 0,
+      "note": "neu: PULSAR-Karten-Chips, Messungspanel, Diagnosebericht; Community-Test entfernt (Funktion entfallen)"
+    },
+    "new_suite_10_5_0": {
+      "suite": "tests/test_v1050_pulsar_messung_quellen.py",
+      "passed": 24,
+      "failed": 0,
+      "highlights": [
+        "StockTwits-Trending nimmt nur Aktien (keine .X-Krypto); Strom zaehlt letzte Stunde, Untergrenzen-Flag, keine Texte/Autoren im Ergebnis",
+        "StockTwits-Aktivitaet absolut (>= 20 / >= 10 Konten) und gegen eigene Basis (>= 3x); Abruf cached 1 h, Zeitreihe attention_hours, Netzfehler -> backoff/UNKNOWN",
+        "FINRA-Stichtage (Wochenende -> Freitag, wie in der echten Antwort 2026-08-14), Abruf findet 31.08. nach 204 fuer 15.09., Cache 24 h, Squeeze-Merkmal JA/nein/STALE/UNKNOWN",
+        "Relatives Volumen aus Quote (zeitanteilig, STALE/NOT_IN_SESSION/UNKNOWN) und Stundenkerzen (4,0x gegen 20 Sitzungen), scan_universe",
+        "Bewertung: Volumen ohne Social -> AUSLOESER gemessen, nicht nominiert; Reddit+StockTwits als zweite Familie; 3 von 3 mit Tageskerze; eigene Reddit-Basis; Squeeze blockt nie",
+        "Telegram-Alarm nennt Ausloeser, n von 3, StockTwits, Squeeze",
+        "Kandidatenreihenfolge mit frischen Zusatzkandidaten; Karte traegt StockTwits/FINRA/Volumen als Belege (Hourly-Rueckfall)",
+        "Messung: eine Zeile je Symbol/NY-Tag, Nachtrag 1/3/5/10 Handelstage, PARTIAL/COMPLETE/UNRESOLVABLE, Urteil erst ab 30",
+        "Urteilsregeln in pulsar/measurement.py und NEXUS_10_Diagnose.py rechnen identisch (ERFOLGREICH/NICHT/UNKLAR/ZU_WENIG)",
+        "Worker traegt Messungen hoechstens alle 6 h nach; Diagnosebericht aus SHA-verifizierter ZIP, Fallback fuer alte ZIPs, Manipulation -> 404, Sitzungspflicht, Seite mit Kennung",
+        "ZUSAMMENFASSUNG.json-Dokument, Befund PULSAR_MEASUREMENT_*, Pflichtdateien, alte 10.4.0-Wrapper entfernt",
+        "Rev 2: StockTwits/FINRA opt-in -- ausgeschaltet kein Abruf (Doubles wuerfen), Schalter im Snapshot, ungueltiger Wert -> ValueError"
+      ]
+    },
+    "full_isolated_run": {
+      "date": "2026-09-18",
+      "method": "Alle 222 Testmodule je in eigenem Prozess (6 parallel, Node auf PATH)",
+      "modules": 222,
+      "modules_green": 193,
+      "passed": 3133,
+      "failed": 47,
+      "errors": 7,
+      "skipped": 9,
+      "failing_modules_all_known_windows_artifacts": true,
+      "note": "test_v1050 fiel im Sammellauf einmal am NY-Tageswechsel (NOW+600 s ueber Mitternacht); Test auf festen Zeitpunkt umgestellt und einzeln 23/23 gruen. test_v1012_diagnosis_webui laeuft erstmals unter Windows (fcntl optional) und faellt dort an flock/Symlink -- auf dem Pi unveraendert.",
+      "artifact_classes": {
+        "fcntl/flock (nexus_update, backtest_jobs, diagnosis_jobs-Sperre)": [
+          "test_alle_module_importierbar",
+          "test_etoro_protection_plan_repair",
+          "test_fix3_update",
+          "test_installer_reboot_boundary",
+          "test_v10110_backtest_webui",
+          "test_v1012_diagnosis_webui",
+          "test_v1017_okx_boundary",
+          "test_v101_candle_observation",
+          "test_v975_installer",
+          "test_v976_release_and_diagnose",
+          "test_v988_cold_migration_fix2",
+          "test_v988_staging_and_guard",
+          "test_v988_encoding_fix1"
+        ],
+        "symlink WinError 1314 / chmod-Bits / Backslash-Zip": [
+          "test_installer_recovery",
+          "test_v1013_release_integration",
+          "test_v1013_sources_webui",
+          "test_v974_isolation_fix1",
+          "test_v975_release_unpack",
+          "test_v988_import_migration_ui"
+        ],
+        "sqlite Windows-Dateisperre WinError 32": [
+          "test_money_path_integration",
+          "test_order_execution",
+          "test_v988_import_migration_ui"
+        ],
+        "systemctl fehlt": [
+          "test_v821_service_guard"
+        ],
+        "Credential-/Pfadtests POSIX": [
+          "test_v1013_x_market_intelligence",
+          "test_v80_nexus",
+          "test_v812_nexus"
+        ],
+        "pytest-Pin/Umgebung": [
+          "test_v974_test_dependencies",
+          "test_v974_isolation_fix1"
+        ],
+        "bekannte Einzelfaelle": [
+          "test_v902_stability_fixes telegram claim",
+          "test_v990_freqtrade DataFrame-Index"
+        ]
+      },
+      "new_failures_vs_10_4_0_rev2": 0
+    },
+    "visual_check_windows_browser": {
+      "method": "pulsar.html und diagnosis_report.html mit den Paketdateien und einer API-Attrappe im eigenen Browser gerendert",
+      "results": [
+        "Messungspanel mit Plakette UNKLAR, Horizonttabelle, Gruppen, Demo-Bilanz",
+        "Quellen-Chips (StockTwits backoff rot, FINRA ok), Budgetzeile",
+        "Kandidatenkarten mit Ausloeser, 3 Bestaetigungs-Chips, Existenzrisiko/Squeeze/Bilanz-Chips, StockTwits-Zeile",
+        "Diagnosebericht: Kennzahlen, Bereitschaft je Broker, Messung, Befunde nach Stufe, Blocker, Quellen",
+        "keine JavaScript-Fehler"
+      ]
+    },
+    "full_isolated_run_rev2": {
+      "date": "2026-09-18",
+      "method": "222 Module isoliert mit Netzwerkwaechter und Node auf PATH",
+      "modules": 222,
+      "modules_green": 183,
+      "passed": 3121,
+      "failed": 60,
+      "errors": 7,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": [
+        "test_v100_webui_backend",
+        "test_v1012_diagnosis_webui",
+        "test_v1012_source_receipts",
+        "test_v1013_sources_webui",
+        "test_v1015_webui_diagnosis",
+        "test_v1016_runtime_repairs",
+        "test_v1040_scan_chart_existence",
+        "test_v1050_pulsar_messung_quellen",
+        "test_v972_webui_contexts",
+        "test_v980_webui",
+        "test_v981_performance",
+        "test_v984_recovery_and_access",
+        "test_v985_pulsar_flow_and_pages"
+      ],
+      "note": "Die 13 socket-only-Module sind ohne Waechter gruen (Lauf 10.5.0 Rev 1: 193 Module gruen) und auf dem Pi in Runde 1 gruen; die uebrigen Fehlmodule sind die dokumentierten Windows-Artefakte. Keine neue Fehlstelle."
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (Pi-Update, Pflicht vor Dienststart)",
+    "Abnahme: PULSAR-Seite mit Messungspanel und Quellen-Chips; StockTwits-Erreichbarkeit vom Pi (DNS)",
+    "Abnahme: erste Messzeile nach dem ersten Ausloeser; Logzeile 'PULSAR-Messung <SYMBOL>: Ausloeser ...'",
+    "Abnahme: Diagnose starten, 'Bericht oeffnen', ZUSAMMENFASSUNG.json in der ZIP"
+  ],
+  "pi_fullrun_round_1": {
+    "date": "2026-09-18",
+    "result": "VOLLTEST OK (3298 passed, 3 skipped), aber Netzwerk-Tripwire: 7 Worker-Tests versuchten echten HTTP-Verkehr -> keine Testfreigabe, Update vertragsgemaess abgebrochen, Staging archiviert (ALT_FEHLGESCHLAGEN_20260918T052942_TradingBot_v10.5.0_NEXUS); 10.5.0 nie installiert, Revision 2 derselben Nummer gedeckt",
+    "root_cause": "Der Worker-Zyklus rief StockTwits (Trending/Strom) und FINRA direkt ab; die bestehenden Worker-Tests stubben nur research.discover/fetch_social und worker.gather_market. Auf Windows blieb das unsichtbar, weil die lokale Pruefung pytest je Modul fuhr statt den Volltest-Tripwire (network_guard) mitzuinstallieren -- die Abrufe schlugen dort fehl, wurden vom Worker als Fehler geschluckt und die Tests blieben gruen.",
+    "revision_2_fix": "StockTwits und FINRA sind opt-in-Schalter (pulsar_control.stocktwits/finra, Standard aus, WebUI-Haken) wie Tradestie/GPT-Websuche; Trending laeuft ueber research.fetch_social('stocktwits') innerhalb von discover(), Strom und FINRA im Marktpaket (gather_market) -- die Naehte, an denen die Offline-Tests ihre Doubles setzen. Zusatzkandidaten kommen aus discover() (Feld source) und werden in select_candidates getrennt.",
+    "local_verification_rev_2": "run_all_isolated.py installiert jetzt denselben Netzwerkwaechter (PYTHONPATH offline_test_bootstrap, NEXUS_OFFLINE_NETWORK_EVENTS je Modul): 0 http-/dns-Ereignisse in allen 222 Modulen. Verbleibende 'socket'-Ereignisse stammen ausschliesslich aus TestClient-/anyio-Tests: Windows emuliert socket.socketpair() ueber AF_INET-localhost und loest den Waechter aus (nachgestellt); auf dem Pi (AF_UNIX) liefen dieselben Tests in Runde 1 ohne Ereignis.",
+    "lesson": "Die lokale Pruefung muss den Tripwire des Volltests mitfuehren; 'Test gruen' reicht nicht, wenn Produktcode Fehler schluckt. Neue externe Quellen nur ueber die bestehenden Test-Naehte (fetch_social/gather_market) und als opt-in."
+  }
+}

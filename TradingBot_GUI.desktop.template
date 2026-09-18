@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=TradingBot GUI
+Comment=Oeffnet die TradingBot-Bedienoberflaeche
+Exec=__BOTDIR__/Pi_GUI_Starten.sh
+Path=__BOTDIR__
+Icon=utilities-system-monitor
+Terminal=false
+Categories=Utility;Finance;
+StartupNotify=true

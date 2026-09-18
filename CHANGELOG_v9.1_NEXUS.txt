@@ -1,0 +1,306 @@
+TRADINGBOT v9.1 NEXUS — AENDERUNGSBERICHT
+================================================================================
+Stand: 31.08.2026        Basis: v9.0.15 + manual_webui_hotfix
+
+Anlass: die vollstaendige Pruefung von 9.0.15 (21 belegte Befunde) und eine
+Detailpruefung der OKX-API-Kommunikation gegen die offizielle V5-Doku.
+
+Das Muster aller schweren Befunde war dasselbe wie in 8.3.1: der gute Pfad war
+sorgfaeltig gebaut und getestet -- der ABBRUCH MITTENDRIN war gedacht, aber
+nicht zu Ende gefuehrt und nirgends geprueft.
+
+Unveraendert geblieben — auf ausdrueckliche Ansage:
+  * Verbindungseinstellungen (eToro, OKX, Telegram, WireGuard, Web-Login)
+  * Einstellungsuebernahme aus der Vorgaengerversion
+  * Universumsseite und Logbuchseite der WebUI
+  * das auto-fit-Kachelraster des Dashboards
+  * der Freqtrade-Modus bleibt eine abschaltbare Zusatzfunktion; bei
+    NEXUS_STANDARD und CRYPTO_PAUSED arbeitet nichts davon mit
+
+
+A. OKX-API — ANTWORTEN RICHTIG EINORDNEN
+================================================================================
+Die Signatur-, URL-, Parameter-, Quantisierungs- und WebSocket-Schicht war
+bereits doku-konform und wurde bestaetigt: eea.okx.com, Signatur
+timestamp+METHOD+requestPath+body (HMAC-SHA256, Base64), ISO-8601 mit
+Millisekunden, x-simulated-trading nur bei privaten Demo-Aufrufen, expTime als
+HTTP-Header, Zeitversatz ueber 50102, sCode-Pruefung zusaetzlich zum aeusseren
+code, Mengen immer abgerundet, WS-Login nach der abweichenden WS-Regel.
+
+Gefaehrlich war die KLASSIFIKATION der Antworten:
+
+A1  MEHRDEUTIGE CODES GALTEN ALS ENDGUELTIGE ABLEHNUNG
+    OKX schreibt zu 50004 woertlich: "does not indicate success or failure of
+    order, please check order status". Dieser Code -- ebenso 50001, 50005,
+    50013, 50026 -- landete im Zweig "fachliche Ablehnung ist eindeutig". Der
+    Bot hat die Order daraufhin VERGESSEN (REJECTED + clear_pending). Eine
+    tatsaechlich angenommene Order wurde damit zu einer unbekannten,
+    ungeschuetzten Position.
+    -> Neue Menge _UNKLARE_ORDER_CODES; sie fuehren jetzt zu OrderStatusUnklar
+       und damit in den bestehenden Nachweispfad ueber die clOrdId.
+
+A2  "DUPLICATED CLIENT ORDER ID" (51016) GALT ALS FEHLSCHLAG
+    Der Code ist der BEWEIS, dass die Order bei OKX liegt. Da die clOrdId
+    deterministisch aus der decision_id entsteht, trat er nach jedem
+    Wiederanlauf derselben Entscheidung auf -- und die real gefuellte Position
+    verschwand aus dem Positionsbuch.
+    -> 51016 wird im Kaufpfad gezielt abgefangen und loest eine Suche nach der
+       bestehenden Order aus. Wird sie nicht gefunden, bleibt der Zustand
+       unklar; ein zweiter POST findet nie statt.
+
+A3  STORNO-ERFOLGSZUSTAENDE BLOCKIERTEN DEN AUSSTIEG
+    51400 "does not exist", 51401 "already canceled", 51402 "already
+    completed", 51410 "already under cancelling" sind fachlich ERFOLGE: das
+    Ziel "keine offene Order mehr" ist erreicht. Sie galten als Fehler und
+    verhinderten den Verkauf genau dann, wenn die Schutzorder gerade
+    ausgeloest war -- also im aktivsten Marktmoment.
+    -> _STORNO_ERLEDIGT_CODES; zusaetzlich wird der aeussere code="1" einer
+       reinen Storno-Erledigt-Antwort korrekt als Erfolg gewertet.
+
+A4  TEILERFOLG KIPPTE DEN GANZEN AUFRUF
+    OKX nutzt bei Sammelanfragen code="2" fuer "teilweise erfolgreich". Von
+    zwei Schutzorders wurde eine storniert, der Aufruf warf trotzdem -- und
+    der Bot glaubte, gar nichts storniert zu haben.
+    -> code="2" ohne echte Fehlerzeile gilt als Erfolg.
+
+A5  slOrdPx KONNTE AUF 0 FALLEN
+    Bei Cent- und Sub-Cent-Coins fiel der abgeschlagene Stop-Limitpreis unter
+    einen Tick und wurde auf 0 abgerundet. OKX lehnt die GESAMTE OCO ab -- die
+    Position lief ohne jeden Broker-Schutz weiter, waehrend "stop: True"
+    gemeldet wurde.
+    -> Rueckfall auf den ungeschlagenen Stoppreis; bleibt er unter einem Tick,
+       wird der Schutz ehrlich als nicht setzbar gemeldet.
+
+A6  FILL-HISTORIE VERLOR AB SEITE 2 DATEN
+    /trade/fills[-history] paginiert ueber billId, nicht ueber tradeId. Mit dem
+    falschen Cursor endete die Suche nach 100 Zeilen -- genau im Beweispfad
+    fuer extern ausgefuehrte Verkaeufe.
+
+A7  expTime WURDE AUCH AN STORNO-ENDPUNKTE GESENDET
+    Dokumentiert ist der Header nur fuer Place/Amend order. Ein Storno darf
+    niemals verfallen, sonst glaubt der Bot, storniert zu haben.
+
+A8  KAUFGEBUEHREN IN DER BASISWAEHRUNG WURDEN NICHT UMGERECHNET
+    OKX belastet die Gebuehr eines SPOT-KAUFS in der Basiswaehrung
+    (feeCcy="BTC"). Ohne Umrechnung erschienen Kaufgebuehren um
+    Groessenordnungen zu niedrig -- und damit auch die Kostenhuerde.
+
+A9  TRIGGER-ALGOS WAREN UNSICHTBAR
+    ALGO_ARTEN kannte nur oco und conditional. Eine im OKX-Web von Hand
+    angelegte Trigger-Verkaufsorder wurde weder gefunden noch storniert.
+
+A10 tradeQuoteCcy AN /trade/order-algo
+    Der Parameter ist fuer /trade/order dokumentiert, nicht fuer die
+    Algo-Order. Validiert OKX ihn, wird jede Schutzorder abgelehnt.
+
+
+B. DER GELDPFAD
+================================================================================
+B1  POSITION BLIEB NACH EINEM PROZESSABBRUCH DAUERHAFT UNGESCHUETZT
+    schliesse_position storniert als ERSTEN Schritt die OKX-Schutzorder. Stirbt
+    der Prozess danach (SIGKILL, Stromausfall, OOM), blieb im Buch
+    broker_schutz=True stehen -- und der einzige periodische Schutzabgleich
+    steht hinter "if not position.broker_schutz". Er lief nie wieder. Die
+    Position stand dauerhaft nackt, waehrend die Oberflaeche "Schutz aktiv"
+    meldete. exit_state hatte im ganzen Projekt keinen auswertenden Leser.
+    -> Der Schutzvermerk wird VOR dem Brokeraufruf persistiert
+       (broker_schutz=False, protection_status="LOST"). Zusaetzlich erzwingt
+       exit_state in {SUBMITTING, MANUAL_EXIT_PENDING} einen Schutzabgleich;
+       gelingt er, wird der Zustand zurueckgesetzt und gemeldet.
+
+B2  ZWEITER VERKAUF AUS FREMDBESTAND
+    Der Fill-Nachweis wurde nur geholt, wenn WENIGER im Konto lag als im Buch.
+    Lag Fremdbestand desselben Coins im Konto, galt weiter die veraltete
+    Buchmenge -- und der naechste Stop verkaufte sie ein zweites Mal, aus dem
+    Bestand des Nutzers. Das 8.1.4-Schadensmuster ueber einen neuen Weg.
+    -> Auch der Zweig "mehr im Konto als im Buch" holt jetzt den Fill-Nachweis.
+
+B3  UNKLARER ORDERZUSTAND WURDE ALS FEHLSCHLAG BEHANDELT
+    _schliesse prueft nur filled_quantity; das vom Broker berechnete Feld
+    ``terminal`` wurde nie gelesen. Eine Order, deren Statusabfrage dreimal
+    leer blieb, landete im 5-Minuten-Retry und wurde erneut gesendet.
+    -> Nicht-terminal fuehrt in den 24-Stunden-Pfad mit kritischer Meldung.
+       Der bewiesene Fehlschlag behaelt den kurzen Retry.
+
+
+C. DER FREQTRADE-MODUS
+================================================================================
+Die Rechenseite war bereits bit-genau (RSI14, TEMA9, BB-Mitte gegen
+unabhaengige Referenzen auf 0.000e+00; Ein-/Ausstiegsbedingungen Zeile fuer
+Zeile wie die offizielle SampleStrategy; Kerzensemantik doppelt abgesichert).
+Die Abweichungen lagen im Zeitverhalten:
+
+F1  ROI UND STOPLOSS HINGEN AN DER KERZENVERFUEGBARKEIT
+    exit_decision rief als erste Zeile evaluate(raw); bei duenner Historie warf
+    das, der Aufrufer fing ab -- und eine Position mit +4,79 % Gewinn blieb
+    liegen, obwohl ihre ROI-Stufe erreicht war. Echtes Freqtrade rechnet ROI
+    und Stoploss aus reiner Trade-Mathematik.
+    -> Reihenfolge stoploss -> ROI -> Exit-Signal, beide ersten Schritte ohne
+       Dataframe. Ein fehlgeschlagenes evaluate() kostet nur noch das Signal.
+
+F2  AUSGEFUEHRT WURDE BIS ZU 5 MINUTEN NACH KERZENSCHLUSS
+    Der Takt lief frei mit 300 s (Vermerk erst NACH dem Scan) statt am
+    5-Minuten-Kerzenraster. Gemessen: Versatz 2 bis 297 s; bei 30 s Scandauer
+    wurden 4 von 48 Kerzen komplett uebersprungen.
+    -> Taktgeber.markiere() kennt jetzt ein Zeitraster. Im Freqtrade-Modus
+       rastet der Scan auf die 5-Minuten-Grenze ein; die anderen Modi behalten
+       ihren freien Takt.
+
+F3  DER BACKTEST MASS ZU GUTE ERGEBNISSE
+    Er prueft das Exit-Signal vor dem Intrabar-Stop; Freqtrade prueft Stop ->
+    ROI -> Signal. Gemessen ueber 4000 Kerzen: +8,63 % statt +7,98 %, und ein
+    einzelner Trade wurde mit -26,86 gebucht statt mit -112,04.
+    -> Auf die Freqtrade-Reihenfolge umgestellt.
+
+F4  startup_candle_count 200 STATT 30
+    Das Original nutzt 30. Die 200 verwarfen Instrumente mit duenner Historie,
+    liessen den Backtest 16,7 h statt 2,5 h ueberspringen und waren die Ursache
+    von F1. Die Zahl kommt jetzt aus der Strategie, nicht aus einer zweiten
+    eingetippten Kopie.
+
+F5  DER AUSSTIEGSGRUND WAR FALSCH ETIKETTIERT
+    Das Signal wurde vor dem ROI geprueft. Am Ja/Nein aenderte das nichts, aber
+    jeder ROI-Ausstieg wurde als Signal-Ausstieg protokolliert und verfaelschte
+    damit jede Auswertung.
+
+F6  DIE ROI-UHR LIEF AB DER BUCHUNG STATT AB DEM FILL
+    Wurde ein Fill erst nach einem Absturz aufgeklaert, startete die Uhr neu --
+    die Position blieb auf der 4-%-Stufe statt auf 2 % oder 1 % zu fallen.
+    -> Der frueheste OKX-Fill-Zeitstempel setzt eroeffnet_am.
+
+
+D. ZUSTAENDE, SPERREN UND MANUELLE VERWALTUNG
+================================================================================
+D1  Ein FEHLGESCHLAGENER manueller Verkauf setzte die Position DAUERHAFT auf
+    MANUELL -- im ganzen Code gab es keinen Weg zurueck auf AUTO. Freqtrade-ROI
+    und Strategie-Exit waren danach tot, obwohl der Nutzer nur verkaufen
+    wollte. Jetzt wird die vorherige Verwaltung zurueckgerollt. Bei UNCLEAR
+    bleibt MANUELL bestehen -- dort ist es richtig.
+D2  Ein TEILVERKAUF fiel in den else-Zweig und wurde als "nicht ausgefuehrt"
+    gemeldet; die angeforderte Wiedereinstiegssperre blieb aus. PARTIAL ist
+    jetzt ein eigener Ausgang mit Sperre und eigener Meldung.
+D3  external_exit_evidence haengte die zielueberschreitende Fill-Zeile
+    VOLLSTAENDIG an, statt sie zu kuerzen -- ein bereits abgerechneter
+    Teilverkauf verfaelschte Menge, Durchschnittspreis und Gebuehren. Sie wird
+    jetzt anteilig gekuerzt.
+D4  Die Wiedereinstiegssperre fiel bei JEDEM Lesefehler lautlos weg
+    (except -> ""). An einem Sicherheitsgate ist das die falsche Richtung:
+    jetzt fail-closed. Ebenso bleibt eine Sperre mit unlesbarem Ablaufdatum
+    bestehen, statt spurlos zu verschwinden.
+D5  Eine unklare TP/SL-Aenderung liess Broker und lokalen Stop auseinander
+    laufen. Jetzt gilt der ENGERE der beiden Werte, der Broker-Schutz wird als
+    unbestaetigt markiert und beim naechsten Abgleich neu geprueft.
+D6  Die Auftragsdatei war unter Windows NICHT gesperrt (nur POSIX). WebUI und
+    Handelskern sind dort zwei Prozesse -- ein verlorenes Update konnte
+    denselben Verkauf ein zweites Mal senden. msvcrt-Zweig ergaenzt.
+D7  Zwei verschiedene Dust-Schwellen: gemessen wurde gegen die
+    EROEFFNUNGSschwelle (15,00). Ein Rest von 11,55 USDC -- das Hundertfache
+    der OKX-Mindestgroesse -- galt als "nicht handelbarer Staub" und verlor
+    Client-Stop, Broker-Schutz und Ledgerzeile. Massstab ist jetzt die echte
+    Verkaufbarkeit (minSz) plus eine echte Staubgrenze.
+D8  Eine unbekannte Sperrdauer warf einen ungefangenen KeyError -- nach einem
+    ERFOLGREICHEN Verkauf waere der Auftrag haengen geblieben.
+
+
+E. ANZEIGE UND MELDUNGEN
+================================================================================
+E1  /pnl meldete NUR eToro, nannte das Ergebnis aber "Tagesergebnis gesamt".
+    An einem Tag mit +98 auf eToro und -252 auf OKX zeigte es "+98,00 gesamt".
+    Jetzt beide Broker, mit Aufschluesselung je Seite.
+E2  /bericht nutzte den Summenzaehler statt des Handelsbuchs -- eine dritte
+    Zahl fuer denselben Tag, ohne die Abweichungswarnung, die /pnl mitliefert.
+E3  Der Entscheidungszaehler zeigte zwischen 00:00 und 02:00 Ortszeit den
+    VORTAG: geschrieben wurde mit config.LOCAL_TIMEZONE, gelesen mit der
+    Systemzeitzone. Auf einem Pi mit UTC-Systemuhr meldete das Dashboard 0.
+E4  Die Trades-Seite rechnete mit der ANGENOMMENEN Gebuehr (0,35 %), der Kern
+    mit der GEMESSENEN (typisch 0,10 %). Die eingezeichnete ROI-Linie lag
+    128 EUR ueber dem Kurs, bei dem der Bot tatsaechlich verkauft -- waehrend
+    das Dashboard daneben den gemessenen Satz zeigte.
+E5  Eine PAUSIERTE Position zeigte weiter ein "aktives ROI-Ziel", das nie
+    ausgefuehrt wird: der Kern prueft nur AUTO.
+E6  management_note, exit_state, exit_retry_after und protection_detail wurden
+    berechnet und nie angezeigt. Der 9.0.15-Retry-Cooldown und die
+    24-Stunden-Sperre waren in der Oberflaeche unsichtbar.
+E7  Eine MANUELL verwaltete OKX-Position fehlte komplett im Telegram-Status --
+    inklusive ihrer Schutzwarnung. Da jede TP/SL-Aenderung genau diesen Zustand
+    erzeugt, war das der Normalfall nach jedem Eingriff.
+E8  Drei Zahlenformate in einer Meldung: "= 1,234.57 EUR" liest sich fuer einen
+    deutschen Leser als 1,23 EUR. Neue Formatierer betragstext/betragstext_vz.
+E9  Globale Kaufsperren schrieben bei JEDER Scanrunde einen Datensatz
+    symbol="OKX_SCAN" -- 288 Zeilen pro Tag, die die echten Ablehnungsgruende
+    aus der Top-5-Liste verdraengten. Eine unveraenderte Sperre wird jetzt nur
+    einmal protokolliert; nach einem durchgelaufenen Scan wieder.
+E10 Ein UNBEKANNTES unrealisiertes Ergebnis wurde als 0,00 gebucht -- der
+    Kommentar zwei Zeilen darueber verbietet genau das. (Eigener Fehler aus
+    8.1.5.)
+E11 Der Tagesbericht trug immer die Uhrzeit "18:00".
+E12 Die Kaufmeldung etikettierte Marktquote-Preise mit der
+    Abrechnungswaehrung. Jetzt steht die Marktquote am Preis und die
+    Abrechnungswaehrung als eigener Hinweis dabei.
+
+
+F. LATENTE PUNKTE
+================================================================================
+F1  bot_zustand.py und runtime_status.py loesten relative Pfade gegen das
+    ARBEITSVERZEICHNIS auf -- die Regel aus 8.1.5 war hier nicht angewandt.
+    Betroffen waren Positionsbuch, Ordereigentumsregister, Fill-Tracker,
+    Laufzeitstatus und Botzustand. Jetzt immer absolut zum Botordner.
+F2  fees_quote addierte Gebuehren fremder Quote-Waehrungen ohne Umrechnung.
+    Sie bleiben einzeln in ``fees`` sichtbar, faelschen aber die Quotesumme
+    nicht mehr.
+F3  Eine FEHLENDE Modusdatei lieferte NEXUS_STANDARD (Handel), eine
+    BESCHAEDIGTE pausierte. Wer die Datei loescht, hob damit ein gesetztes
+    CRYPTO_PAUSED still auf. Eine Markierung merkt sich, dass die Datei schon
+    einmal existiert hat.
+F4  Nach einer Reparatur springt revision auf 1 zurueck; die Telegram-
+    Bestaetigung wurde ueber die wiederholte event_id still unterdrueckt.
+F5  send_telegram lieferte False, obwohl die Nachricht eingereiht war und der
+    Worker sie zustellt. Das Sammelfenster selbst bleibt unveraendert -- es
+    verhindert, dass derselbe Text in Sekundenabstand mehrfach ankommt.
+F6  Die Tagessperre verdrahtete Europe/Berlin fest statt config.LOCAL_TIMEZONE.
+
+
+NEUE UND GEAENDERTE DATEIEN
+================================================================================
+NEU
+    tests/test_v910_okx_api.py              OKX-Antwortklassifikation
+    tests/test_v910_geldpfad.py             B1, B2, B3
+    tests/test_v910_freqtrade.py            F1 bis F6
+    tests/test_v910_zustand_und_anzeige.py  D- und E-Befunde
+
+GEAENDERT
+    broker/okx.py           Codeklassifikation, Storno, Paginierung,
+                            slOrdPx, Gebuehrenwaehrung, Algo-Arten, expTime
+    crypto_engine.py        Schutzfenster, Fremdbestand, terminal-Auswertung,
+                            Kerzenraster, Fill-Zeitpunkt, manuelle Verwaltung,
+                            Dust, Scan-Protokoll, Waehrungsetikett
+    freqtrade_sample_strategy.py   Ausstiegsreihenfolge, stoploss_price,
+                            startup_candle_count
+    freqtrade_sample_backtest.py   Freqtrade-Reihenfolge
+    scheduler_v7.py         markiere(raster_sekunden=...)
+    manual_trade_control.py Windows-Sperre, fail-closed, Sperrdauer, Zeitzone
+    crypto_strategy_mode.py fehlende Datei, event_id
+    decision_analytics.py   lokaler_handelstag()
+    telegram_exports.py     derselbe Handelstag
+    trade_chart_data.py     gemessener Gebuehrensatz, ROI nur fuer AUTO
+    webui/state.py          ROI nur fuer AUTO
+    webui/static/trades.js  Exit-Zustand, PARTIAL
+    okx_status.py           MANUELL sichtbar, gemessener_taker_satz()
+    meldungen.py            betragstext / betragstext_vz
+    berichte.py             /pnl ueber beide Broker
+    daily_report.py         Handelsbuch statt Summenzaehler, echte Uhrzeit
+    position_manager.py     Unbekanntes bleibt unbekannt
+    notifier.py             ehrlicher Rueckgabewert
+    bot_zustand.py, runtime_status.py   absolute Pfade
+    config.py, VERSION.txt  9.1.0-NEXUS
+
+
+PRUEFUNG
+================================================================================
+876 Tests gruen, 1 uebersprungen, 176 Subtests.
+volltest.py: STATIC RELEASE HYGIENE, PYTEST, SELF TEST, COMPILEALL,
+PI PREFLIGHT, SHELL SYNTAX -- alle OK.
+
+Grenze: echte eToro-/Telegram-/OKX-/KI-Netzwerkaufrufe und ARM64-Hardware
+werden offline nicht simuliert. Die OKX-Pruefung erfolgte gegen die offizielle
+V5-Dokumentation mit nachgebauten Antworten, nicht gegen ein Live-Konto.

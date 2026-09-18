@@ -1,0 +1,80 @@
+NEXUS 9.7.6 - tatsaechlich ausgefuehrte Offline-Pruefungen
+08.09.2026
+
+1. Basis und Reproduktion
+Original-ZIP SHA256:
+be296d064073935bb9c2bb66051a7a4d9e0ec38e3b4a71693d4e5e5d3e9e86fe
+Alle 534 Eintraege des Originalmanifests passen.
+Original-Volltest: 1464 Tests + 210 Subtests bestanden, Exitcode 0.
+Diese alte Suite entdeckt den Live-/Demo-Marktdatenfehler nicht.
+
+Neue Gegenproben vor der Handelskorrektur:
+11 fehlgeschlagen, 6 bestanden. Enthalten sind fehlende Demo-Kennungen,
+SUI-FOK mit getrennten kuenstlichen Buechern, falsche Tiefenfreigabe,
+Umgebungswiderspruch, Tickgrenze und die neuen Diagnosefelder.
+Die Demo-Kurse dieser Nachstellung sind explizite Testwerte.
+
+Nach Umgebungs-/Preisfix, vor Lifecyclefix:
+6 fehlgeschlagen, 23 bestanden. Vergebene Verkaufs-ID, widerspruechliche
+Verkaufsantwort und nachgelagerter BrokerFehler bleiben gesondert reproduziert.
+
+2. Gezielte fertige Pruefungen
+Brokerkorrektur + bestehende SUI-/Schutzgruppen: 93 bestanden.
+Installer, echte Migration/Reparatur/Promotion, Diagnose und Waehrungsfall:
+52 bestanden. Systemdienste, UI-Einrichtung und externe Vorabchecks sind in
+den Migrationstests Testdoubles; SQLite und Dateibewegungen sind echt.
+Finale Marktdaten-/Anzeigegruppe samt vorhandenen Charttests: 49 bestanden.
+
+3. Vollstaendiger finaler Quelllauf
+1506 Tests + 211 Subtests bestanden; keine Tests uebersprungen; Exitcode 0.
+Alle sieben Volltestgruppen OK: statische Hygiene, Testabhaengigkeiten/echter
+ASGI-TestClient, gesamte pytest-Suite, Selbsttest, compileall, host-neutraler
+Pi-Preflight und Shell-Syntax. Gesamtlaufzeit rund 48 Sekunden.
+
+42 neue Tests. Keine vorhandenen Tests entfernt, keine xfail-Markierungen.
+Zwei bestehende Testfixtures wurden fachlich berichtigt:
+- Waehrungstest: SELL-Order 2 bekommt ihren eigenen Status/Fill, nicht den
+  bisherigen BUY-Status der Order 1. Alte Assertions bleiben erhalten;
+  zusaetzliche Assertions pruefen getrennte IDs und echte Ausfuehrung.
+- Anzeigetest: der normale Demo-Trade nennt paper=True ausdruecklich.
+  Neue Negativtests lassen fehlende/widerspruechliche Umgebung ungeklaert.
+
+Ein frueher Zwischen-Volltest war rot (eine alte falsche Orderfixture und
+drei noch unvollstaendige neue Migrationsfixtures). Dieser Lauf ist nicht
+als bestanden gezaehlt. Die zugehoerigen Logs bleiben im Nachweispaket.
+
+Zusaetzlicher Vorbefund zur Testabdeckung:
+Ein bestehender Telegram-Paralleltest scheitert bei isoliertem Einzelaufruf
+sowohl in der unveraenderten Originalbasis als auch in einer Teilgruppe des
+Arbeitsstandes, besteht aber in beiden vollstaendigen Suiten. Seine Ursache
+ist hier nicht abschliessend analysiert; Telegram-Produktionscode wurde nicht
+veraendert. Das wird nicht durch Loeschen/Skip oder eine gruen behauptete
+Einzelpruefung verdeckt. Der komplette vorgeschriebene Volltest wurde ausgefuehrt.
+
+4. Umgebung und Abhaengigkeiten
+Linux x86_64, Python 3.12.13; kein Raspberry Pi/ARM64 und nicht Python 3.13.5.
+Eigene Testumgebung mit installierten Release-Pins aus requirements-lock.txt
+und requirements-test.txt, inklusive yfinance; keine Ersatz-Importmodule.
+pip check: No broken requirements found.
+
+Direkte Pins:
+pandas 2.2.3, numpy 2.3.5, scikit-learn 1.8.0, joblib 1.5.3,
+yfinance 1.6.0, requests 2.32.5, fastapi 0.116.1, uvicorn 0.35.0,
+python-multipart 0.0.20, websocket-client 1.8.0,
+pytest 9.0.2, httpx 0.28.1.
+Vollstaendige Paketliste im Nachweispaket. Eine vorhandene Starlette/
+FastAPI-Deprecation-Warnung ist kein Testfehlschlag.
+
+5. Ausdrueckliche Grenzen
+Keine echten Brokerorders, Telegram-Sendungen, Pi-Dienstaktionen oder
+Installation auf dem Nutzergeraet. HTTP-/Socket-Netzschutz in den Tests aktiv.
+Die abgefragten externen Quellen waren offizielle Dokumentation und
+oeffentlicher Referenzquellcode; keine Nutzerkonten wurden angebunden.
+
+Der alte Registry-/Ledger-Datensatz wurde nur aus der Uebergabe ausgewertet:
+die aktuellen Nutzerdatenbanken sind hier nicht vorhanden. Es wurde weder
+eine aktuelle Broker-Schutzbestaetigung noch ein SUI-Verkauf erfunden.
+Keine Behauptung einer vollstaendigen zentralen Freqtrade-artigen Buchhaltung.
+
+Die Endpruefung der verpackten ZIP und des selbstenthaltenden Starters steht
+zusaetzlich in PAKETPRUEFUNG_9.7.6.txt und den Logs im Nachweispaket.

@@ -1,0 +1,123 @@
+TESTISOLATION FIX1: 797 Release-Dateien hashgeprueft; 0 lokale Dateien nicht eingelesen.
+Privates Testverzeichnis; keine Live-Konfiguration, keine geerbten API-Schluessel. HTTP-/Socket-Schutz aktiv.
+TEST-ZEICHENCODIERUNG OK: {"default_file_encoding": "utf-8", "filesystem_encoding": "utf-8", "locale": "C.UTF-8", "native_locale_encoding": "UTF-8", "preferred_encoding": "utf-8", "stdio": {"stderr": "utf-8", "stdin": "utf-8", "stdout": "utf-8"}, "utf8_mode": 1}
+
+==============================================================================
+STATIC RELEASE HYGIENE (vor Testlauf)
+==============================================================================
+OK
+
+==============================================================================
+TEST-ABHAENGIGKEITEN / WEBUI-CLIENT
+==============================================================================
+Test-Python: /workspace/scratch/33592271b955/implementation_10_1_2/testenv/bin/python
+Python: 3.12.14 / x86_64
+pytest: 9.0.2
+httpx: 0.28.1
+fastapi: 0.116.1
+starlette: 0.47.3
+httpcore: 1.0.9
+anyio: 4.15.1
+TESTABHAENGIGKEITEN OK (echter In-Process-TestClient; keine Brokeraufrufe)
+
+==============================================================================
+PYTEST GELDPFAD / REGRESSIONEN
+==============================================================================
+....................................... [  1%]
+........................................................................ [  4%]
+...............................................ss.....................s. [  6%]
+........................................................................ [  9%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 24%]
+.................................................................. [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 32%]
+........................................................................ [ 35%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 50%]
+........................................................................ [ 53%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+.......................................................................  [100%]
+=============================== warnings summary ===============================
+../../../workspace/scratch/33592271b955/implementation_10_1_2/testenv/lib/python3.12/site-packages/starlette/testclient.py:51
+  /workspace/scratch/33592271b955/implementation_10_1_2/testenv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_v100_analysis_jobs.py::test_independent_webui_processes_share_admission_lock
+tests/test_v100_analysis_jobs.py::test_independent_webui_processes_share_admission_lock
+tests/test_v101_massive.py::test_real_processes_cannot_race_the_atomic_reservation
+tests/test_v101_massive.py::test_real_processes_cannot_race_the_atomic_reservation
+tests/test_v101_massive.py::test_real_processes_cannot_race_the_atomic_reservation
+tests/test_v101_massive.py::test_real_processes_cannot_race_the_atomic_reservation
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=10) is multi-threaded, use of fork() may lead to deadlocks in the child.
+    self.pid = os.fork()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_repair_diagnosis.py:17: Standalone delivery supplied explicitly through NEXUS_STANDALONE_DIAGNOSIS
+SKIPPED [1] tests/test_repair_diagnosis.py:38: Standalone delivery supplied explicitly through NEXUS_STANDALONE_DIAGNOSIS
+SKIPPED [1] tests/test_repair_diagnosis.py:232: Original diagnosis ZIP supplied explicitly through NEXUS_REPLAY_ARCHIVE
+2765 passed, 3 skipped, 7 warnings, 255 subtests passed in 65.72s (0:01:05)
+
+==============================================================================
+SELF TEST
+==============================================================================
+SELF TEST OK
+
+==============================================================================
+COMPILEALL
+==============================================================================
+
+==============================================================================
+PI PREFLIGHT (host-neutral)
+==============================================================================
+=== TradingBot Raspberry-Pi Preflight ===
+Modell      : x86_64
+Architektur : x86_64
+CPU-Kerne   : 9
+Python      : 3.12.14 (64 Bit)
+RAM         : 22039 MB gesamt / 20886 MB frei
+Speicher    : 28.0 GB frei
+PREFLIGHT OK
+
+==============================================================================
+SHELL SYNTAX
+==============================================================================
+
+==============================================================================
+VOLLTEST 10.1.2-NEXUS - ZUSAMMENFASSUNG
+==============================================================================
+STATIC RELEASE HYGIENE             OK              1.64s
+TEST-ABHAENGIGKEITEN / WEBUI-CLIENT OK              0.37s
+PYTEST GELDPFAD / REGRESSIONEN     OK             67.46s
+SELF TEST                          OK              1.23s
+COMPILEALL                         OK              0.94s
+PI PREFLIGHT (host-neutral)        OK              0.11s
+SHELL SYNTAX                       OK              0.03s
+Gesamtlaufzeit: 71.8s
+VOLLTEST OK
+Grenze: echte eToro-/Telegram-/KI-Netzwerkaufrufe und ARM64-Hardware werden offline nicht simuliert.

@@ -1,0 +1,105 @@
+TRADINGBOT NEXUS 9.0.15 - AENDERUNGSPROTOKOLL
+================================================
+Version: 9.0.15-NEXUS
+Datum: 30.08.2026
+Basis: 9.0.14-NEXUS
+
+WARUM DIESE VERSION NOETIG WAR
+-----------------------------
+- Nach dem Stornieren einer OKX-Schutzorder konnte die API das Storno schon
+  bestaetigen, obwohl die reservierte Coinmenge noch nicht wieder verfuegbar
+  war. Der unmittelbar folgende FOK-Verkauf blieb dann unerfuellt.
+- Ein fehlgeschlagener Exit wurde jede Minute erneut versucht und gemeldet.
+- Ein vollstaendig manuell verkaufter Bestand konnte als kleiner Restbetrag
+  im Positionsbuch offen bleiben, obwohl die OKX-Fill-Historie den Verkauf
+  eindeutig belegte.
+- TP/SL konnten bislang nicht kontrolliert in NEXUS geaendert werden. Eine
+  reine Brokeraenderung waere widerspruechlich gewesen, weil Freqtrade-ROI
+  und Strategie-Exit weiterhin frueher haetten verkaufen koennen.
+
+OKX-EXIT-ZUSTANDSMASCHINE
+-------------------------
+- Vor jedem Exit wird die volle Menge gegen das frische Orderbuch und die
+  erlaubte Slippage geprueft. Bis dahin bleibt der Broker-Schutz aktiv.
+- Danach werden Schutzorders storniert. Der Bot wartet begrenzt, bis
+  1. keine Algo-Schutzorder mehr offen ist,
+  2. keine konkurrierende Verkaufsorder mehr offen ist und
+  3. die volle Botmenge wieder als verfuegbares Guthaben gemeldet wird.
+- Erst dann wird das Orderbuch erneut gemessen und genau eine preisbegrenzte
+  FOK-Verkaufsorder mit eigener clOrdId gesendet.
+- Ein unklarer POST-Zustand wird ueber die ID nachgeschlagen und niemals
+  blind wiederholt.
+- Nicht ausgefuehrte Exits erhalten einen persistenten fuenfminuetigen
+  Wiederholungsabstand. Kritische Telegram-Meldungen werden 15 Minuten
+  dedupliziert. Der Broker-Schutz wird nach einem belegten Fehlschlag
+  erneuert.
+- Ist der Zustand unklar, erfolgt 24 Stunden lang kein automatischer Retry;
+  der Fall muss zuerst durch Brokerdaten geklaert werden.
+
+EXTERNE UND MANUELLE VERKAEUFE
+------------------------------
+- Ein geringerer Kontobestand wird nicht mehr nur nach unten korrigiert.
+  Der Bot sucht zunaechst einen exakten OKX-Verkaufsbeweis aus instId,
+  Seite, Zeitpunkt, Menge, tradeId und ordId.
+- Das gilt auch fuer bereits unter 9.0.14 gespeicherte Restmengen. Damit wird
+  der manuell geschlossene ONDO-Trade anhand des echten OKX-Fills beendet;
+  der verbleibende nicht handelbare Rest wird als Dust ausgewiesen.
+- Preis, Menge, Gebuehren und Abschlusszeit stammen aus den OKX-Fills. Ohne
+  belastbaren Fill wird kein Ergebnis aus einem Tickerpreis erfunden.
+
+MANUELLE VERWALTUNG IN DER WEBUI
+--------------------------------
+- Bestaetigte, exakt zugeordnete offene OKX-Trades erhalten zwei Aktionen:
+    1. TP/SL aendern
+    2. Jetzt preisbegrenzt verkaufen
+- Jede Aktion verlangt eine symbolbezogene Bestaetigungsphrase. Die WebUI
+  schreibt nur einen persistenten Auftrag; ausschliesslich die zentrale
+  Krypto-Engine darf ihn ausfuehren.
+- Nach einer TP/SL-Aenderung wechselt genau diese Position dauerhaft in
+  MANUELL. Freqtrade-ROI und Strategie-Exit sind fuer sie deaktiviert.
+  Aktiv bleiben nur der bestaetigte OKX-Schutz, der clientseitige harte
+  Stop/Take-Profit und ein ausdruecklicher manueller Verkauf.
+- Der neue OKX-TP/SL wird ueber die vorhandene eindeutige algoId geaendert
+  und danach zuruengelesen. Erst die verifizierte Brokerantwort wird lokal
+  gespeichert.
+- Ein manueller Sofortverkauf nutzt denselben abgesicherten, preisbegrenzten
+  Exitpfad. Danach kann LINK/ONDO usw. fuer 1 Stunde, 6 Stunden, bis zum
+  Tageswechsel oder bis zur manuellen Freigabe gesperrt werden.
+- Die Sperre gilt fuer den Basiswert im exakten OKX-Konto, unabhaengig davon,
+  ob ein spaeteres Paar in EUR, USD oder USDC notiert.
+- Ein bei einem Neustart veralteter PROCESSING-Auftrag wird UNCLEAR und nicht
+  erneut gesendet.
+
+WEBUI UND STATUS
+----------------
+- Die Trades-Seite zeigt den Verwaltungsmodus sowie offene manuelle Auftraege
+  und Wiedereinstiegssperren.
+- Bei manuell verwalteten Positionen wird kein aktives Freqtrade-ROI-Ziel
+  mehr angezeigt, weil dieses Ziel nicht mehr ausfuehrungsberechtigt ist.
+- Exit-Zustand, naechster Retry und letzte belegte Fehlermeldung werden beim
+  Trade gespiegelt.
+
+MIGRATION UND RELEASE-HYGIENE
+-----------------------------
+- manual_trade_commands.json und manual_coin_locks.json werden bei spaeteren
+  Updates mitgenommen, aber nicht in ein sauberes Release-Paket eingebaut.
+- Bestehende Zugangsdaten, Trade-Historie und Positionsdateien bleiben bei
+  der normalen Migration erhalten.
+
+PRUEFUNG
+--------
+- 808 Pytest-Tests bestanden.
+- 190 Subtests bestanden.
+- self_test.py und volltest.py: OK.
+- Python-, JavaScript- und Shell-Syntax: OK.
+- Raspberry-Pi-Preflight: OK (host-neutral).
+- Neue Regressionen pruefen insbesondere verzögerte OKX-Guthabenfreigabe,
+  einmaliges Senden, manuelle Verwaltung, exakte Schutz-Aenderung,
+  persistenten Retry-Cooldown und ONDO-Dust-Abschluss mit echtem Fill.
+- Es wurden keine Brokerorders und keine schreibenden Brokeraufrufe gesendet.
+
+SICHERHEITSGRENZE
+-----------------
+- eToro bleibt PAPER und OKX bleibt DEMO.
+- Echte OKX-Antworten, Telegram-Zustellung und Raspberry-Pi-ARM64-Verhalten
+  muessen nach Installation kontrolliert im DEMO-Betrieb beobachtet werden.

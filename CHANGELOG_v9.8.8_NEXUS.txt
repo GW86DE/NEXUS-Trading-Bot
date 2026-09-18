@@ -1,0 +1,71 @@
+NEXUS 9.8.8 – 12. September 2026
+Basis: unveraendertes TradingBot_v9.8.7_NEXUS.zip, SHA256
+be121dd325a8d81e7e0406ad80143185cd844c5697d08163d3fce00e0651e096
+
+1. Kontogebundene OKX-Buchungssperre
+Die Bereitschaft sowie Orderreservierung und letzte Vorbereitung eines BUY lesen
+unabhaengig vom JSON-Risikostand offene Ergebnis-/Bestandsluecken im Ledger.
+Fehlende Domaene, Schema-/Lesefehler und unbewiesene Restklassifikation sperren.
+SELL, Schutzerhalt, eToro, andere bewiesene Konten und DEMO/LIVE bleiben getrennt.
+Teilweiser ungeklärter Kontorueckgang schreibt keine Botmenge herunter. Fremde
+Kontoreste werden nicht zum eigenen Lot addiert. Der Original-Schutzanker bleibt.
+Unbekannte ganze Abgaenge werden vor Entfernen der Position dauerhaft vermerkt;
+fehlender Ledgeranker wird als Incident bewahrt. Schreibfehler behalten Position
+und Sperre. Es gibt keine zweite Order wegen Zeitablauf oder fehlender Balance.
+
+2. Nicht verkaufte Reste sind Bestand, keine Verkaeufe
+okx_residual_inventory speichert exakte Restmenge, anteilige Kostenbasis,
+Kauf-/Verkaufsbelege, Originalzustand und Hash. Mehrere Teilzeilen einer Kauforder
+werden gemeinsam geprueft. Der Staub-Text allein ist kein Beweis. Bereits
+bestaetigte Nettowerte anderer Verkaeufe werden nicht geaendert. Fuer noch offene
+Reste sind aktuelle Handelsschrittweite/Mindestmenge und ein ausreichender
+Kontobestand erforderlich. Eine blosse Wertgrenze ersetzt diese Regeln nicht.
+UI: Guthaben & Verwaltung > Guthaben und Restbestaende. Kein Verkaufsbutton fuer
+als unverkauft dokumentierten Rest. Keine neuen Ganzzahl-Kaufregeln.
+
+3. Vollstaendige Ergebnisse und historische Schutzanker
+Dezimalrechnung mit vollstaendigen, orderbezogenen Originalfills. Basisgebuehren
+vermindern Bestand, Quotegebuehren den Zahlungsfluss; keine doppelte Kaufgebuehr.
+Leeres Order-Waehrungsfeld darf nur durch explizite konsistente Fillbelege
+vervollstaendigt werden. Widerspruch, Teilhistorie, Mengenluecke, fremdes Konto,
+geteilte aber nicht allokierbare Ausfuehrung oder fehlende Fremdgebuehrenbewertung
+bleiben offen. Keine heutige oder pauschal 1:1 gesetzte historische Umrechnung.
+Schutzversuche werden historisch bewahrt; exakt belegte alte Anker werden aus
+Journal und Requestbelegen gelesen, ohne sie als aktuell aktiven Schutz auszugeben.
+Ausstiegsbelege, exklusive Fillclaims, Kostenaufteilung und Ledgerkorrektur werden
+in einer SQLite-Transaktion gespeichert. Wiederholung bucht nicht doppelt.
+Der begrenzte GET-Nachlauf kann nun auch Verkaufs-/Restketten verarbeiten.
+
+4. Risiko-Nachpflege nach Neustart und Teilerfolg
+Fehlende UNKNOWN-Risikobelege werden aus dem Ledger entdeckt. Ein nach DB-Commit
+abgebrochener JSON-Schritt ist wiederholbar. Native Fremdwaehrung bleibt ohne
+historischen FX-Beleg im Risikokonto unbeziffert. Bestehende bestaetigte Altbelege
+werden nicht still neu umgerechnet. Ein bestaetigter Rest kann einen falschen
+UNKNOWN-Eintrag auf RESIDUAL setzen, nicht einen echten Verlust loeschen.
+
+5. Grafik
+Bekannte Teilergebnisse unvollstaendiger Tage werden gezeichnet und markiert.
+Ein Tag ohne bewertbares Ergebnis wird nicht zum behaupteten Nullergebnis.
+Kapitalbasis folgt der bewiesenen anteiligen Einstandskostenrechnung. Keine
+Waehrungs-, Konto-, Broker- oder Umgebungssummen ohne passenden gemeinsamen Bezug.
+
+6. Sichere Uebernahme bestehender Daten
+repair_okx_accounting.py zeigt standardmaessig eine Vorschau auf einer Kopie.
+Anwenden nur mit gestoppten Writern und vorheriger Sicherung. Der Updater nutzt
+frisch aus den tatsaechlichen Diensten migriertes STAGING; keine Uploaddatenbank.
+Ein optionaler eigener Original-Belegexport wird streng validiert, kontogebunden
+und idempotent importiert. Der persoenliche Installer enthaelt Georgs DOGE-Export
+separat; er ist nicht Teil dieses allgemeinen Quellpakets und enthaelt keine Keys.
+Vor Promotion: SQLite-Checkpoint/Integritaetscheck. Transiente WAL/SHM-Metadaten
+werden nicht als Nutzerdaten verschoben. Belegte DB-Hauptdateien bleiben vollstaendig.
+Nach der Startgrenze weiterhin KEIN alter Datenrollback. Ein erfolgreicher
+Installations-/Verbindungstest ist keine Freigabe trotz offener Buchungsbelege.
+
+7. Unveraendert
+PULSAR-Regelversion 1.2, Research-/Freigabe-/Budgetregeln, Strategieparameter,
+Kauf-/Verkaufspreisgrenzen und eToro-Ausfuehrungskern. Nur Release-/User-Agent-
+Versionskennungen wurden aktualisiert. Alte eToro-Gebuehren, SUI-FX und andere
+nicht belegte Handelsereignisse bleiben ausdruecklich offen.
+
+Pruefverfahren und korrigierte alte Testvertraege: PRUEFKATALOG_9.8.8.md.
+Tatsaechliche Endergebnisse und Plattformgrenzen: separat gelieferter Pruefbericht.

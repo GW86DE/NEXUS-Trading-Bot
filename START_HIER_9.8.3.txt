@@ -1,0 +1,12 @@
+NEXUS 9.8.3 – PRUEFSTAND
+
+Bitte zuerst NEXUS_9.8.3_Pruefstand.md lesen.
+
+Die belegten Codekorrekturen sind offline getestet. Die Broker-Abnahme fuer
+DOGE-Schutzfehler 51634 und ZAMA-Stornofehler 51001 steht noch aus.
+Dieses Paket ist keine Bestaetigung, dass beide Fehler im Konto behoben sind.
+
+Keine Benutzerzustaende oder Zugangsdaten sind enthalten. Die laufende
+9.8.2-Installation wurde nicht geaendert. Die Schritte fuer den beobachteten
+DEMO-Test stehen in NEXUS_9.8.3_Pruefstand.md; historische Anleitungen im
+Ordner beziehen sich auf die dort genannten alten Versionen.

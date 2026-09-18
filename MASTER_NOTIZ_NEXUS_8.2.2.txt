@@ -1,0 +1,33 @@
+TRADINGBOT NEXUS – MASTER-NOTIZ
+Stand: 26.08.2026 | Version: 8.2.2-NEXUS
+
+BROKER-TRENNUNG
+- eToro: ausschliesslich Aktien / ETFs.
+- OKX EEA: ausschliesslich Spot-Krypto, bevorzugt EUR-Paare.
+- Demo-Guthaben und externe OKX-Bestaende sind keine vom Bot verwalteten
+  Positionen und werden nicht automatisch verkauft.
+
+FAVORITEN
+- Maximal 5 Werte insgesamt.
+- GUI-Typ „auto“ ordnet bekannte Aktien eToro und bekannte Coins/Paare OKX zu.
+- Unbekannte oder mehrdeutige Eingaben brauchen eine klare Auswahl.
+- Favorit bedeutet nur priorisierte Pruefung; die normale Universumsaufnahme,
+  das Ranking und alle Kaufregeln bleiben voll wirksam.
+
+KI
+- Luna priorisiert und dokumentiert.
+- Terra liefert nur Beratung.
+- KI kann keine Order freigeben, ablehnen, blockieren, dimensionieren oder
+  Schutzregeln veraendern.
+
+WICHTIGE SICHERHEITEN
+- Getrennte Risikotoepfe fuer eToro und OKX.
+- Tagesverlust, Positions-/Trade-Limits, Cash-Reserve, Kosten, Spread,
+  Liquiditaet, Kursfrische und Broker-Checks bleiben harte Bedingungen.
+- Stops und Schutzorders laufen nie ueber KI.
+
+INSTALLATIONSREGEL 8.2.2
+- Nur nach „INSTALLATION UND TESTS ERFOLGREICH“ starten.
+- Eine fehlende WebUI-systemd-Unit wird aus diesem Release wiederhergestellt.
+- Eine vorhandene Unit mit fremdem/alten Pfad wird nicht gestartet.
+- WireGuard, Peers, Schluessel und Portfreigaben werden nicht angefasst.

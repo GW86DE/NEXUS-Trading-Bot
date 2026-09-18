@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf" content="{{CSRF}}"><title>NEXUS {{VERSION}} Logbuch</title>
+  <link rel="stylesheet" href="/static/app.css"><link rel="stylesheet" href="/static/nexus.css">
+</head>
+<body><a class="skip-link" href="#main-content">Zum Inhalt</a>
+<header class="topbar"><div class="brand"><img class="brand-logo" src="/static/nexus-logo.png" alt="NEXUS" width="46" height="46"><span class="brand-copy">TradingBot <strong>{{VERSION}} NEXUS</strong></span></div><nav aria-label="Hauptmenü"><a href="/">Übersicht</a><a href="/trades">Handel</a><a href="/analysis">Analyse</a><a href="/universe">Universum</a><a href="/underdogs">Underdogs</a><a href="/pulsar">PULSAR</a><a href="/sources">Quellen &amp; X</a><a href="/diagnosis">Diagnose</a><a href="/settings">Einstellungen</a><a class="active" aria-current="page" href="/logbook">Logbuch</a></nav><span class="small">{{USER}}</span><button class="secondary" onclick="logout()">Abmelden</button></header>
+<main class="container" id="main-content"><p class="scope-note">Entscheidungen tragen ihren gespeicherten Broker und Handelsmodus. Systemmeldungen werden nur bei eindeutiger Herkunft einem Broker zugeordnet; sonst System/gemeinsam.</p>
+  <section class="panel" id="scan-uebersicht-panel"><h2>Scan-Übersicht je Zyklus</h2><p class="small">Was der Scanner zuletzt geprüft hat und was dabei herauskam. Nur Kaufwünsche stehen zusätzlich unten als Einzelbelege; HOLD und Verkaufssignale ohne Position werden hier gezählt.</p><div id="scan-uebersicht"><p class="small">Wird geladen …</p></div></section>
+  <div class="page-head"><div><h1>Logbuch</h1><p>Jede Entscheidung mit verständlichem Hauptgrund; die vollständige Begründung und Messwerte stehen in den aufklappbaren Details.</p></div></div>
+  <section class="panel">
+    <div class="toolbar">
+      <div class="field"><label>Broker</label><select id="broker"><option value="">alle</option><option>etoro</option><option>okx</option></select></div>
+      <div class="field"><label>Anlageklasse</label><select id="asset"><option value="">alle</option><option value="stock">Aktie</option><option value="crypto">Krypto</option></select></div>
+      <div class="field"><label>Status</label><select id="status"><option value="">alle</option><option>APPROVED</option><option>BLOCKED</option><option>NO_SIGNAL</option><option>UNKNOWN_AFTER_SUBMIT</option><option>SYSTEM_ERROR</option></select></div>
+      <div class="field"><label>Quelle</label><input id="source" placeholder="TECHNIK / BROKER …"></div>
+      <div class="field"><label>Symbol</label><input id="symbol"></div>
+      <div class="field"><label>Tag</label><input id="day" type="date"></div>
+      <div class="field"><label for="perPage">Einzelbelege pro Seite</label><select id="perPage"><option value="15" selected>15</option><option value="50">50</option><option value="100">100</option></select></div>
+      <button onclick="loadDecisions(1)">Filtern</button>
+    </div>
+    <details><summary>Weitere Entscheidungsfilter</summary><div class="toolbar"><label>Text oder ID<input id="filterSearch" type="search" placeholder="Grund, Trade-ID, Order-ID …"></label><label>Strategie<input id="filterStrategy" type="search" placeholder="FREQTRADE_SAMPLE …"></label><label>Ablehnungsgrund<input id="filterReason" type="search" placeholder="Liquidität, Daten, Risiko …"></label><button class="secondary" onclick="loadDecisions(1)">Filter anwenden</button></div></details>
+    <div id="count" class="small" style="margin:15px 0"></div>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Entscheidungen, seitlich scrollbar"><table><thead><tr><th>Zeit</th><th>Broker</th><th>Symbol</th><th>Strategie</th><th>Status</th><th>Grund</th><th>Hauptquelle</th><th>Quellen</th><th>Ausfuehrung</th></tr></thead><tbody id="decisionRows"></tbody></table></div>
+    <div class="toolbar" style="margin-top:14px"><button class="secondary" id="prev">Zurueck</button><span id="page" class="small"></span><button class="secondary" id="next">Weiter</button></div>
+  </section>
+  <section class="panel" style="margin-top:16px"><h2>Systemprotokoll</h2><div class="toolbar"><div class="field"><label>Systemmeldungen für</label><select id="sysBroker"><option value="">Beide Broker + System</option><option value="etoro">eToro · Aktien</option><option value="okx">OKX · Spot</option><option value="system">System / nicht eindeutig</option></select></div><div class="field grow"><label>Suche</label><input id="sysSearch" type="search" placeholder="Text, Symbol, Trade-ID oder Order-ID"></div><div class="field"><label>Level</label><select id="sysLevel"><option value="">alle</option><option>CRITICAL</option><option>ERROR</option><option>WARNING</option><option>INFO</option></select></div><button onclick="loadSystem()">Anzeigen</button></div><pre id="systemRows" class="log-lines"></pre></section>
+</main>
+<script src="/static/common.js"></script><script src="/static/logbook.js"></script>
+</body>
+</html>

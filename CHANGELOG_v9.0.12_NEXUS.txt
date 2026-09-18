@@ -1,0 +1,100 @@
+TRADINGBOT NEXUS 9.0.12 - AENDERUNGSPROTOKOLL
+================================================
+Version: 9.0.12-NEXUS
+Datum: 30.08.2026
+Basis: 9.0.11-NEXUS
+
+OKX-UNIVERSUM: MEHR AUSWAHL OHNE FALSCHE FREIGABE
+-------------------------------------------------
+- Der authentifizierte Endpunkt /api/v5/account/instruments bleibt die
+  verbindliche Obergrenze fuer tatsaechlich orderfaehige Kontomaerkte.
+- Der oeffentliche OKX-SPOT-Katalog dient nur der Entdeckung und Alters-
+  bestimmung. Ein dort sichtbarer Markt wird dadurch nicht handelbar.
+- Die Diagnose formuliert die beiden Zahlen jetzt eindeutig: oeffentlich
+  sichtbar ist nicht gleich fuer das konkrete Demo-/Live-Konto orderfaehig.
+- Der bisherige feste Mindest-Tagesumsatz von 250.000 EUR wurde entfernt.
+  Jeder Markt mit positivem, belegtem Umsatz darf in die Rangfolge. Damit
+  arbeitet die Auswahl wie Freqtrades VolumePairList: beste Werte nach
+  Quote-Volumen statt pauschaler Aussortierung kleinerer Maerkte.
+- Der kontoseitig ausfuehrbare Kern wird auf bis zu 20 Werte aufgefuellt.
+  Bis zu 30 weitere Werte kommen aus der monatlichen dynamischen Rangliste.
+- Die Waehrungsrichtlinie der dynamischen Liste wurde angehoben, damit eine
+  alte 9.0.11-Auswahl beim ersten Lauf neu bewertet wird.
+- Unveraendert harte Bedingungen sind: OKX-Kontofreigabe, SPOT/live,
+  tradeQuoteCcyList, finanziertes Waehrungskonto, Mindestalter, positiver
+  Umsatz, gueltige Handelsregeln, Spread sowie vor der Order Kosten,
+  Orderbuch, Mindestmenge und Risiko.
+
+OKX-WAEHRUNGEN UND BROKERWAHRHEIT
+---------------------------------
+- EUR, USD und USDC bleiben getrennte Cash-/Handelskanäle. Guthaben werden
+  weder addiert noch still im Verhaeltnis 1:1 umgerechnet.
+- USDT, Futures, Margin und Leverage bleiben fuer NEXUS deaktiviert.
+- cashBal/availBal sind Kontoguthaben. BTC, ETH, SOL oder XRP in diesen
+  Feldern sind deshalb noch keine offenen Bot-Trades.
+- Eine OKX-Botposition gilt nur bei lueckenloser Brokerkette als bestaetigt:
+  clOrdId oder NEXUS-tag -> ordId -> echter tradeId/fillId -> Nettomenge.
+- Kuenstliche Alt-IDs wie okx-entry:<ordId> beweisen keinen Fill.
+- Konto-Assets werden weder automatisch verkauft noch blockieren sie einen
+  neuen Einstieg. Nur ein unbelegter eigener Auftrag oder ein echter
+  Mengenfehlbestand darf weiterhin sperren.
+- Die wiederkehrende falsche Telegram-Warnung zum ETH-Ueberhang von
+  0,996348 wurde entfernt.
+
+SOL/ETH UND „KLAERUNG NOETIG“
+-----------------------------
+- Legacy-Eintraege ohne Eigentumsbeweis erscheinen nicht mehr als bestaetigte
+  offene Trades oder Botpositionen.
+- Unter „Klaerung noetig“ besitzt jede OKX-Zeile nun drei Aktionen:
+    1. Erneut mit OKX pruefen
+    2. Als Konto-Asset bestaetigen
+    3. Eintrag loeschen
+- Die WebUI merkt die Aktion nur vor. Der laufende OKX-Kern prueft sie im
+  naechsten Zyklus erneut und fuehrt sie zentral aus.
+- „Eintrag loeschen“ entfernt ausschliesslich den unbelegten lokalen Hinweis.
+  Es wird niemals Guthaben, eine Position oder eine Order bei OKX geloescht.
+- Vor jeder lokalen Bereinigung werden crypto_positions.json und die
+  Decision-Datenbank gesichert.
+- Bestaetigte Botpositionen, echte Fill-Beweise und offene eigene OKX-Orders
+  koennen ueber diese Funktion nicht geloescht werden.
+- Die Datenbank-Auditspur bleibt erhalten; bereinigte Hinweise werden aus
+  offenen Ansichten und Reconciliation-Abfragen ausgeblendet. Es wird kein
+  Verkaufszeitpunkt, Verkaufskurs oder Ergebnis erfunden.
+
+TELEGRAM
+--------
+- Status-, Positions-, Entscheidungs-, Kauf-, Verkaufs- und Tagesmeldungen
+  wurden auf NEXUS 9.0.12 und die aktuellen Brokerrollen angepasst.
+- OKX zeigt „Konto-Assets (keine Bottrades)“ getrennt von „bestaetigten
+  Bot-Positionen“.
+- Der doppelte Text „BLOCKED · BLOCKED“ wurde beseitigt und als einmaliges
+  „ABGELEHNT“ dargestellt.
+- Alle Zeitangaben werden explizit in Europe/Berlin formatiert.
+- Kauf- und Verkaufsmeldungen kennzeichnen bestaetigte Ausfuehrungen klarer.
+
+WEBUI UND LOGBUCH
+-----------------
+- Das Entscheidungslog zeigt 15 Zeilen je Seite; Blaettern und Filter bleiben.
+- Decision- und Execution-Zeiten werden serverseitig nach Europe/Berlin
+  umgerechnet und als lokale Felder an die WebUI gegeben.
+- Auch das Systemlog verwendet einen festen Berlin-Formatter und ist nicht
+  mehr von UTC/Systemd-TZ des Prozesses abhaengig.
+- Bereinigte Konto-Asset-/Legacy-Hinweise verschwinden aus „Offene Trades“
+  und „Klaerung noetig“, ohne historische Daten zu erfinden.
+
+ETORO-API-GEGENPRUEFUNG
+-----------------------
+- Die offizielle Dokumentation bestaetigt den bereits vorhandenen 9.0.11-
+  Aufbau: asynchroner v3-POST mit HTTP 202, token/orderId/referenceId,
+  anschliessender v2-Lookup mit genau einem Anker und PositionExecutions.
+- OrderStatusUnklar bleibt vom echten Verbindungsausfall getrennt; der POST
+  wird bei unklarer Antwort niemals blind wiederholt.
+- Status 5/teilweise ausgefuehrt, persistente Hintergrund-Reconciliation,
+  privater Portfolio-WebSocket und der zentrale 60/20-Minuten-Limiter bleiben
+  aktiv. REST bleibt die abschliessende Kontrollinstanz.
+
+SICHERHEITSGRENZE
+-----------------
+- Die Version wurde vollstaendig offline getestet. Echte Brokerantworten,
+  Telegram-Zustellung und ARM64-Hardware koennen erst im kontrollierten
+  DEMO/PAPER-Lauf auf dem Raspberry Pi abschliessend bestaetigt werden.

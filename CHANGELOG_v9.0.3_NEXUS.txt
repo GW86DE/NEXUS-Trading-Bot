@@ -1,0 +1,48 @@
+TradingBot NEXUS 9.0.3
+======================
+
+Broker-Wahrheit und Ledger
+- eToro-FILLED wird nach einem Neustart erst dann wieder als offener Kauf
+  eingespielt, wenn seine exakte positionId im aktuellen Depot vorhanden ist.
+- Bereits geschlossene eToro-positionIds werden über die paginierte
+  Trade-Historie erkannt und als CLOSED_BEFORE_IMPORT beendet.
+- eToro-Order-ID, Fill-ID, Positions-ID, Kontoabdruck und Abgleichstatus werden
+  strukturiert im Trade-Ledger gespeichert.
+- OKX-Fill-Historie wird paginiert und dedupliziert gelesen. Fehlende Verkäufe
+  und Teilverkäufe werden mengenbasiert nachgetragen.
+- Ein OKX-Trade aus einem anderen Demo-/Live-/Unterkonto wird nicht übernommen.
+- Offene Trades sind in CONFIRMED_OPEN, KLÄRUNG NÖTIG und GESCHLOSSEN getrennt.
+
+Sicherer Start
+- Neue Aktienkäufe sind nach jedem Prozessstart mindestens 15 Minuten gesperrt.
+- Zusätzlich müssen Broker, Instrumente, Universum, Kontostand, Kurse,
+  abgeschlossene Signalkerze, Protokoll und Reconciliation bestätigt sein.
+- Verkäufe, Stop-Loss, Take-Profit und Positionsschutz bleiben während der
+  Anlaufsperre aktiv.
+
+Telegram
+- Der vorhandene atomare Queue-Claim und die inhaltsbasierte 25-Sekunden-
+  Deduplizierung bleiben aktiv.
+- eToro-Erfolgsmeldungen entstehen erst nach bestätigter Brokerposition;
+  stabile Ereignis-IDs verhindern Wiederholungen nach Neustarts.
+
+WebUI
+- Handy und Tablet erhalten ein Dropdown mit Dashboard, Positionen, Trades,
+  Universum, Einstellungen und Logbuch.
+- Auf Laptop/Desktop bleibt die horizontale Navigation bestehen.
+- Bedienelemente haben mobil mindestens 44 Pixel Höhe; Layout und Tabellen
+  passen sich an Handy, Tablet und Desktop an.
+- Die Trade-Seite zeigt unklare Datensätze separat unter „Klärung nötig“.
+- Das Dashboard zeigt die Aktien-Handelsbereitschaft samt offenen Bedingungen.
+
+Weitere Stabilität
+- Risikotage akzeptieren während der Mitternachtsüberlappung UTC- und lokalen
+  Kalendertag; der Tagesverlust wird dadurch nicht versehentlich zurückgesetzt.
+- SQLite-/Telegram-Export verwendet weiterhin die vorhandene konsistente
+  SQLite-Backup-Funktion statt eine laufende WAL-Datei roh zu kopieren.
+
+Nicht geändert
+- 20 feste plus bis zu 30 dynamische Kryptowerte.
+- NEXUS- und Freqtrade-SampleStrategy-Handelsregeln.
+- Risikoprofile Konservativ, Ausgewogen und Offensiv.
+- eToro PAPER und OKX DEMO bleiben nach Installation/Migration die Standards.

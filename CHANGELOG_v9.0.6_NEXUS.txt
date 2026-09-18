@@ -1,0 +1,52 @@
+TRADINGBOT NEXUS 9.0.6 - AENDERUNGSPROTOKOLL
+================================================
+
+1. eToro: CRM-/NVDA-Fehlzuordnung beseitigt
+--------------------------------------------
+- Ein von eToro bestaetigter Fill wird nicht mehr sofort als UNPROVABLE oder
+  externer Kauf eingestuft, wenn die positionId im Depot kurz verzoegert ist.
+- Nach einem exakten Fill startet eine Karenz von 300 Sekunden.
+- Innerhalb der Karenz bleibt der Kauf AWAITING_POSITION_CONFIRMATION und
+  sperrt einen zweiten Kauf desselben Brokerbereichs.
+- Ein negativer Abschluss ist erst nach Zeitablauf und mindestens drei
+  vollstaendigen Depot-/Historienabgleichen erlaubt.
+- Order-ID, referenceId und positionId bleiben die einzigen Besitznachweise;
+  Symbol und Menge werden weiterhin niemals geraten.
+
+2. OKX: Konto-Assets und Botpositionen getrennt
+-----------------------------------------------
+- BTC, ETH, SOL, XRP und andere Spot-Salden werden als KONTO-ASSET angezeigt.
+- Ein Account-Saldo ist kein offener Trade. OKX Spot liefert im Account-Kanal
+  cashBal/availBal/frozenBal, aber keine positionsartige Handelswahrheit.
+- Nur Positionen mit Bot-Herkunft, AUTO-Verwaltung und aufgeloester
+  Einstiegsstrategie zaehlen als offene Botposition.
+- Legacy-/BEOBACHTEN-Eintraege bleiben als Herkunftshinweis erhalten, werden
+  aber weder gezaehlt noch automatisch verkauft.
+- SOL mit Stop/Ziel 0 erscheint deshalb nicht mehr als aktive Botposition.
+
+3. OKX: Stream- und Kontofrische gehaertet
+------------------------------------------
+- Transportkontakt/Pong und Account-Daten besitzen getrennte Zeitstempel.
+- Ein Pong kann keine alten Guthaben mehr als aktuell ausgeben.
+- Account-Snapshots ersetzen den Cache autoritativ; ausgelassene alte Coins
+  bleiben nicht als Geistersaldo bestehen.
+- Zusaetzlich wird regelmaessig eine vollstaendige REST-Kontosicht gelesen
+  und in den Streamcache gespiegelt.
+- Jede NEXUS-Spotorder besitzt weiterhin eine eindeutige clOrdId und nun
+  zusaetzlich das OKX-Tag NEXUS.
+
+4. Anzeige und Risiko
+---------------------
+- Die WebUI verwendet die eindeutige Bezeichnung KONTO-ASSET.
+- Positionszaehler, Positionslimit und handelbares Botportfolio verwenden
+  nur aktiv verwaltete Botpositionen.
+- Konto-Assets werden sichtbar gelassen, aber nie ohne exakten Botnachweis
+  automatisch verkauft.
+
+5. Qualitaetssicherung
+----------------------
+- CRM-/NVDA-Verzoegerung, mehrfache Negativ-Snapshots, Pong ohne Kontodaten,
+  autoritativer Account-Snapshot sowie BTC/ETH/SOL/XRP als Konto-Assets sind
+  als Regressionstests abgedeckt.
+- Ergebnis des Gesamttests: 749 Tests und 186 Untertests bestanden.
+

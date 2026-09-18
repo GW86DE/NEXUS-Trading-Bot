@@ -1,0 +1,69 @@
+{
+  "release": "10.3.1-NEXUS",
+  "build": "10.3.1-ETORO-CASH-DELTA-SETTLEMENT",
+  "based_on": "10.3.0-NEXUS Revision 2 (auf dem Pi installiert, 919 Dateien MATCH)",
+  "package_revision": 2,
+  "pi_fullrun_round_1": {
+    "date": "2026-09-17",
+    "result": "3241 passed, 1 failed; Update vertragsgemaess abgebrochen, Staging archiviert (ALT_FEHLGESCHLAGEN_20260917T182613); 10.3.1 nie installiert, Revision 2 derselben Nummer gedeckt",
+    "failure": "tests/test_v1015_webui_diagnosis.py: der Diagnose-Abrechnungsreport exportierte neu das Feld actor (Klarname des Bestaetigers) und verletzte den Privatsphaere-Vertrag ('private-' darf nie im Export stehen)",
+    "revision_2_fix": "Nur noch das abgeleitete Flag automatic (actor beginnt mit 'nexus:') wird exportiert, kein Klarname; Modul-Test lokal gruen",
+    "lesson": "Vor JEDEM Bau den kompletten Testbestand je Modul in isolierten Prozessen laufen lassen (Windows-Sammellauf stirbt am Konsolen-Teardown), nicht nur gezielte Suiten; Revision 2 wurde so geprueft: alle 212 Module, Fehlklassen identisch zum dokumentierten Windows-Artefaktvergleich der 10.3.0"
+  },
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "trigger_incident": {
+    "date": "2026-09-17",
+    "diagnosis": "NEXUS_10_Diagnose_2026-09-17_17-02-04_689126_UTC_85717f0d03",
+    "case": "eToro AAPL Trade 79 (44 @ 332.85 -> 335.67, TP 16:01:31 UTC): History netProfit 124.08 / fees 0 bei belegten Einstiegskosten 1.00 USD -> BROKER_HISTORY_COST_SCOPE_CONFLICT -> ledger:79 UNKNOWN -> RISK_MANAGER_BUY_BLOCK (eToro)",
+    "root_cause": "etoro_settlement_review._preview verlangte position_ids==[pid] vor und [] nach dem Abschluss; reale Belege waren [AAPL, META] -> [META]. Mit mehreren offenen Positionen war die Cash-Delta-Abrechnung strukturell unerreichbar (auch manuell).",
+    "api_research": {
+      "history_endpoint": "GET /api/v1/trading/info/trade/history (ClosedTrade: netProfit 'The net profit of the trade', fees 'The fees of the trade', kein dokumentierter Bezug)",
+      "closed_position_fees_endpoint": "keiner; totalFees nur im PnL-Endpoint fuer offene Positionen",
+      "sources": [
+        "https://api-portal.etoro.com/api-reference/trading--real/list-trading-history",
+        "https://api-portal.etoro.com/api-reference/trading--real/get-real-account-pnl-and-portfolio-details"
+      ]
+    },
+    "cash_evidence": {
+      "before": "2026-09-17T15:11:07.994Z 70213.54 USD [3600799341, 3600814421] clean_orders",
+      "after": "2026-09-17T16:01:36.320Z 84982.02 USD [3600814421] clean_orders",
+      "gross_proceeds": "14769.48",
+      "cash_delta": "14768.48",
+      "exit_cost": "1.00",
+      "net": "122.08",
+      "credit_excludes_floating_pnl_proof": "META-Kauf 85026.04 -> 70213.54 = 22 x 673.25 + 1.00 exakt"
+    }
+  },
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "note": "Node-Frontendsuite und POSIX-gebundene Module laufen im Pi-Volltest."
+  },
+  "checks": {
+    "ast_syntax": {"errors": 0},
+    "release_checklist_automated": {"findings": 0},
+    "targeted_regressions_10_3_1": {
+      "suite": "tests/test_v1031_etoro_cash_delta.py",
+      "passed": 12,
+      "failed": 0,
+      "highlights": [
+        "Gleichzeitig offene Position: automatische Verbuchung, CASH_DELTA_CONFIRMED, Audit actor nexus:cash-delta-auto, idempotent",
+        "Exakte Pi-Zahlen AAPL/META: Erloes 14769.48, Delta 14768.48, Kosten 1.00, netto 122.08, Intervall 58 s",
+        "Andere Position verschwindet oder wird teilgeschlossen -> Zuordnung abgelehnt; identische Stueckzahlen -> erlaubt",
+        "Kosten ueber max(5 USD, 0.5 %) / offene Orders / Intervall > 30 min -> keine Automatik, manueller Dialog weiterhin gruen",
+        "risk_result_recovery loest UNKNOWN am Verkaufstag mit Belegpaar ETORO_AUTOMATIC_CASH_DELTA/CASH_DELTA_CONFIRMED; falsches Paar abgelehnt",
+        "Sampler speichert position_units; Qualitaet in ledger_result/trade_ledger/Diagnose bekannt"
+      ]
+    },
+    "regression_suites": {
+      "passed": 255,
+      "skipped": 1,
+      "modules": "v1015 Manuellpfad, v1014 History, v1013 Ergebnisscope/Exitkosten/Exit-Identitaet, v987 Abschluesse, v990 Recovery/Guards, v100 Risikopersistenz, v1012 Risiko/Schutz, v101 Basisreview, v1016, v1019, v1030"
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (Pi-Update, Pflicht vor Dienststart)",
+    "Abnahme: Logzeile 'eToro-Abrechnung automatisch protokolliert: Trade 79 netto 122.08 USD (Abschlusskosten 1.00 USD aus Barbestandsbelegen)'",
+    "Abnahme: Sperre 'Ergebnisabgleich ausstehend' entfaellt, eToro-Kaeufe wieder moeglich (Demo)"
+  ]
+}

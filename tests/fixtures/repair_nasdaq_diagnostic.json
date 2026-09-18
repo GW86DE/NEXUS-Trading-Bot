@@ -1,0 +1,290 @@
+{
+  "provenance": {
+    "source": "NEXUS_10_Diagnose_2026-09-13_15-26-49_510824_UTC_3c47dfecbf.zip",
+    "member": "ende/zustand/nasdaq_halt_diagnostics.json",
+    "archive_sha256": "0c03e93a244fdbf1a07b1450762214ede15ad9b5ee209ed4d29d329697257de7",
+    "note": "Structured diagnosis only. Tests reconstruct XML rows; original RSS bytes were not exported."
+  },
+  "data": {
+    "absence_is_evidence": false,
+    "active_count": 8,
+    "active_rows": [
+      {
+        "halt_at": "2026-09-11T23:50:00+00:00",
+        "reason_code": "T1",
+        "resumes_at": null,
+        "symbol": "HUBC"
+      },
+      {
+        "halt_at": "2026-09-11T23:50:00+00:00",
+        "reason_code": "T1",
+        "resumes_at": null,
+        "symbol": "NRSN"
+      },
+      {
+        "halt_at": "2026-09-11T23:50:00+00:00",
+        "reason_code": "T1",
+        "resumes_at": null,
+        "symbol": "NXXT"
+      },
+      {
+        "halt_at": "2026-09-11T23:50:00+00:00",
+        "reason_code": "T1",
+        "resumes_at": null,
+        "symbol": "IPDN"
+      },
+      {
+        "halt_at": "2026-09-11T23:50:00+00:00",
+        "reason_code": "T1",
+        "resumes_at": null,
+        "symbol": "NRSNW"
+      },
+      {
+        "halt_at": "2026-09-11T23:50:00+00:00",
+        "reason_code": "T1",
+        "resumes_at": null,
+        "symbol": "HUBCW"
+      },
+      {
+        "halt_at": "2026-09-11T23:50:00+00:00",
+        "reason_code": "T1",
+        "resumes_at": null,
+        "symbol": "CPOP"
+      },
+      {
+        "halt_at": "2026-09-11T23:50:00+00:00",
+        "reason_code": "T1",
+        "resumes_at": null,
+        "symbol": "HUBCZ"
+      }
+    ],
+    "checked_rows": 23,
+    "complete": false,
+    "completeness_scope": "STRUCTURED_ROWS_ONLY",
+    "detail": "Halt-Abdeckung unvollstaendig; gueltige Belege und verworfene Zeilen getrennt",
+    "feed_build_at": null,
+    "feed_errors": [],
+    "feed_freshness": "UNKNOWN",
+    "feed_sha256": "6b528ba92079fc212a95ff018d791650d4dd7cbd69a28c3aeb5dfdee0625f252",
+    "invalid_count": 15,
+    "invalid_rows": [
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "09/10/2026",
+          "halttime": "19:50:00.000",
+          "issuename": "New Fortress Energy Inc Cm A",
+          "issuesymbol": "NFE",
+          "reasoncode": "T1",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 8
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "09/10/2026",
+          "halttime": "19:50:00.000",
+          "issuename": "AtaiBeckley Inc. Common Stock",
+          "issuesymbol": "ATAI",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 9
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "09/01/2026",
+          "halttime": "10:08:23.769",
+          "issuename": "Archer Aviation Inc. Redeemable Warrants, each whole warrant exercisable for one Class A common stoc",
+          "issuesymbol": "ACHR.W",
+          "reasoncode": "H11",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 10
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "06/11/2026",
+          "halttime": "19:50:00.000",
+          "issuename": "Happy City Holdings Limited",
+          "issuesymbol": "HCHL",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 11
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "12/04/2025",
+          "halttime": "19:50:00",
+          "issuename": "Magnitude International Ltd OS",
+          "issuesymbol": "MAGH",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 12
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "11/14/2025",
+          "halttime": "19:50:00",
+          "issuename": "MaxsMaking Inc.",
+          "issuesymbol": "MAMK",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 13
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "11/11/2025",
+          "halttime": "19:50:00",
+          "issuename": "Charming Medical Limit Cl A OS",
+          "issuesymbol": "MCTA",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 14
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "10/22/2025",
+          "halttime": "19:50:00",
+          "issuename": "Robot Consulting ADS",
+          "issuesymbol": "LAWR",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 15
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "10/16/2025",
+          "halttime": "19:50:00",
+          "issuename": "Premium Catering Hold Ltd OS",
+          "issuesymbol": "PC",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 16
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "10/03/2025",
+          "halttime": "19:50:00",
+          "issuename": "Platinum Analytics Cymn Ord A",
+          "issuesymbol": "PLTS",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 17
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "10/03/2025",
+          "halttime": "19:50:00",
+          "issuename": "Etoiles Capital Group Cl A OS",
+          "issuesymbol": "EFTY",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 18
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "10/01/2025",
+          "halttime": "11:28:10",
+          "issuename": "CN Healthy Food Tech Warrant",
+          "issuesymbol": "UCFIW",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 19
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "10/01/2025",
+          "halttime": "11:28:10",
+          "issuename": "CN Healthy Food Tech Group CS",
+          "issuesymbol": "UCFI",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 20
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "09/12/2025",
+          "halttime": "12:24:23",
+          "issuename": "Ostin Tech Grp Co Ord Cl A Ord",
+          "issuesymbol": "OST",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 21
+      },
+      {
+        "code": "MULTIDAY_HALT_WITHOUT_FRESH_FEED",
+        "fields": {
+          "haltdate": "02/22/2019",
+          "halttime": "16:02:01",
+          "issuename": "Sinovac Biotech, Ltd Ord Shrs",
+          "issuesymbol": "SVA",
+          "reasoncode": "T12",
+          "resumptiondate": "",
+          "resumptionquotetime": "",
+          "resumptiontradetime": ""
+        },
+        "row": 22
+      }
+    ],
+    "observed_at": "2026-09-13T15:40:21.605469+00:00",
+    "provider": "Nasdaq Halts",
+    "resumed_count": 0,
+    "schema_version": 1,
+    "status": "INCOMPLETE",
+    "total_rows": 23,
+    "truncated": false
+  }
+}

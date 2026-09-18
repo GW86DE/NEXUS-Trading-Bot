@@ -1,0 +1,82 @@
+NEXUS 10.2.0 - STRATEGY-EXPANSION-AND-RESILIENCE
+Stand: 17.09.2026 | Basis: 10.1.10-NEXUS (Revision 2) | Diagnose: 1.8.1
+
+NEUE FUNKTIONEN
+1) Sechs Zusatzstrategien live schaltbar (zusatz_strategien.py): drei fuer
+   Aktien/eToro (RSI-2 Ruecksetzer nach Connors, 52-Wochen-Hoch-Momentum
+   nach George/Hwang 2004, Goldenes Kreuz SMA50/200) und drei fuer
+   Krypto/OKX (Zeitreihen-Momentum nach Moskowitz/Ooi/Pedersen 2012,
+   Keltner-Ausbruch EMA20+2xATR10, MACD-Trend 12/26/9). Alle arbeiten auf
+   abgeschlossenen TAGESKERZEN und ersetzen ausschliesslich das Einstiegs-/
+   Ausstiegssignal: Positionsgroesse, Session-, News-, Earnings-, KI-,
+   Kosten-, Cash- und Risiko-Gates sowie der Broker-OCO-Schutz bleiben
+   exakt die der installierten NEXUS-Kaskade. Die Signal-Mathematik ist
+   identisch mit dem Backtest V6 (per Test erzwungen); jede Position traegt
+   ihren unveraenderlichen Strategie-Snapshot (Name, Version, Parameter-
+   Hash) und wird von GENAU ihrer Einstiegsstrategie wieder verkauft.
+   Eine Tageskerze loest je Symbol hoechstens einen Kaufversuch aus
+   (persistenter Kerzen-Cursor wie im Freqtrade-Modus).
+2) Strategie-Schalter je Broker in den Einstellungen, sofort wirksam und
+   nur fuer NEUE Einstiege: OKX ueber den bestehenden Krypto-Strategiemodus
+   (jetzt 6 Modi), eToro ueber den neuen Abschnitt "eToro Aktien-
+   Strategiemodus" (etoro_strategy_mode.py; Rueckfall bei defekter
+   Modusdatei ist immer NEXUS Standard). Aktivierung einer Zusatzstrategie
+   verlangt die exakte Phrase "STRATEGIE AKTIVIEREN". Verstaendliche
+   Erklaerungen aller Strategien: Backtest-Seite, Abschnitt "Strategien
+   einfach erklaert".
+3) Backtest V6 ist Bestandteil des Pakets (NEXUS_Universum_Backtest_V6.sh,
+   von der WebUI gestartet): bewertet alle 11 Strategien inkl. der sechs
+   neuen, mit Beschreibungs-/Detailfenstern an jeder Strategie-Karte.
+4) Gebuehren-Snapshots offener eToro-Positionen (etoro_fee_snapshot.py,
+   Vorarbeit): Bei jedem ohnehin stattfindenden P&L-Abruf werden die von
+   der API NUR fuer offene Positionen gelieferten Gebuehrenfelder dauerhaft
+   als Beleg gesichert (etoro_fee_snapshots.json). Keine erfundene Gebuehr,
+   keine automatische Freigabe - reines Belegmaterial fuer den
+   Ergebnisabgleich kuenftiger Versionen.
+
+KORREKTUREN AUS DEM 10.1.10-BETRIEB
+5) EXIT_IN_PROGRESS statt Domaenensperre (DOGE-Fall 17.09.2026): Reduziert
+   ein TEILERFUELLTER bot-eigener Schutz-Exit (OCO) den Bestand, prueft der
+   Snapshot-Guard die eigenen Schutz-/Exitorders (protection_algo_id ->
+   belegte Order-IDs -> bestaetigte SELL-Fuellmengen). Ist die Fehlmenge
+   dadurch erklaert, bleibt die OKX-Domaene handelbar und NUR der
+   betroffene Wert ist fuer Neueinstiege gesperrt, bis der Exit
+   abgerechnet ist. Unerklaerte Fehlmengen sperren unveraendert alles;
+   jeder Zweifel (Orderauskunft nicht lesbar) behaelt die alte Sperre.
+6) Equity-Tagesbremse fuer MEHRERE finanzierte Waehrungs-Lanes (USDC+USD):
+   Die native Reihe wird als Summe der Lanes mit am TAGESSTART
+   eingefrorenen, beobachteten Umrechnungskursen gefuehrt
+   (native_fx_day_start). Reiner FX-Verfall loest keinen Halt aus, ein
+   echter Handelsverlust haelt auch bei FX-Maskierung. Ein Lane-Set-
+   Wechsel (z. B. untertaegige USD-Freigabe) ist ein Basis-Ereignis und
+   startet die Tagesbasis neu - die Bremse ist an so einem Tag nie durch
+   den Kapitalsprung verfaelscht. Fehlt fuer irgendeine Lane ein
+   beobachteter Kurs, gibt es fuer diesen Takt keine native Reihe
+   (keine erfundenen Paritaeten); der Basis-Drawdown gilt weiter.
+   Genau-eine-Lane verhaelt sich bit-identisch zu 10.1.10.
+
+INSTALLATIONS-/UPDATE-ROBUSTHEIT (Lektionen der 10.1.10-Installation)
+7) Installer archiviert einen abweichenden, aber NACHWEISLICH inaktiven
+   Zielstand automatisch nach ALT_<zeitstempel>_<name> (Beweis: kein
+   installierter NEXUS-Dienst hat WorkingDirectory/laufenden Prozess in
+   diesem Verzeichnis). Aktive oder nicht pruefbare Staende brechen
+   unveraendert hart ab; geloescht wird nie.
+8) Updater raeumt bei Fehlschlag im Offline-Test (Phase 1, Dienste liefen
+   nie aus dem Staging) sein eigenes Zielverzeichnis selbst nach
+   ALT_FEHLGESCHLAGEN_<zeitstempel>_<name>; der naechste
+   Installationsversuch startet sauber. Journal/Logs bleiben erhalten.
+9) Frueher Installer-Banner VOR jeder Payload-Pruefung; eine leere oder
+   abgeschnittene Installerdatei meldet sich jetzt sichtbar statt stumm
+   nichts zu tun.
+10) Release-Checkliste automatisiert (volltest._release_checklist):
+    UTF-8-BOM-Scan des ganzen Baums, Verbot alter versionsgebundener
+    Diagnose-Einstiege, Pflicht-Klassifizierung neuer RiskState-Felder in
+    risk_basis_review (METADATA/OPTIONAL_FIELDS), Abgleich aller
+    settings.html-Felder mit dem Settings-Vertragstest. Jeder Verstoss
+    bricht den Volltest und damit das Update ab.
+
+UNVERAENDERT
+Freqtrade-Regeln, Order-State-Machine (UNKNOWN bleibt UNKNOWN), Schutz-/
+Spread-/Liquiditaets-/Risikogrenzen, PULSAR/GPT/X ohne Orderbefugnis,
+keine Paritaetsannahmen, kein TLS-Bypass, keine Gebuehren-Erfindung.
+Der Backtest-Berichtsknopf-Fix aus der 10.1.10-Arbeitskopie ist enthalten.

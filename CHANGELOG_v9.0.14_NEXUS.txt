@@ -1,0 +1,153 @@
+TRADINGBOT NEXUS 9.0.14 - AENDERUNGSPROTOKOLL
+================================================
+Version: 9.0.14-NEXUS
+Datum: 30.08.2026
+Basis: 9.0.13-NEXUS
+
+WARUM DIESE VERSION NOETIG WAR
+-----------------------------
+- Die Schutzpreise einer neuen OKX-Position konnten noch von einem vor dem
+  Fill ermittelten Plan-/Tickerpreis beeinflusst werden. Bei stark
+  schwankenden oder unterschiedlich abgerechneten Maerkten konnte der
+  Abstand dadurch zu eng oder sachlich falsch werden.
+- Der Freqtrade-Sample-Modus verwendete zwar die Signalregeln, bildete aber
+  Gebuehren, ROI-Stufen und den tatsaechlichen OKX-Fill noch nicht durchgehend
+  als eine gemeinsame Rechnung ab.
+- Ein erfolgreicher OKX-Schutzabgleich wurde nicht in jedem Pfad in das
+  Trade-Ledger zurueckgeschrieben. Deshalb konnte die WebUI dauerhaft
+  "Offen - Schutzabgleich laeuft" anzeigen, obwohl der Broker-Schutz bereits
+  vorhanden war.
+- Bei einem nicht erreichbaren Schutz-Endpunkt konnte "fehlt" angezeigt
+  werden, obwohl die API-Abfrage lediglich unvollstaendig war.
+- Tagesgrenzen wurden teilweise nach UTC beziehungsweise einer globalen
+  Standardgrenze statt nach lokalem Handelstag und Broker-Risikopot bewertet.
+- Die Trades-Seite zeigte weder einen belastbaren ausfuehrbaren Kurs noch
+  den aktuellen Nettoertrag, Stop, aktive Freqtrade-ROI-Stufe oder die
+  tatsaechliche Markt-/Abrechnungswaehrung ausreichend klar an.
+
+FREQTRADE-SAMPLE-MODUS
+----------------------
+- Die offizielle Freqtrade-SampleStrategy bleibt die fachliche Vorlage:
+    minimal_roi = 4 % ab Einstieg, 2 % ab 30 Minuten, 1 % ab 60 Minuten
+    stoploss    = -10 %
+    exit signal = aktiv; ein Exit-Signal darf auch im Verlust schliessen
+    trailing stop = aus
+- Der Stop wird fuer neue FREQTRADE_SAMPLE-Positionen ausschliesslich aus dem
+  echten durchschnittlichen OKX-Fill berechnet: Fillpreis x 0,90.
+- Das initiale brokerseitige Sicherheitsziel von 4 % wird ebenfalls aus dem
+  echten Fill berechnet und um die tatsaechliche Einstiegsgebuehr sowie die
+  erwartete Ausstiegsgebuehr korrigiert.
+- Die zeitabhaengige ROI-Pruefung verwendet die im Trade gespeicherte echte
+  Einstiegsgebuehr. Nach 30 beziehungsweise 60 Minuten sinkt das aktive Ziel
+  netto auf 2 beziehungsweise 1 Prozent.
+- Ein vorhandenes Freqtrade-Exit-Signal wird weiterhin bei jeder neuen,
+  abgeschlossenen 5-Minuten-Kerze geprueft. Der Bot wartet deshalb nicht nur
+  auf Take-Profit oder Stop-Loss.
+- Der Parameter-Hash der bestehenden FREQTRADE_SAMPLE-Positionen bleibt
+  absichtlich unveraendert. Die Positionen werden durch das Update nicht
+  wegen einer rein technischen Ausfuehrungsbeschreibung pausiert.
+
+BEISPIEL LINK
+-------------
+- Einstieg: 11,429 USDC.
+- Ein angezeigter Kurs von 11,48 entspricht vor Gebuehren nur rund +0,45 %.
+- Bei 0,35 % Einstiegs- und 0,35 % Ausstiegsgebuehr liegt das netto +1-%-Ziel
+  ungefaehr bei 11,6245 USDC.
+- LINK musste bei 11,48 deshalb noch nicht verkauft werden.
+
+OKX-SCHUTZ UND ZUSTAND
+----------------------
+- ACTIVE, PENDING und MISSING werden nach jedem Schutzabgleich sowohl im
+  Positionsbuch als auch im Trade-Ledger gespeichert.
+- Ist eine API-Abfrage fehlgeschlagen oder unvollstaendig, bleibt der Zustand
+  PENDING. Er wird nicht als belegtes MISSING ausgegeben.
+- Nur eine vollstaendige Brokerantwort darf bestaetigen, dass der Schutz
+  vorhanden ist oder fehlt.
+- Exakte instId, algoId, Detailtext und Pruefzeitpunkt werden gespiegelt.
+- Der Sicherheitsablauf aus 9.0.13 bleibt erhalten: preisbegrenzter FOK-
+  Einstieg, dauerhafte Fill-Kette und brokerseitige OCO-/Schutzorder.
+
+WAEHRUNGEN UND PREISE
+---------------------
+- Die exakte OKX-instId aus dem Trade ist die primaere Marktidentitaet. Die
+  WebUI rekonstruiert das Paar nicht mehr aus Symbol und einer vermeintlichen
+  Standardwaehrung.
+- Marktwaehrung und Abrechnungs-/Finanzierungswaehrung werden getrennt
+  angezeigt und gespeichert.
+- EUR, USD und USDC werden weiterhin nicht pauschal 1:1 zusammenaddiert.
+- Der Livekurs offener Trades ist der aus dem frischen Orderbuch berechnete
+  Full-size-Sell-VWAP fuer die gesamte Positionsmenge. Er zeigt damit einen
+  naeherungsweise ausfuehrbaren Kurs statt nur des letzten Tickerwerts.
+- Fehlt eine exakte instId, wird fuer die Livebewertung kein Markt geraten.
+
+NETTOERGEBNIS UND RISIKO
+------------------------
+- Beim Verkauf gilt durchgehend:
+    Netto = Bruttoergebnis - anteilige Einstiegsgebuehr - Ausstiegsgebuehr
+- Ledger, Tagesbuch und OKX-Risikopot erhalten denselben Nettowert.
+- Bei Teilverkaeufen bleibt nur die anteilige Einstiegsgebuehr der
+  Restposition offen.
+- Die Tagesverlustgrenze verwendet die Grenze des tatsaechlichen Brokerpots.
+  OKX und eToro ueberschreiben sich damit nicht mehr durch eine globale
+  Standardgrenze.
+- Der Handelstag beginnt in config.LOCAL_TIMEZONE, standardmaessig
+  Europe/Berlin, um 00:00 Uhr. UTC und lokale Tagesgrenzen werden nicht mehr
+  vermischt.
+- Ein bereits am selben Tag gesetzter Sicherheitsstopp wird beim Update aus
+  Sicherheitsgruenden nicht automatisch geloescht. Die korrigierte Logik
+  gilt fuer neue Buchungen; ein alter Stopp endet regulaer am lokalen
+  Tageswechsel oder nach bewusster manueller Pruefung.
+
+TRADES-SEITE
+------------
+- Offene OKX-Trades zeigen nun:
+    exaktes Handelspaar und Marktwaehrung
+    Abrechnungswaehrung
+    aktuellen Full-size-Sell-VWAP mit Quelle und Zeitpunkt
+    aktuelles Nettoergebnis in Betrag und Prozent
+    Stop-Loss und Abstand zum Stop
+    aktive Freqtrade-ROI-Stufe mit Zielpreis
+    statisches brokerseitiges Take-Profit
+    aktuellen Schutzstatus
+- Geschlossene Trades zeigen das Nettoergebnis zusaetzlich in Prozent.
+- Diagramme enthalten getrennte Linien fuer aktuellen Kurs, aktives ROI-Ziel,
+  brokerseitiges Take-Profit und Stop-Loss.
+- Ergebnisreihen verschiedener Waehrungen werden getrennt dargestellt. Eine
+  irrefuehrende gemischte EUR/USD/USDC-Gesamtkurve wird nicht erzeugt.
+
+ETORO
+-----
+- An der eToro-Orderzustandsmaschine wurde in 9.0.14 nichts geaendert.
+- Die in 9.0.13 vorhandenen Schutzmechanismen bleiben aktiv: asynchroner
+  Auftrag, referenceId/orderId/positionId-Abgleich, persistenter Worker,
+  privater Portfolio-WebSocket, REST-Kontrolle, Teilfuellungen und
+  zentraler Rate-Limiter.
+
+DOKUMENTATIONSGRUNDLAGE
+-----------------------
+- Freqtrade SampleStrategy:
+  https://github.com/freqtrade/freqtrade/blob/develop/freqtrade/templates/sample_strategy.py
+- Freqtrade Konfiguration und Strategie-Callbacks:
+  https://www.freqtrade.io/en/stable/configuration/
+  https://www.freqtrade.io/en/stable/strategy-callbacks/
+- OKX API v5:
+  https://www.okx.com/docs-v5/en/
+
+PRUEFUNG
+--------
+- 800 Pytest-Tests bestanden.
+- 189 Subtests bestanden.
+- self_test.py: OK.
+- volltest.py: OK.
+- compileall, JavaScript-Syntax, Shell-Syntax und host-neutraler
+  Raspberry-Pi-Preflight: OK.
+- Migration und Trade-Auswertung wurden auf Kopien der bereitgestellten
+  decision_history- und crypto_positions-Dateien geprueft.
+- Es wurden keine Brokerorders und keine schreibenden Brokeraufrufe gesendet.
+
+SICHERHEITSGRENZE
+-----------------
+- eToro bleibt PAPER und OKX bleibt DEMO.
+- Vor LIVE muss mindestens ein kompletter kontrollierter DEMO-/PAPER-Zyklus
+  einschliesslich Kauf, Fill-Zuordnung, Schutz, ROI/Exit und Ledgerabschluss
+  erfolgreich beobachtet werden.

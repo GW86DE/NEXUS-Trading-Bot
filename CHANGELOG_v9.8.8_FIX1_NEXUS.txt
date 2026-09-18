@@ -1,0 +1,37 @@
+NEXUS 9.8.8 FIX1 - isolierte Testcodierung und sichere neue Zielinstallation
+12.09.2026
+
+Gegen das originale 9.8.8-ZIP wurde unter echter Latin-1-Locale exakt Georgs
+Pi-Befund reproduziert: sechs Grafiktests fehlgeschlagen, 2030 bestanden,
+234 Untertests bestanden. Dieselben Paketbytes: UTF-8 2036/234 bestanden.
+
+Ursache: Der Installer setzte PYTHONUTF8/PYTHONIOENCODING, die erlaubnisbasierte
+Testumgebung entfernte diese aber wieder. Default-Textdateilesen sowie die
+Decodierung des Node-JSON-Outputs richteten sich dadurch nach der OS-Locale.
+Ein spaetes Setzen von PYTHONUTF8 in einem laufenden Interpreter reicht nicht.
+
+Korrekturen:
+- Der isolierte Kindprozess und seine Nachfolger erhalten fest PYTHONUTF8=1
+  und PYTHONIOENCODING=utf-8:strict. Keine Uebernahme fremder API-Schluessel,
+  PYTHONPATH, Test-Plugins oder anderer geerbter Python-Einstellungen.
+- Eine echte Interpreter-/Codec-Pruefung bricht vor Testimporten bei falscher
+  Einstellung ab; das Protokoll nennt nur Codec-/Locale-Metadaten.
+- Grafikquellen werden ausdruecklich als UTF-8 gelesen; Node-Ausgaben werden
+  ausdruecklich streng als UTF-8 decodiert. Alle bisherigen Assertions bleiben.
+- Auch bislang implizite Desktop-/Journal-/Manifestlesestellen des Updatewegs
+  erhalten explizites UTF-8. Kein errors=ignore/replace zur Testkaschierung.
+- Neue Gegenproben fuer C/POSIX, abgeschalteten UTF-8-Modus, Kind-/Enkelprozesse,
+  kaputte Protokollbytes und unveraenderte vorhandene Installationsordner.
+
+Der vollstaendige FIX1-Installer entpackt in TradingBot_v9.8.8_NEXUS_FIX1.
+Der bereits angelegte Ordner TradingBot_v9.8.8_NEXUS wird NICHT geloescht,
+ueberpatcht oder als Datenquelle geraten. Quelle sind die tatsaechlich
+konfigurierten Dienste; widerspruechliche Pfade bleiben ein Abbruchgrund.
+Die gepruefte DOGE-Belegdatei aus dem urspruenglichen Installer bleibt identisch.
+Die laufenden Writer werden erst nach erfolgreicher neuer Vorpruefung gestoppt.
+Kein alter Datenrollback nach moeglich gewordenem Handel.
+
+VERSION.txt und WebUI-Version bleiben 9.8.8-NEXUS; RELEASE_BUILD.txt nennt FIX1.
+Broker-, Ledger-, Risiko-, Repair-, PULSAR-, Strategie- und gesamte WebUI-Dateien
+sind gegen das Ausgangspaket bytegleich. Dies ist keine weitere Handelsaenderung.
+Pruefzahlen/Umgebungsgrenzen stehen im separaten Abschlussbericht.

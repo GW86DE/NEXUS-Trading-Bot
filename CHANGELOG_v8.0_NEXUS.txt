@@ -1,0 +1,25 @@
+TradingBot 8.0 NEXUS
+====================
+
+- OKX Deutschland/EEA ueber https://eea.okx.com, Demo und Live getrennt.
+- Privater OKX-EEA-Account-/Order-WebSocket mit Wiederverbindung und REST-Fallback.
+- Krypto Spot/Cash 24/7, EUR + USDC, 5m/15m/1h-Takt, nur fertige Kerzen.
+- Item-Level-sCode-Fehler werden auch bei top-level code=0 erkannt.
+- LIVE-Hard-Gates: Serverzeit, Read+Trade ohne Withdraw, kurzlebiges Broker-Arming.
+- eToro und OKX laufen in getrennten Threads und Risikodomaenen.
+- Aktien nur eToro; Krypto nur OKX.
+- Aktienkatalog 250, fester Kern 75, bis zu 25 menschlich freigegebene dynamische Werte, Focus 15.
+- Krypto-Kern BTC/ETH/SOL plus autonomes dynamisches Universum.
+- Favoriten priorisieren nur und umgehen keine Sicherheits-/Telegram-Gates.
+- Luna/Terra-Router mit Cache, Tagesbudgets und kostengesteuerter Eskalation; KI ohne Gate-Rechte.
+- Alle KI-Rollen auf den zentralen Router umgestellt; direkte Einzelaufrufe entfernt.
+- FastAPI-WebUI als eigener Dienst mit Login, CSRF, PBKDF2-Passwort, responsivem 4/2/1-Raster.
+- Login-Drosselung sowie ausschliesslich Loopback-/private VPN-Bind-Adressen.
+- Dashboard, gebuendelte Einstellungsseite und separates filterbares Logbuch.
+- Finnhub-Schalter repariert; GDELT 492 mit Rate-Backoff; FMP-News und Symbolsuche getrennte Backoffs.
+- MASSIVE in die Nachrichtenpipeline und den aktiven Verbindungstest integriert.
+- Entscheidungen enthalten Broker, Paper/LIVE, Ausfuehrung, Hauptquelle und einzelne Quellenbeitraege.
+- Migration bevorzugt vollstaendige Versionen, uebernimmt alte Daten und erzwingt Paper/Demo.
+- Geheimnisfreier Migrationsbericht mit Quelle, uebernommenen Dateien und Sicherheitsreset.
+- Separater WireGuard-Leitfaden; WebUI-Wildcard-Bind ist standardmaessig gesperrt.
+- Tkinter bleibt als lokaler Fallback erhalten.

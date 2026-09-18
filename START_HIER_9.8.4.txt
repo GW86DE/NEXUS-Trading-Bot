@@ -1,0 +1,43 @@
+NEXUS 9.8.4 – Update der vorhandenen Raspberry-Pi-Installation
+
+Die Datei NEXUS_9.8.4_Installieren.sh enthält das vollständige, geprüfte ZIP.
+Du brauchst zum Aktualisieren nur diese SH-Datei. Das separate ZIP ist ebenfalls
+ein vollständiges Quellpaket. Die ZIP-Datei nicht über die laufende Version kopieren.
+
+1. SH-Datei auf dem Pi speichern, beispielsweise im Ordner Downloads.
+2. Als georg ausführen, nicht mit sudo:
+
+   bash ~/Downloads/NEXUS_9.8.4_Installieren.sh --paket-pruefen
+   bash ~/Downloads/NEXUS_9.8.4_Installieren.sh
+
+Der erste Befehl prüft ausschließlich das eingebettete Archiv und seine Hashes.
+Der zweite startet den vorhandenen NEXUS-Updater. Er ermittelt den bisherigen
+Ordner anhand der eingerichteten Core-/WebUI-Dienste. Bei widersprüchlichen
+Dienstpfaden bricht er ab. Vor der Umstellung werden Abhängigkeiten und Tests
+geprüft, dann die bisherigen Schreiber gestoppt und die Daten konsistent gesichert.
+Er übernimmt Einstellungen, verschlüsselte Zugangsdaten, Historie, Positionen,
+Risiko- und Orderregister. SQLite-Dateien werden einschließlich WAL-Inhalt mit
+der Backup-API übernommen. Ziel: ~/Georg/TradingBot_v9.8.4_NEXUS.
+
+Der Updater ist für DEMO/PAPER ausgelegt. Er schaltet kein Live-Trading frei.
+Sobald ein neuer Dienst gestartet wurde, spielt er keine alte Finanzdatenbank
+automatisch zurück: neue Ausführungen könnten sonst verloren gehen.
+
+Nach der Installation kontrollieren:
+- Kopfzeile zeigt 9.8.4; Brokerkonto und DEMO stimmen.
+- PEP und andere eindeutig belegte eigene Käufe stehen unter Handel > Offen.
+- DOGE behält Instrument, Abrechnung, Menge und vorhandene Schutz-ID.
+- Handel > Verkäufe > Ergebnisse: bei fehlenden Gebühren Brutto auswählen;
+  unbekannte Nettoergebnisse werden nicht zu null gesetzt.
+- Im Universum tragen die kuratierten Underdogs eine Kennzeichnung.
+- PULSAR startet auf Aus. Für den Datenaufbau Beobachten wählen. ApeWisdom
+  benötigt keinen Schlüssel; Tradestie ist optional. Bereits konfigurierte
+  FMP-/MASSIVE-/SEC- und KI-Zugänge werden weiterverwendet.
+
+Grenzen: Die hier durchgeführten Prüfungen sind offline. Es wurde keine Order
+auf deinem Konto gesendet und kein Lauf auf deinem Pi nach dem Update bestätigt.
+Fehlende Brokergebühren oder historische Wechselkurse bleiben offen. Einzelne
+Social-Erwähnungszahlen reichen nicht zur PULSAR-Kauffreigabe.
+
+Einzelheiten: CHANGELOG_v9.8.4_NEXUS.txt und PULSAR_9.8.4_DE.md.
+Ältere START_HIER-/Prüfberichte im Paket gehören zur Versionshistorie.

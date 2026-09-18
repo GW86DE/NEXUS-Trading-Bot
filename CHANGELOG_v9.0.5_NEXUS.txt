@@ -1,0 +1,52 @@
+TRADINGBOT NEXUS 9.0.5 – ÄNDERUNGSPROTOKOLL
+===========================================
+
+Schwerpunkt: robuste OKX-EEA-Verbindung ohne Änderungen an den Strategien.
+
+1. Zeit und Authentifizierung
+-----------------------------
+- OKX-Fehler 50102 wird als vorübergehender Zeitfehler behandelt, nicht mehr
+  als dauerhaft falscher API-Key.
+- Vor privaten Aufrufen wird die Differenz zwischen lokaler Uhr und
+  /api/v5/public/time gemessen.
+- REST-Signaturen, expTime und WebSocket-Login verwenden denselben gemessenen
+  Serverzeit-Offset.
+- Demo und Live blockieren bei unzulässiger Zeitabweichung sicher und versuchen
+  nach dem Broker-Backoff erneut. Zugangsdaten werden dabei nicht verworfen.
+
+2. Krypto-Worker
+----------------
+- Ein OKX-Fehler beim Botstart beendet den Krypto-Thread nicht mehr.
+- Der Worker schreibt weiterhin einen Offline-Heartbeat und versucht die
+  Verbindung automatisch erneut; eToro bleibt unabhängig aktiv.
+- Der Bereitschaftsstatus wird bei jeder fehlenden Authentifizierung sofort
+  auf „Käufe gesperrt“ gesetzt.
+
+3. OKX-WebSocket V5
+-------------------
+- Anwendungsping exakt als Text „ping“, erwartete Antwort „pong“.
+- Fehlt pong innerhalb der Frist, wird die Verbindung aktiv neu aufgebaut.
+- OKX-event „notice“ (Wartung/Upgrade) löst einen geordneten Reconnect aus.
+- channel-conn-count und channel-conn-count-error werden ausgewertet.
+- WebSocket-Login nutzt Unix-Sekunden inklusive Serverzeit-Offset.
+- REST bleibt bei einem Streamausfall die sichere Datenquelle.
+
+4. WebUI und Meldungen
+----------------------
+- Worker-Lebenszeichen und echte Broker-Authentifizierung werden getrennt.
+- Nur ein frischer Worker UND eine aktuelle OKX-Verbindung ergeben ONLINE.
+- Cache-/Altdaten werden als veraltet markiert und können niemals „KÄUFE FREI“
+  erzeugen.
+- Ein manueller „Verbindung testen“-Aufruf ist sichtbar nur ein einmaliger,
+  lesender API-Test und kein Beweis für den laufenden Worker.
+
+5. Unverändert
+--------------
+- SOL bleibt korrekt als externes Guthaben beziehungsweise eindeutig
+  botverwaltete Position klassifiziert; die 9.0.4-Schutzlogik bleibt erhalten.
+- Unified-USD/tradeQuoteCcyList für UNI, TRX, ETC und weitere OKX-Werte bleibt
+  erhalten.
+- MSFT-/eToro-Phantomfill-Schutz, Telegram-Deduplizierung, Telegram-
+  Laufzeitschalter, WebUI-Navigation, Universum und Handelsstrategien wurden
+  nicht neu geschrieben.
+

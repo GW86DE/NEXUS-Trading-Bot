@@ -1,0 +1,13 @@
+{
+  "version": "10.1.6",
+  "status": "PASS",
+  "passed": 3071,
+  "skipped": 3,
+  "warnings": 7,
+  "subtests": 278,
+  "environment": "Linux x86_64 / Python 3.12, offline isolated copy",
+  "broker_orders_sent": false,
+  "paid_queries_sent": false,
+  "target_pi_deployed": false,
+  "scope": "volltest.py: pytest, release hygiene, selftest, syntax, platform-neutral preflight, shell syntax"
+}

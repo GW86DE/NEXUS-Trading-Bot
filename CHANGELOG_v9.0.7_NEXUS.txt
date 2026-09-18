@@ -1,0 +1,50 @@
+TRADINGBOT NEXUS 9.0.7 - AENDERUNGSPROTOKOLL
+=============================================
+
+Version: 9.0.7-NEXUS
+Datum: 28.08.2026
+
+eToro
+-----
+- OrderStatusUnklar ist kein VerbindungVerloren mehr. Eine angenommene,
+  asynchron noch nicht belegte Order loest deshalb keine falsche globale
+  Verbindungsverlustmeldung aus.
+- Neue Open-Orders verwenden den offiziellen v3-Endpunkt. HTTP 202 wird als
+  Annahme zur Verarbeitung behandelt, nicht als Fill.
+- X-Request-Id/referenceId wird vor dem POST persistiert. Es gibt keinen
+  automatischen zweiten POST nach Timeout oder unklarer Antwort.
+- Ein dauerhafter Hintergrundabgleich liest orderId und referenceId getrennt
+  und prueft die entstandenen positionIds gegen Depot und Historie.
+- Status 5 PartiallyFilled wird als ausgefuehrter Status behandelt; Status 10
+  bleibt RejectedPartiallyFilled mit erhaltener Teilmenge.
+- Eine spaet bestaetigte, bereits als BROKER_EXISTING/OBSERVE sichtbare
+  Position wird ohne Mengenaddition zu BOT/AUTO hochgestuft.
+- Gleitende Ratenbegrenzer halten Standard-, Eligibility- und Execution-
+  Aufrufe unter den dokumentierten eToro-Limits.
+- SL/TP wird unmittelbar vor dem POST noch einmal gegen einen frischen
+  Brokerkurs und die konto-/instrumentbezogene Eligibility geprueft.
+
+OKX
+---
+- Instrumentregeln werden bei konfiguriertem Konto authentifiziert aus
+  GET /api/v5/account/instruments gelesen. Nur dessen tradeQuoteCcyList ist
+  fuer die Orderausfuehrungswaehrung massgeblich.
+- EUR ist primaere Bot-Cashwaehrung, USDC ist zusaetzlich erlaubt. USD, USDT
+  und TRY werden nicht still als Bot-Cash oder Ersatz fuer USDC verwendet.
+- Ein BASE-USD-Markt ist nur zulaessig, wenn die kontospezifische Liste EUR
+  oder USDC erlaubt. Marktquote und Ausfuehrungswaehrung bleiben getrennt.
+- volCcy24h wird als Spot-Notional in der Marktquote ausgewertet und nur ueber
+  beobachtete Spot-Kreuzkurse nach EUR umgerechnet. Keine angenommene 1:1-
+  Stablecoin- oder USD-Paritaet.
+- Risikogroesse und Cashreserve verwenden bei unterschiedlicher Markt- und
+  Ausfuehrungswaehrung denselben beobachteten Kreuzkurs.
+- Account-Salden oberhalb einer exakt bewiesenen Botmenge sind ACCOUNT_ASSET.
+  Sie werden nicht automatisch verkauft und sperren keine neuen Einstiege.
+- USD/USDG/USDT-Kontoguthaben erscheinen nicht als Krypto-Position.
+
+Sicherheit
+----------
+- eToro bleibt nach dem Update PAPER, OKX bleibt DEMO. Das Release schaltet
+  keinen Broker automatisch auf Live.
+- Die Beweiskette clOrdId/tag -> ordId -> tradeId sowie referenceId/orderId ->
+  positionId bleibt zwingend. Symbol und Menge allein begruenden kein Eigentum.

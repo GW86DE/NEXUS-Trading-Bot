@@ -1,0 +1,25 @@
+NEXUS 9.8.8 FIX2 - kalter Reparaturprozess und sichere Datenbankbindung
+
+Befund: repair_okx_accounting._run importierte trade_ledger/decision_analytics
+vor der Auswahl der Staging-Datenbank. decision_analytics.init_db() erzeugte
+beim Erstimport decision_history.sqlite im Releaseziel. Die Uebernahmesperre
+bricht danach korrekt ab. Der bisherige In-Process-Test maskierte dies durch
+bereits importierte Module und TRADINGBOT_TEST_STATE_DIR.
+
+Korrektur: Expliziter ContextVar-Pfad wird vor jedem solchen Import gesetzt.
+Scoped Verbindungen oeffnen nur eine existierende DB (URI mode=rw); ausserhalb
+der Reparatur bleibt der bisherige Laufzeitpfad unveraendert. Kein Rueckgriff
+auf Test-Umgebungsvariablen fuer die Reparatur, keine geloeschte Schutzsperre.
+
+Der Installer prueft den Zielbaum nach Vorpruefung noch vor dem Dienststopp
+und nach jedem Migrationskindprozess. Unerwartete Dateien bleiben erhalten;
+die fehlerhafte Prozessgrenze wird gemeldet. Stagingpfad steht im Journal.
+
+Neuer Zielordner TradingBot_v9.8.8_NEXUS_FIX2; beide fehlgeschlagenen
+9.8.8/FIX1-Ordner und ihre Datenbanken werden nicht automatisch veraendert.
+
+Neue Regressionen starten echte kalte CLI-Prozesse ohne
+TRADINGBOT_TEST_STATE_DIR. Vorschau, Anwenden, Wiederholung, vorhandene
+Default-DB, Import-, CWD-, WAL-/Pfadfehler und echter Migrations-/Reparatur-/
+Promotionspfad werden geprueft. systemd/pip/Netzwerkkonfiguration bleiben
+Testgrenzen, keine behauptete echte Pi- oder Brokerabnahme.

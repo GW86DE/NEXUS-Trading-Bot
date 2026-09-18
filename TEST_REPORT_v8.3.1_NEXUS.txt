@@ -1,0 +1,53 @@
+TradingBot 8.3.1 NEXUS – Testprotokoll
+======================================
+
+Stand: 26.08.2026
+
+Testumgebung
+- Isolierte Python-3.12-Testumgebung im Build-Container
+- Keine echten Brokerzugänge, keine echten Orders
+- Keine Pi-Dienste installiert, gestartet oder aktiviert
+- Keine Telegram- oder OpenAI-Netzanfragen; Schnittstellen wurden testdoppelt
+
+Ergebnisse
+- Neue 8.3.1-Regressionsdateien: 20/20 bestanden.
+- Gesamte vorhandene Pytest-Suite: 674 Tests bestanden.
+- Zusätzlich: 181 unittest-Subtests bestanden.
+- Release-Volltest: OK.
+- Statische Release-Hygiene: OK.
+- Self-Test: OK.
+- compileall: OK.
+- Pi-Preflight host-neutral auf x86_64: OK.
+- Shell-Syntax aller ausgelieferten .sh-Dateien: OK.
+- Migrationstest für etoro_reconciliation.json, core_volume_20.json und
+  core_volume_20_history.json: OK; Sicherheitsreset auf Paper bestätigt.
+- Service-Template-Rendering mit 8.3.1-Pfad/Version: OK.
+- Desktop-Template-Platzhalter: OK.
+
+Gezielt abgedeckt
+- eToro Demo und Live: POST angenommen, orderId-404, getrennte referenceId-
+  Abfrage, Retry-Bestätigung, dauerhafter 404, Neustart, Idempotenz und
+  Doppelorder-Sperre.
+- Exakte Ownership; keine Zuordnung über Symbol/Menge; Teil-Fill mit
+  Restablehnung; DecisionSnapshot bleibt trotz späterem SYSTEM_ERROR erhalten.
+- Telegram jeweils genau einmal für ungeklärt, bestätigt und endgültig
+  fehlgeschlagen; Deduplizierung über Neustarts.
+- OBSERVE read-only mit Kurs, P&L und brokerbestätigtem Stop/Take-Profit;
+  kein automatischer Exit.
+- created_at_utc DESC, id DESC trotz späterem Update, einschließlich CSV-Export.
+- CORE_VOLUME_20: Volumennormalisierung, Quote-/EEA-/Spotfilter, Basis-/Paar-
+  Deduplizierung, Stablecoin-/Hebeltoken-Ausschluss, Top-20/Tie-Break,
+  Persistenz, STALE/fail-closed, dynamisches Universum und unveränderte
+  Risikofilter.
+- Monatsgrenze Europe/Berlin, Neustart/Idempotenz, 30-Tage-Abdeckung, genau
+  eine GPT-Anfrage, GPT-Fehler/ungültige Antwort, unveränderbare Rangfolge,
+  atomarer Fehlschlag/Rollback, Telegram-Deduplizierung und kein Exit durch
+  Entfernung aus CORE_VOLUME_20.
+- Erststart-Bootstrap aus einer verifiziert aktuellen offiziellen OKX-24h-
+  Rangliste; danach monatlicher Wechsel auf 30-Tage-Median.
+
+Bewusst nicht behauptet
+- Kein Test auf echter Raspberry-Pi-5-Hardware
+- Kein eToro-Demo-/Live-Ordertest
+- Kein OKX-Demo-/Live-Ordertest
+- Kein echter Telegram-/GPT-Versand

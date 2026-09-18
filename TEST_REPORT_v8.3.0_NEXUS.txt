@@ -1,0 +1,40 @@
+NEXUS 8.3.0 - Testprotokoll
+===========================
+
+Stand: 26.08.2026
+
+Ausgefuehrt in isolierter lokaler Python-3-Umgebung mit den festgeschriebenen
+Produktiv- und Testabhaengigkeiten. Keine Brokerzugangsdaten, keine echten
+Orders, keine kostenpflichtigen KI-Aufrufe und keine Systemdienste verwendet.
+
+Pruefumfang:
+- Python-Syntax aller geaenderten Module
+- komplette vorhandene pytest-Suite
+- NEXUS self_test.py und volltest.py
+- neue Regressionen fuer DecisionSnapshot, gemeinsame decision_id,
+  SYSTEM_ERROR, Entry-/Schutzordertrennung, Teil-Fill/Storno, Trade-Verknuepfung,
+  Human Gate sowie den korrigierten entry_allowed-Aufruf
+- Shell-Syntax der Pi-/Nexus-Installations- und Dienstskripte
+- Release-Hygiene und ZIP-Integritaet
+- Wiederholung der Tests aus einem frisch entpackten Release-Archiv
+
+Endergebnisse des finalen Arbeitskopie-Laufs:
+- pytest: 654 bestanden
+- pytest-Untertests: 179 bestanden
+- self_test.py: OK
+- compileall: OK
+- Pi-Preflight, host-neutral: OK
+- Shell-Syntax: OK
+- statische Release-Hygiene: OK
+- volltest.py: VOLLTEST OK (Gesamtlaufzeit 12,6 s)
+- gezielte v8.3-Audit-/Migrationssuite: 7 bestanden
+
+Die Migration wurde aus einer 8.2.2-aehnlichen Tabelle mit historischem Trade
+ohne decision_id zweimal ausgefuehrt. Der Datensatz blieb unveraendert als
+LEGACY_UNLINKED erhalten; neue Tabellen/Spalten wurden genau einmal angelegt.
+
+Nicht ausgefuehrt und daher nicht behauptet:
+- Installation auf echter Raspberry-Pi-5-/ARM64-Hardware
+- echte systemd-/Desktop-Umstellung auf Georgs Pi
+- OKX- oder eToro-Live-/Demo-Aufrufe mit Georgs Zugangsdaten
+- echte Order, Fill oder Schutzorder am Broker

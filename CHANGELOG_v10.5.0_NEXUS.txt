@@ -1,0 +1,147 @@
+NEXUS 10.5.0 - PULSAR-SOURCES-MEASUREMENT (18.09.2026)
+
+Basis: 10.4.0-NEXUS Revision 2. Freigabe Georg (18.09.2026): Quellen ohne
+Reddit-Schluessel, messen UND handeln, PULSAR ueber die WebUI abschaltbar,
+PULSAR-Seite aufraeumen mit sichtbarem Messergebnis, Messungen in der
+Diagnose, aufbereiteter Diagnosebericht in der WebUI.
+
+1. QUELLEN OHNE REDDIT-SCHLUESSEL (geprueft gegen die echten Server, 18.09.)
+   - pulsar/stocktwits.py (NEU): StockTwits als zweite Social-Familie ohne
+     Schluessel. Trending-Liste (nur Aktien, keine Krypto) alle 30 Minuten,
+     Symbolstrom je Kandidat hoechstens einmal je Stunde: Nachrichten/Stunde,
+     verschiedene Konten, Bullish/Bearish -- nur Zaehlwerte, kein Rohtext,
+     keine Autorenkennung. 30er-Stichprobe komplett in der letzten Stunde =
+     Untergrenze (truncated_1h). Eigenes Budget 150/Tag, 800/Woche
+     (Anbieterlimit 200/Stunde). DNS-/Netzfehler -> Abrufpause, UNKNOWN.
+     Die Stundenzahl fliesst in die eigene Zeitreihe (attention_hours,
+     Quelle "stocktwits") und bekommt so nach 14 Tagen eine eigene Basis.
+   - pulsar/short_interest.py (NEU): FINRA Short Interest (kostenlos, ohne
+     Schluessel, Stichtage 15./Monatsletzter, ~10 Tage Verzug) je Kandidat
+     einmal taeglich. Squeeze-Merkmal = Short-Anteil >= 15 % der ausstehenden
+     Aktien (FMP-Quote, nicht Free Float) ODER Days-to-Cover >= 5. NUR
+     Information auf der Karte und Vergleichsgruppe in der Messung; blockt
+     nichts, gibt nichts frei. Stichtag > 45 Tage = STALE (kein Merkmal).
+   - pulsar/volume_watch.py (NEU): relatives Volumen als fruehester Beleg.
+     Weg 1: FMP-Quote (volume gegen avgVolume, zeitanteilig zur NY-Sitzung,
+     hoechstens 15 Minuten alt). Weg 2: Stundenkerzen des eToro-Kerzen-
+     speichers (heutiges kumuliertes Volumen bis zur gleichen Stunde gegen
+     den Mittelwert der letzten 20 Sitzungen, mindestens 10). Ausloeser
+     >= 3x, Bestaetigung >= 2x, jeweils nur bei positivem Tageskurs. Symbole
+     mit Volumen-Ausloeser werden zu Zusatzkandidaten (kein Abruf).
+   - Eigene Reddit-Basislinie: die seit 10.1 gespeicherten Stundenwerte
+     (research_history) zaehlen wieder -- ab 14 Beobachtungstagen gilt
+     >= 40 Erwaehnungen und >= 3x des eigenen Tagesmedians als Spike, auch
+     wenn die Anbieterfelder (mentions_24h_ago) keinen zeigen.
+   - Reddit RSS bewusst NICHT aufgenommen: gemessen 1 Abfrage/Minute ohne
+     Anmeldung (jede weitere 429), nur 25 Beitraege ohne Kommentare.
+   - Kandidatenreihenfolge (source_coordination.research_order): Zusatz-
+     kandidaten (Volumen, StockTwits-Trending) reihen sich frisch (<= 1 h)
+     und ohne Dubletten neben Reddit und X ein; ein Reddit-Treffer behaelt
+     seine Zeile mit angehaengtem Zusatzbeleg.
+
+2. BEWERTUNG: AUSLOESER + ZWEI VON DREI BESTAETIGUNGEN (pulsar/evidence.py)
+   - Ausloeser (einer reicht): relatives Volumen >= 3x (Quote/Stundenkerzen
+     oder Volumenvielfaches der Kursbestaetigung), Reddit-Spike (Anbieter-
+     felder oder eigene Basis), StockTwits-Spike (>= 10 Nachrichten/h,
+     >= 6 Konten, >= 3x eigene Basis; ohne Basis absolut >= 20 / >= 10),
+     X-Stichprobe.
+   - Bestaetigungen (zwei von drei): Volumen >= 2x, eine ZWEITE Social-
+     Familie, Kursplus >= 5 % zum Vortagesschluss (Quote/Intraday/Tageskerze
+     wie 10.4.0).
+   - Hype-Kandidat = Ausloeser + >= 2 Bestaetigungen + mindestens eine
+     Social-Familie + keine Bloecke (Identitaet, Kurssprung, Existenzrisiko,
+     Luna-REJECT). Ein Volumen-Ausbruch ohne Social wird GEMESSEN (Zustand
+     AUSLOESER), aber nie nominiert.
+   - Regelversion PULSAR-2.2-TRIGGER-CONFIRM-MEASURED; alte Messungen zaehlen
+     fuer stable_candidate nicht (bestehender Mechanismus). Telegram-Alarm
+     nennt Ausloeser, Bestaetigungen (n von 3), StockTwits und Squeeze-Merkmal.
+   - Kartenpruefungen neu: ausloeser, volumen, zweite_social_familie,
+     kursbestaetigung, squeeze_merkmal (Information) neben identitaet,
+     existenzrisiko, luna_warnfilter, earnings, broker.
+
+3. VORWAERTSMESSUNG (pulsar/measurement.py NEU, Tabelle attention_outcomes)
+   - Jeder Ausloeser wird je Symbol und NY-Handelstag mit Zeitpunkt, Kurs
+     (frischer FMP-Quote, sonst Profilkurs), Ausloeserart, Kandidatenstatus,
+     Squeeze-Merkmal und Regelversion gespeichert -- unabhaengig vom Handel,
+     in BEOBACHTEN und FREIGABE (AUS ruft keine Quellen ab, misst nichts).
+   - Der Worker traegt hoechstens alle 6 Stunden die Schluesse nach 1, 3, 5
+     und 10 Handelstagen nach (FMP-Tageskerzen, hoechstens 10 Symbole je
+     Lauf, Cache 24 h). Offene Werte bleiben OPEN/PARTIAL; nach 20 Handels-
+     tagen ohne Kurs UNRESOLVABLE. Feiertage nehmen den letzten Schluss davor.
+   - Auswertung: Trefferquote, Median, Median nach 0,7 % Rundreise-Kosten
+     je Horizont, nach Ausloeserart, Squeeze-Merkmal und "Hype-Kandidat gegen
+     nur Ausloeser". Urteil (5 Handelstage, erst ab 30 vollstaendigen
+     Messungen): ERFOLGREICH = Trefferquote >= 55 % und Median nach Kosten
+     >= +0,5 %; NICHT ERFOLGREICH = Trefferquote < 45 % oder Median nach
+     Kosten <= 0; dazwischen UNKLAR; vorher ZU WENIG DATEN. Ein Urteil ist
+     keine Handelsfreigabe.
+   - API GET /api/pulsar/measurements (Sitzung), Snapshot-Feld measurement,
+     Demo-Handelsbilanz (demo_trades) getrennt von der Papiermessung.
+
+4. PULSAR-SEITE AUFGERAEUMT (webui/templates/pulsar.html, static/pulsar.js)
+   - Reihenfolge: Betrieb (AUS / BEOBACHTEN UND MESSEN / MESSEN UND HANDELN)
+     -> "Was die Messungen zeigen" mit Urteilsplakette (gruen/rot/gelb/grau),
+     Horizonttabelle, Gruppen, Demo-Bilanz, aufklappbare Einzelmessungen ->
+     Quellen und Budget (Chips fuer ApeWisdom, Tradestie, StockTwits, FINRA,
+     Volumen; Abrufzaehler je Quelle) -> Kandidaten mit Ausloeser, drei
+     Bestaetigungs-Chips (n von 3), Existenzrisiko-, Squeeze- und Bilanz-Chip,
+     StockTwits-Zeile -> Freigaben, offene Trades, Abschluesse, Universums-
+     gaeste -> Technik (GPT-Requests, X-Recherche, Verarbeitungskette).
+   - Entfernt: Community-Messkriterien, Zusammenspiel-der-Quellen-Tabelle,
+     Belegscore-Reste, "Fuenf Beobachtungskandidaten"-Text, Originalmeldung
+     ausserhalb der Details.
+
+5. DIAGNOSE (NEXUS_10_Diagnose.py 1.9.0, WebUI)
+   - AUSWERTUNG.json: pulsar.measurement aus dem Export der Tabelle
+     attention_outcomes (Standalone-Auswertung mit denselben Regeln, per
+     Test gegen pulsar/measurement.py abgeglichen); Befund
+     PULSAR_MEASUREMENT_<Urteil>; BERICHT.md-Abschnitt "PULSAR-Vorwaerts-
+     messung". attention_outcomes in der Exportprioritaet.
+   - NEU ZUSAMMENFASSUNG.json in der ZIP: Laufabschluss, Handelsbereitschaft
+     je Broker, Blocker, GPT-Zaehler, Quellenstand, Exportstatus, Befunde
+     (gezaehlt und gelistet), Erfassungsfehler, PULSAR-Karten und -Messung.
+   - WebUI: Diagnoseliste bietet je abgeschlossener ZIP "Bericht oeffnen"
+     (neues Fenster, /diagnosis/<id>/bericht). Die Seite liest
+     /api/diagnosis/<id>/summary aus der SHA256-verifizierten ZIP (nichts
+     wird entpackt oder veraendert) und zeigt Kennzahlen, Bereitschaft je
+     Broker, PULSAR-Messung mit Urteil, Befunde nach Stufe (Fehler,
+     Warnungen, Unbekannt, Hinweise), Entscheidungsblocker, Quellen/Exporte,
+     Karten und den vollstaendigen BERICHT.md. Aeltere ZIPs ohne
+     Zusammenfassung: Minimalsicht aus META/BEFUNDEN.
+   - webui/diagnosis_jobs.py: fcntl-Import optional (Windows-Pruefstand
+     kann summary/status testen); die Sperre bleibt auf dem Pi Pflicht.
+
+6. BUDGETS: research.LIMITS data 300/Tag (vorher 200), neu stocktwits
+   150/800 und finra 40/200. Keine Aenderung an X (15 EUR) oder GPT.
+
+7. QUELLENSCHALTER (opt-in wie Tradestie/GPT-Websuche): StockTwits und
+   FINRA werden auf der PULSAR-Seite eingeschaltet (pulsar_control-Spalten
+   stocktwits/finra, Standard aus; Migration per ALTER TABLE). Ausgeschaltet
+   gibt es keinen externen Abruf, die Felder bleiben UNKNOWN. StockTwits-
+   Trending laeuft ueber research.fetch_social("stocktwits"), Strom und FINRA
+   im Marktpaket (gather_market) -- dieselben Naehte, an denen die Offline-
+   Tests ihre Testdoubles setzen; der Netzwerk-Tripwire des Volltests bleibt
+   still.
+
+VERSIONEN: VERSION.txt 10.5.0-NEXUS, RELEASE_BUILD 10.5.0-PULSAR-SOURCES-
+MEASUREMENT, config.VERSION_NEXUS, Diagnose 1.9.0 (NEXUS_10_5_0_Diagnose.py /
+NEXUS_10.5.0_Diagnose_Starten.sh; 10.4.0-Wrapper entfernt).
+
+NICHT geaendert: Orderpfade, Risikomanager, Gates, PULSAR-Handelsgrenzen
+(1 Nominierung/Tag, 1 offener Trade, 10 Handelstage, 0,25 %), Telegram-
+Doppelbestaetigung, Cash-Delta-Automatik, OKX-Freigabe, Kerzenansicht.
+PULSAR/X/GPT ohne Orderbefugnis; UNKNOWN bleibt UNKNOWN; kein TLS-Bypass.
+
+Tests: tests/test_v1050_pulsar_messung_quellen.py (23: StockTwits-Trending/
+Strom/Aktivitaet/Abruf+Pause, FINRA-Stichtage/Abruf/Squeeze, Volumen aus
+Quote und Stundenkerzen, Bewertung 2-von-3 inkl. "Volumen ohne Social wird
+gemessen, nicht nominiert", eigene Basis, Telegram-Text, Kandidatenreihenfolge,
+Karte mit neuen Belegen, Messung speichern/nachtragen/UNRESOLVABLE, Urteils-
+regeln identisch mit der Diagnose, Worker-Taktung, aufgeraeumte Seite,
+Snapshot/API, Diagnosebericht aus verifizierter ZIP inkl. Manipulation/
+Fallback/Routen, ZUSAMMENFASSUNG-Dokument, Pflichtdateien). Fixtures aus
+echten Antworten (anonymisiert): echt_stocktwits_stream_gme.json,
+echt_stocktwits_trending.json, echt_finra_short_interest.json. Node:
+frontend_v100.test.js 28 Tests (neu: Karten-Chips, Messungspanel,
+Diagnosebericht; Community-Test entfernt). Fortgeschrieben: test_v1030,
+test_v1040 (2-von-3), test_v1019/test_v976 (Pins).

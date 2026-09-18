@@ -1,0 +1,83 @@
+TRADINGBOT 8.2.0 NEXUS — AENDERUNGSBERICHT
+Stand: 26.08.2026 | Basis: 8.1.5-NEXUS
+
+ZIEL
+====
+Dieses Release setzt die beobachteten Betriebsprobleme gezielt um, ohne die
+bestehende WebUI oder die bewährte Einstellungsübernahme umzubauen.
+
+1. OKX-BEREITMELDUNG OHNE NEUSTART-SPAM
+========================================
+- Der Status der bereits gesendeten Handelsbereitmeldung wird lokal und
+  atomar gespeichert.
+- Ein normaler Neustart prüft weiterhin alle Voraussetzungen erneut
+  (Konto, Instrumente, Gebühren, Reconciliation, Universum, Kursdaten und
+  abgeschlossene Signalkerze), sendet aber keine zweite identische Meldung.
+- Eine neue Nachricht folgt nur beim ersten erfolgreichen Start oder nach
+  einem echten Verlust und einer echten Wiederherstellung der Bereitschaft.
+
+2. OKX EEA / DEUTSCHLAND – TRANSPARENTER UND ROBUSTER
+=====================================================
+- Der vorhandene EEA-REST-Endpunkt und EEA-Demo-Privatstream bleiben erhalten.
+- Der Demo-Header `x-simulated-trading: 1` bleibt für Demoaufrufe gesetzt.
+- Jede Order- oder Stornoanfrage erhält zusätzlich eine kurze OKX-Ablauffrist
+  (`expTime`). Eine verspätete Anfrage wird nicht einfach irgendwann später
+  verarbeitet.
+- Der bestehende fail-closed-Mechanismus bleibt: unklare Antwort = keine
+  blinde Wiederholung, sondern Prüfung über die Client-Order-ID.
+- `crypto_diagnose.py --voll` liest read-only Kontokonfiguration, Guthaben,
+  Equity, Spot-Gebühren, Standardorders, OCO-/Conditional-Schutzorders,
+  jüngste Fills und Streamstatus. Es erzeugt, ändert oder cancelt keine Order.
+- Die geprüfte Referenzbibliothek wurde bewusst NICHT zusätzlich eingebaut:
+  der eigene Adapter deckt die benötigten EEA-Spot-Endpunkte bereits ab;
+  ein zweiter API-Stack würde nur Zustände und Fehlerpfade verdoppeln.
+
+3. OKX-DEMO-GUTHABEN KLAR VON BOT-POSITIONEN GETRENNT
+======================================================
+- Die Positions-WebUI hat jetzt eine separate Tabelle "OKX · Konto-Guthaben".
+- XRP, ETH, SOL, BTC usw. aus dem OKX-Demokonto erscheinen dort korrekt als
+  Guthaben bzw. externer Bestand – NICHT als offene Bot-Order.
+- Nur Positionen mit eigenem Positionsbuch, bekanntem Einstieg und gesetztem
+  Schutz erscheinen unter "OKX · Bot-Positionen".
+- Externe Guthaben werden weiterhin nie automatisch verkauft. Sie machen den
+  kompletten Kontowert nicht unbemerkt zur Handelsmasse; der Bot nutzt nur
+  freies Quote-Guthaben und seine eigenen, nachvollziehbaren Positionen.
+
+4. NEWS
+=======
+- finanzen.net RSS ist komplett aus WebUI, Migration und automatischem
+  Nachrichtenablauf entfernt. Ursache: wiederholt blockierter RSS-Abruf.
+- Der kostenlose Kernpfad bleibt: SEC EDGAR, Nasdaq Halts, Yahoo Finance,
+  Google News und GDELT. MASSIVE bleibt als geprüfte Schlüsselquelle.
+- Ein alter finanzen.net-Schalter wird bei der Migration bereinigt und kann
+  den Abruf nicht wieder aktivieren.
+
+5. TELEGRAM
+===========
+- Kleine, eindeutige Symbole: 🟢 Kauf/Bereit, 💰 Verkauf, 🛡️ Sicherheit,
+  📊 Handel, ℹ️ Information und 🚨 kritisch.
+- Die bestehende Priorisierung und Queue bleiben unverändert.
+
+6. KI-ZWEITMEINUNG – NUR WARNUNG, KEIN HANDELS-GATE
+===================================================
+- Ein Urteil „kritisch“ erzeugt nur noch einen Telegram-Hinweis und einen
+  neutralen Logbucheintrag mit Gewicht 0,0.
+- Es kann keinen Kauf anhalten, freigeben, ablehnen, die Menge aendern oder
+  einen Verkauf beziehungsweise eine Schutzorder verzoegern.
+- Der alte Telegram-Befehl `/kaufen SYMBOL` hat in 8.2 keine Handelswirkung;
+  er erklaert nur noch die neue Regel. Alte Warteeintraege lassen sich bei
+  Bedarf mit `/verwerfen SYMBOL` aufraeumen.
+
+7. MIGRATION UND OBERFLAECHE
+============================
+- WebUI-Layout und bestehende Einstellungsfelder bleiben unverändert, ergänzt
+  nur um die notwendige OKX-Kontoübersicht.
+- Migration übernimmt zusätzlich den Meldestatus, bewahrt Yahoo/Google/Nasdaq
+  News-Schalter und setzt beide Broker wie bisher sicher auf PAPER/DEMO.
+
+TESTS
+=====
+- Neue Offline-Regressionen für Neustart-Entdoppelung, echte Rückkehr nach
+  Ausfall, OKX-Demo-Header/Ablauffrist, Vollsnapshot, finanzen.net-Entfernung,
+  WebUI-Trennung, Telegram-Symbole und die KI ohne Handels-Gate.
+- Der Pi-Installer führt weiterhin den vollständigen Offline-Volltest aus.

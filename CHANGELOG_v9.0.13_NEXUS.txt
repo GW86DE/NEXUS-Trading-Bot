@@ -1,0 +1,150 @@
+TRADINGBOT NEXUS 9.0.13 - AENDERUNGSPROTOKOLL
+================================================
+Version: 9.0.13-NEXUS
+Datum: 30.08.2026
+Basis: 9.0.12-NEXUS
+
+WARUM DIESE VERSION NOETIG WAR
+-----------------------------
+- Beim DOGE-Kauf am 30.08.2026 verwendete NEXUS den OKX-Tickerwert "last"
+  wie einen sofort ausfuehrbaren Preis. Der Kauf lief als unbeschraenkte
+  Market-Order in ein duennes Orderbuch und wurde 38 Sekunden spaeter wegen
+  eines erneut ungeeigneten last-Werts als Gewinnziel-Verkauf ausgeloest.
+- Das war kein belegter Verbindungsabbruch. Der nachfolgende Verkauf wurde
+  von NEXUS selbst ausgelöst.
+- OKX-tradeId ist nicht kontoweit global eindeutig. LINK und ONDO konnten
+  beide die tradeId "1" besitzen. Die alte Datenbank behandelte nur
+  (Broker, tradeId) als eindeutig und verlor deshalb den ONDO-Ledgereintrag.
+- Ein kleiner DOGE-Rundungsrest blieb danach als ungeklaerte Exposure offen
+  und sperrte neue Krypto-Einstiege.
+
+OKX-AUSFUEHRUNG: KEINE UNBEGRENZTEN MARKET-ORDERS MEHR
+------------------------------------------------------
+- Einstieg und clientseitiger Ausstieg verwenden ein frisches OKX-v5-
+  Orderbuch statt des vergangenen ticker.last-Werts.
+- NEXUS summiert die Gegenseite bis zur vollstaendigen geplanten Menge und
+  berechnet Bestpreis, Full-size-VWAP, schlechteste benoetigte Preisstufe,
+  Buchalter und erwartete Slippage.
+- Fehlen Tiefe oder Zeitstempel, ist das Buch zu alt oder ueberschreitet die
+  Slippage die konfigurierte Grenze, wird die Order vor dem POST blockiert.
+- Kauf und Verkauf werden als preisbegrenzte FOK-Spot-Order gesendet:
+  vollstaendige Menge innerhalb der Grenze oder keine Ausfuehrung.
+- Dadurch kann keine unbemerkte Teilposition wie im alten SOL-Fall entstehen.
+- Die alten Einstellungen fuer Risikogroesse und Kosten bleiben zusaetzliche
+  Grenzen; die neue Orderbuchpruefung ist die letzte Brokergrenze.
+
+STOP-LOSS UND TAKE-PROFIT
+-------------------------
+- Take-Profit und Stop-Loss senden keine unbeschraenkte Marktorder mehr.
+- Take-Profit wird mit seinem Zielpreis als limitierte Ausfuehrung angelegt.
+- Der Stop besitzt eine begrenzte Ausfuehrungstoleranz unter dem Trigger.
+  Ein fehlerhafter OKX-last-Tick kann damit nicht mehr zu einem Verkauf zu
+  beliebig schlechtem Preis fuehren.
+- Sicherheitsfolge: Ein Stop-Limit kann in einem Kursrutsch offen bleiben.
+  NEXUS zeigt diesen Zustand als fehlenden/ausstehenden Schutz an, meldet ihn
+  kritisch und versucht den Schutz kontrolliert erneut. Es sendet keinen
+  unlimitierten Notverkauf.
+- Stop und Ziel werden nach dem echten Durchschnittsfill neu berechnet. Die
+  geplanten prozentualen Abstaende bleiben erhalten.
+- Position, Ledger und Fill-Beweis werden dauerhaft geschrieben, bevor die
+  Schutzorder angelegt wird. So gibt es keine verwaiste Schutzorder ohne
+  lokale Botposition.
+- Jede Schutzorder erhaelt eine deterministische algoClOrdId. OKX-algoId und
+  Status werden im Positionsbuch und im Trade-Ledger gespeichert.
+- Nach einem Trigger zaehlt auch eine daraus entstandene normale offene
+  SELL-Order als vorhandener Schutz. Sie wird nicht doppelt angelegt.
+- Vor einem neuen Kauf prueft NEXUS sowohl normale SELL-Orders als auch
+  Algo-/Schutzorders. Ist die Abfrage unvollstaendig, wird fail-closed
+  blockiert.
+
+ORDER-, FILL- UND POSITIONSIDENTITAET
+------------------------------------
+- Die eindeutige Fill-Identitaet lautet jetzt:
+    Broker + Kontofingerabdruck + Instrument + ordId + tradeId/fillId
+- Die globale Fehleindeutigkeit (OKX, tradeId) wurde entfernt.
+- Die Datenbankmigration erhaelt Teilverkaufs-Historien: eine geschlossene
+  Teilzeile und ihr offener Rest duerfen dieselbe Einstiegsorder referenzieren.
+- Exit-Beweise speichern exit-orderId und alle exit-fillIds.
+- Bei brokerseitigem Schutzverkauf wird die Kette
+  protection-algoId -> erzeugte ordId -> SELL-fillId geprueft. Ein manueller
+  Verkauf desselben Symbols wird nicht allein anhand Symbol und Uhrzeit dem
+  Bot zugerechnet.
+- Eine belegte Position ohne Ledgerzeile wird idempotent aus Positionsbuch,
+  ordId, clOrdId und echten Fill-IDs rekonstruiert.
+
+ONDO, LINK, DOGE UND REALE DATENMIGRATION
+-----------------------------------------
+- Die mitgelieferte reale 9.0.12-Datenbank und crypto_positions-Datei wurden
+  auf einer Kopie migriert.
+- Ergebnis: ONDO wurde mit Order 3877327800382468097 und Fill "1" als eigener
+  Trade rekonstruiert, obwohl LINK ebenfalls Fill "1" besitzt.
+- Der DOGE-Rest von 0,06235 DOGE wurde als nicht handelbarer Rundungsrest
+  geschlossen. Es wird keine Verkaufsorder gesendet und keine neue
+  Einstiegssperre erzeugt.
+- Danach blieben BNB, LINK, XLM und ONDO als belegte offene OKX-Bottrades.
+- Kleine Konto-Assets unter der Staubgrenze werden vor der Ledger-Residual-
+  Bewertung als Konto-Asset klassifiziert.
+
+VERBINDUNGSSTATUS
+-----------------
+- Ein einzelner REST-Timeout gilt als DEGRADED, nicht als vollstaendiger
+  Verbindungsabbruch. Der vorhandene Broker bleibt aktiv und der naechste
+  Health-Check prueft erneut.
+- Erst ein harter Authentifizierungs-/Zeitfehler oder drei REST-Fehler in
+  Folge setzt OKX auf OFFLINE und startet die Wiederverbindung.
+- REST-Zustand, REST-Fehlerzaehler, letzter REST-Erfolg, WebSocket-Verbindung,
+  WebSocket-Authentifizierung sowie Konto-, Order- und Pong-Zeitpunkte werden
+  getrennt im Runtime-Status ausgegeben.
+- Die Telegram-Meldung behauptet nicht mehr pauschal "Verbindung abgebrochen",
+  sondern nennt den tatsaechlich fehlgeschlagenen authentifizierten REST-Pfad.
+- Health-Zustaende werden im Decision-Heartbeat protokolliert.
+
+WEBUI, LOGBUCH UND MELDUNGEN
+---------------------------
+- Offene Trades zeigen nun "OKX-Schutz aktiv", "Schutzabgleich laeuft" oder
+  "Broker-Schutz fehlt" und bei vorhandenem Beweis die algoId.
+- Die Klarstellungen aus 9.0.12 bleiben aktiv: 15 Entscheidungen je Seite,
+  Blaettern, Europe/Berlin-Zeit, getrennte Konto-Assets/Botpositionen und die
+  manuellen Klaerungsaktionen einschliesslich lokalem Loeschen.
+- Wiederholte identische Exposure-Warnungen werden 15 Minuten gedrosselt;
+  bei geaendertem Grund erfolgt die Meldung sofort.
+- Verwaiste normale SELL-Orders und Algo-Schutzorders ohne Coinbestand werden
+  im Positionszyklus bereinigt.
+
+WAEHRUNGEN UND UNIVERSUM
+------------------------
+- EUR, USD und USDC bleiben getrennte Handels- und Cashkanaele. Es gibt keine
+  pauschale 1:1-Gleichsetzung von USD und USDC.
+- tradeQuoteCcy wird aus OKX-tradeQuoteCcyList und dem tatsaechlich finanzierten
+  Kanal bestimmt und an Kauf, Schutz und Verkauf weitergereicht.
+- cashBal/availBal bleiben Konto-Assets, keine offenen Bottrades.
+- Die Universumslogik aus 9.0.12 bleibt erhalten: oeffentlicher SPOT-Katalog
+  zur Entdeckung, authentifizierter Kontokatalog als Handelsobergrenze,
+  Umsatz als Ranking statt starre 250.000-EUR-Sperre.
+
+ETORO
+-----
+- Die in 9.0.12 vorhandene eToro-Zustandsmaschine bleibt unveraendert aktiv:
+  asynchroner Auftrag, referenceId/orderId/positionId-Abgleich, persistenter
+  Hintergrund-Worker, privater Portfolio-WebSocket, REST-Kontrolle,
+  Teilfuellungen und Rate-Limiter.
+- OrderStatusUnklar bleibt von VerbindungVerloren getrennt. Ein unklarer POST
+  wird nicht erneut gesendet und eine neue Position nicht vorschnell als
+  extern eingestuft.
+- Die eToro-Regressionssuite ist zusammen mit allen anderen Tests bestanden.
+
+PRUEFUNG
+--------
+- 794 Pytest-Tests bestanden.
+- 189 Subtests bestanden.
+- self_test.py: OK.
+- volltest.py: OK.
+- compileall, Shell-Syntax und host-neutraler Pi-Preflight: OK.
+- Reale 9.0.12-Datenmigration auf Kopien: OK.
+- Es wurden keine echten Orders und keine schreibenden Brokeraufrufe ausgeführt.
+
+SICHERHEITSGRENZE
+-----------------
+- Die abschliessende Bestaetigung muss kontrolliert auf dem Raspberry Pi mit
+  eToro PAPER und OKX DEMO erfolgen. Vor diesem Test nicht auf LIVE umstellen.
+

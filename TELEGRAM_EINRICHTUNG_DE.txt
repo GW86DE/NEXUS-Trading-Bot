@@ -1,0 +1,36 @@
+TELEGRAM EINRICHTUNG - TradingBot 8.1.1 NEXUS
+=========================================
+
+Telegram ist Benachrichtigungs-, Fernsteuerungs- und Human-Freigabekanal.
+
+1. In Telegram @BotFather oeffnen und /newbot senden.
+2. Bot-Namen festlegen und Token sicher kopieren.
+3. Den eigenen Bot privat oeffnen und /start senden.
+4. TradingBot GUI -> Telegram einrichten oder `python telegram_setup_cli.py` starten.
+5. Token pruefen.
+6. Chat-ID automatisch ermitteln lassen oder manuell eintragen.
+7. Die freigegebene Telegram-User-ID kontrollieren. Im privaten Chat ist sie
+   normalerweise identisch mit der Chat-ID und wird automatisch erkannt.
+8. Einstellungen speichern und Testnachricht senden.
+
+SICHERHEIT DER RESEARCH-FREIGABE
+--------------------------------
+- Inline-Freigaben werden nur akzeptiert, wenn Chat-ID UND User-ID stimmen.
+- "Pruefen lassen" fordert nur eine deterministische eToro-Aufnahmepruefung an.
+- Erst nach technischem PASS wird "Ins Universum aufnehmen" angeboten.
+- Auch dieser zweite Klick loest KEINEN Kauf aus.
+- Der neue Wert wird erst beim naechsten Botstart eingelesen und erneut von
+  eToro qualifiziert. Danach gelten fuer jeden Kauf alle normalen Filter.
+
+BEFEHLE
+-------
+/vorschlaege  Status der KI-Research-Vorschlaege
+/universum    Menschlich freigegebene Universums-Erweiterungen
+/ai off       Keine OpenAI-Aufrufe; deterministische Funktionen bleiben aktiv
+
+Token und Credential-Dateien wie Passwoerter behandeln. Sie gehoeren nicht in
+Backups/ZIPs, die weitergegeben werden.
+
+RISK3-SICHERHEIT
+-----------------
+/risk3 aktiviert OFFENSIV nicht direkt. Der Bot sendet einen Bestaetigungsbutton, der standardmaessig 60 Sekunden gueltig und nur einmal verwendbar ist. Nur die konfigurierte Chat-ID plus freigegebene User-ID darf ihn bestaetigen. /risk3 JA umgeht diese Stufe nicht.

@@ -1,0 +1,77 @@
+NEXUS 9.8.7 – 11. September 2026
+Basis: tatsächliches 9.8.6-Release; keine Rekonstruktion aus 9.7.5.
+Basis-ZIP SHA256: 92d4bbdd222cae70d143aa8402d6ae05047a834a20a8d85cb885648af79b3233
+
+1. eToro / Kursfrische
+- Marktsitzung, aktuelle Brokerquote und Signalhistorie getrennt.
+- Gültigkeitsdauer von Kursbelegen; keine dauerhaft grüne Bedingung durch 30 alte Kerzen.
+- Begrenzte Kursprobe unabhängig von einem BUY-Signal während des Regelhandels.
+- Außerhalb der Börsenzeit verständlicher Wartestatus, andere Sperren bleiben sichtbar.
+- Scanner verwendet keine veraltete oder zeitlich unklare Signalhistorie.
+- Verbindungen/Bedingungen zeigen auch Details der einzelnen Voraussetzungen.
+
+2. OKX / Ausführungsbelege und Schutzidentität
+- ordId serverseitig bei aktuellen und archivierten Fills; weiterhin lokale Identitätsprüfung.
+- Archiv bis 20 Seiten begrenzt; wiederholte volle Seite ist kein Vollständigkeitsbeweis.
+- Widersprüchliche doppelte Fills werden weder im Archiv noch beim Merge verschluckt.
+- Positive Vollständigkeit der konkreten terminalen Order von negativer Gesamthistorie getrennt.
+- Kein No-Fill-Beweis aus unvollständiger/leerer begrenzter Historie.
+- fillTime hat für die Ausführungszeit Vorrang vor dem späteren ts der Datenbereitstellung.
+- Exakte Schutz-Algo-ID darf nicht durch gleichen Client-Text überstimmt werden.
+- Storno verwendet das belegte Instrument der konkreten Algozeile; keine blinde USD/USDC-Umbenennung.
+
+3. Geschlossene OKX-Ergebnisse
+- Eigener GET-only-Nachlauf mit separater HTTP-Sitzung und gemeinsamem Rate-Limiter.
+- Ein fälliger geschlossener Trade pro Lauf, 24 Requests/60 Sekunden Lesebudget;
+  höchstens ein Thread pro Konto/Umgebung, frühestens nach 60 Sekunden wieder starten.
+- Primäre Kauf-/Verkaufsorder, konkrete Algo-Kinder, Fills, Mengen, Zeiten, Gebühren,
+  Konto und Abrechnung werden geprüft. Aktuelle offene Positionsverwaltung bleibt vorrangig.
+- Atomare Nachpflege der bestehenden geschlossenen Ledgerzeile; Original, Beleg, Hash,
+  exklusive Fill-Claims und Ereignisse in derselben SQLite-Transaktion.
+- Wiederholung desselben Belegs ist wirkungslos. Widersprüche/konkurrierende Änderungen sperren.
+- Keine neue Position, kein erfundener Verkauf, keine Marktkurs- oder Nullgebühren-Ergänzung.
+- Echter Rundungsrest wird mit seiner verbleibenden Kostenbasis im Beleg erhalten,
+  nicht als weiterer Verkauf oder zusätzlicher Verlust verbucht.
+- Mehrfach aufgeteilte Einstiegsketten und native Fremdwährungsabschlüsse werden nicht
+  geraten; sie bleiben im passenden gesonderten Abgleich.
+- Neu erfasste Käufe speichern die tatsächliche Fillzeit, nicht den späteren Beobachtungszeitpunkt.
+- Bereits als UNKNOWN vorgemerkte Risikoergebnisse werden auf dem belegten Ausführungstag
+  vervollständigt; keine Doppelzählung oder heutiger Gewinn aus einem gestrigen Abschluss.
+
+4. Klärungsanzeige / Diagnose
+- Fehlender Verkaufskurs, Verkaufsorder, Gebühren, Einstand und historische FX getrennt benannt.
+- Letzter Ergebnis-Abruf und konkreter offen gebliebener Beleggrund an der Karte.
+- Als geschlossen erfasst bedeutet nicht automatisch vollständig nachgewiesen verkauft.
+- NEXUS_9_8_7_Statuspruefung.py: rein lokale Read-only-Inventur, getrennte Domänen,
+  echte WAL-Sicht, keine versehentlich neu erzeugte Datenbank bei falschem Pfad.
+
+5. PULSAR 1.2
+- Unbekannte Vortagszahlen werden nicht als Null und Wachstum ausgelegt.
+  Abgeleitetes Wachstum alter Caches wird aus den tatsächlichen Zahlen neu berechnet.
+- Eigener Entdeckungsplatz innerhalb der Top fünf für ausreichend große neue Stichproben;
+  kein zusätzlicher Handelsplatz und keine abgeschwächte Nominierungsbedingung.
+- Entdecken, qualifizieren und persönlich freigeben inhaltlich getrennt.
+- Bestehender begrenzter GPT-Web-/Originalquellenagent bleibt aktivierbar, ohne Reddit-Zwang.
+- Community: nicht prüfbar / geprüft aber Kriterien verfehlt / Messkriterien erfüllt.
+  Aggregate oder SEC-Dokumente können keine Autorenbreite attestieren.
+- Quellenfilter bleiben getrennt. Erfolgreich abgerufene Seiten sind keine vollständige
+  Instrument-/Reddit-Abdeckung. Keine rückwirkend erzeugten stillen Tage oder Nullwerte.
+- Eine tatsächliche Stichprobe pro UTC-Stunde; Tagesmedian der beobachteten Stunden.
+  Rohbeobachtungen sieben Tage, kompakte Stichproben 35 Tage, begrenzte atomare Verdichtung.
+- Vorhandene echte Historie bleibt während des Übergangs aus Rohdaten lesbar.
+  Budgets, Assessments, Freigaben und Handelsjournale werden nicht automatisch gelöscht.
+- Keine laufende VACUUM-Operation und keine behauptete konstante Gesamtdateigröße.
+- Recherchephase sichtbar; ein langer Quellenabruf wird nicht durch einen erfundenen
+  frischen Freigabe-Heartbeat kaschiert.
+- USD-Schwellen nur bei exakt zugeordnetem USD-Unternehmensprofil.
+- SEC-Einheit stammt aus der ausgewählten Datenreihe. CIK muss zur abgefragten
+  Zuordnung passen. Gewinn und Cashflow benötigen dieselbe USD-Berichtsperiode.
+- Alte PULSAR-1.1-Bewertungen zählen nicht als neue 1.2-Nominierungsbestätigung.
+  Gespeicherte Wochenverbräuche, bestehende Positionen und Budgets bleiben erhalten.
+
+6. Nicht behauptet
+Keine aktuelle Brokerabnahme aller 19 Screenshot-Fälle. Keine nachträglich
+hergestellten eToro-Gebühren, SUI-FX, Reddit-Genehmigung oder vollständigen
+Autoren-/Push-Nachweise. Keine vollständige Neuentwicklung aller wirtschaftlichen
+Speicher nach Freqtrade. Keine echte Pi-/ARM64-/systemd-/Safari-/LIVE-Abnahme.
+Konkrete Testergebnisse und Befundbewertung im neuen Prüfbericht.

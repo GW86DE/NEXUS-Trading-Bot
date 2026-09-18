@@ -1,0 +1,59 @@
+TradingBot NEXUS 9.0.4
+======================
+
+Priorität 1: Broker-Wahrheit und Phantom-Trades
+- Eine eToro-Order mit Fill-Menge gilt nicht mehr automatisch als offene
+  Position. Die genaue positionId muss im aktuellen Brokerdepot vorhanden sein.
+- Fehlt der Positionsnachweis, bleibt die Ausführung ungeklärt; es entsteht
+  weder ein MSFT-Phantom-Trade noch eine lokale Verkaufsmöglichkeit.
+- Orderstatus, Broker-Ausführungsstatus und Positionsbestätigung werden getrennt
+  gespeichert. Eine Kauforder wird im ungeklärten Zustand niemals wiederholt.
+- Spätere Reconciliation ist idempotent und erzeugt weder doppelte Fills noch
+  doppelte Erfolgsmeldungen.
+
+Priorität 1: OKX, Unified USD und Universum
+- Der öffentliche Live-Instrumentkatalog wird auch im DEMO-Modus ohne Demo-
+  Header gelesen. Dadurch entsprechen verfügbare Spot-Paare dem echten OKX-
+  Marktangebot.
+- `tradeQuoteCcyList` wird vollständig ausgewertet. Ein Unified-USD-Instrument
+  kann damit über das vom Konto und Instrument gemeinsam unterstützte EUR,
+  USD, USDC oder USDG abgewickelt werden.
+- Quotevolumen wird nur über beobachtete OKX-Marktkurse in EUR umgerechnet;
+  Stablecoin-Paritäten werden nicht erfunden.
+- Das Mindestalter gilt für den Basiswert und wird nicht durch ein später
+  hinzugefügtes Quote-Paar künstlich zurückgesetzt.
+- Vor jedem neuen OKX-Kauf werden positiver Einstieg, Stop und Ziel sowie
+  `Stop < Einstieg < Ziel` verbindlich geprüft.
+
+Priorität 1: SOL und Bestandsabgleich
+- SOL ist kein Cash und wird niemals als Zahlungswährung für neue Käufe
+  klassifiziert.
+- Ein alter `LEGACY_UNLINKED`-SOL-Trade ohne decision_id, Entry-Order, Fill,
+  Positionsbuch und Kontofingerabdruck wird erst nach zwei vollständigen OKX-
+  Bestandsabgleichen administrativ geschlossen.
+- Dabei werden weder SOL verkauft noch ein Verkaufskurs oder Gewinn erfunden.
+  Das vorhandene SOL-Guthaben bleibt anschließend `EXTERNAL_HOLDING`.
+- Ein belegbarer oder neuer SOL-Trade wird nicht automatisch bereinigt. Bei
+  Widersprüchen bleibt er fail-closed als `RESIDUAL_EXPOSURE` und sperrt neue
+  Krypto-Einstiege bis zur sicheren Klärung.
+
+Telegram
+- Identische Nachrichten werden vor dem ersten Versand 30 Sekunden gesammelt
+  und dedupliziert. Mehrere Worker-/Zyklusauslöser erzeugen nur einen Versand.
+- Interaktive Telegram-Antworten bleiben unverzögert.
+- Telegram kann in Einstellungen/WebUI ohne Bot-Neustart aktiviert und
+  deaktiviert werden. Polling und Versand reagieren auf die Laufzeiteinstellung.
+- Der Callback-Quittierungspfad wurde repariert.
+
+WebUI und Bestandsschutz
+- Der responsive Menüwechsel aus 9.0.3 für Handy, Tablet und Desktop bleibt
+  unverändert erhalten.
+- Auf der Einstellungsseite steht ein direkter Telegram-Laufzeitschalter mit
+  deutschem Status bereit.
+- Bestehende Strategie-, Risiko-, News-, Trade- und Universumsdarstellungen
+  bleiben fachlich unverändert.
+
+Architekturhinweis
+- Von Freqtrade wurde das Prinzip der persistenten, getrennten Trade-/Order-
+  Zustände und der Brokerabgleich übernommen. Es wurde kein GPL-Quellcode
+  kopiert.

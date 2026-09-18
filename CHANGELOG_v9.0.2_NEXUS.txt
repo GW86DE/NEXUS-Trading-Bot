@@ -1,0 +1,52 @@
+TradingBot NEXUS 9.0.2
+======================
+
+UMFANG
+- Gezieltes Stabilitätsupdate auf Basis von NEXUS 9.0.1.
+- WebUI, fester 20er-Kern, DYNAMIC_30, Profile und beide Krypto-Strategiemodi
+  wurden fachlich nicht neu entworfen.
+
+OKX-SPOTPAARE UND GELDPFAD
+- EUR, USD und USDC sind jetzt die einzigen erlaubten OKX-Spot-Quotes.
+- Das Universum erkennt dadurch auch liquide EEA-Spotmärkte wie TRX-USD oder
+  UNI-USD, statt sie fälschlich als nicht handelbar auszuschließen.
+- Je Basiswert bleibt genau ein live verfügbares Paar ausgewählt. Für den
+  Volumenvergleich werden USD und USDC nur über einen tatsächlich beobachteten
+  Spotkurs nach EUR umgerechnet; eine 1:1-Parität wird nicht geraten.
+- Kauf, Schutzorder und Verkauf senden die zum Instrument gehörende
+  tradeQuoteCcy an OKX. Cashprüfung, Gebühren und Ordergröße bleiben in der
+  jeweiligen Paarwährung getrennt.
+- Andere Krypto-gegen-Krypto-Paare, Futures, Margin und Hebelprodukte bleiben
+  ausgeschlossen.
+
+OFFENE OKX-TRADES UND RESTBESTÄNDE
+- Offene Ledger-Trades ohne Positionsbuch werden mit dem echten Brokerbestand
+  abgeglichen.
+- Ist noch Bestand vorhanden, wird er als RESIDUAL_EXPOSURE ausgewiesen und
+  sperrt neue Krypto-Einstiege. NEXUS verkauft oder übernimmt ihn nicht
+  automatisch.
+- Fehlt nach zwei vollständigen Abgleichen jeder Bestand, wird der verwaiste
+  Ledger-Eintrag geschlossen. Ausstiegspreis und Ergebnis bleiben NULL statt
+  erfunden zu werden.
+- Teilverkäufe behalten nun auch im Rest-Trade den gespeicherten Strategie-
+  Modus, Parameter-Hash und Parametersnapshot.
+
+TELEGRAM
+- Queue-Einträge werden vor dem Senden atomar beansprucht. Zwei parallele
+  Worker können dieselbe Nachricht nicht mehr beide senden.
+- Exakt gleiche Inhalte werden 25 Sekunden lang dedupliziert. Es gibt keine
+  blockierende 25-Sekunden-Wartezeit; die erste Meldung wird sofort gesendet.
+- Claims laufen kontrolliert ab, damit ein Prozessabbruch keine Nachricht
+  dauerhaft blockiert. Event-ID-Deduplizierung und persistente Queue bleiben.
+
+ETORO-AUSSTIEGE
+- Historische brokerseitige Stop-Loss- und Take-Profit-Ausführungen werden
+  einer vorhandenen eigenen AUTO-Position zugeordnet, obwohl eToro dafür eine
+  synthetische Close-ID liefert.
+- Vorrang hat ein Broker-Ausführungsgrund; ersatzweise gilt ein enger Abgleich
+  mit den gespeicherten Schutzwerten.
+- Nicht passende Schließungen bleiben ausdrücklich MANUELLER BROKER-VERKAUF.
+  Eine unbekannte Schließung wird nicht zur Bot-Order geraten.
+
+VERSION
+- VERSION.txt und config.VERSION_NEXUS: 9.0.2-NEXUS.

@@ -1,0 +1,101 @@
+{
+  "release": "10.3.0-NEXUS",
+  "build": "10.3.0-PULSAR-HYPE-LANE",
+  "based_on": "10.2.2-NEXUS (auf dem Pi installiert, 912 Dateien MATCH)",
+  "package_revision": 2,
+  "pi_fullrun_round_1": {
+    "date": "2026-09-17",
+    "result": "3229 passed, 1 failed; Update vertragsgemaess abgebrochen, Staging selbst archiviert (ALT_FEHLGESCHLAGEN_20260917T151054); 10.3.0 wurde NIE installiert, Revision 2 derselben Nummer daher gedeckt",
+    "failure": "tests/test_v100_frontend.py (Node-Suite frontend_v100.test.js, Subtest 19) pinnte die entfernte 'Community-Breite'-Zeile der PULSAR-Karte; auf Windows uebersprungen, weil Node fehlt",
+    "revision_2_fix": "Subtest 19 auf die Hype-Spur fortgeschrieben (Hype-Spur: Kriterien offen; keine Community-Breite/kein Belegscore; unbekannte Zahlen bleiben unbekannt); jede neue Assertion wurde gegen die im Pi-Protokoll ausgegebene aktuelle Karten-HTML verifiziert",
+    "lesson": "Node-Frontend-Suite laeuft nur auf dem Pi -- bei WebUI-JS-Aenderungen frontend_v100.test.js immer mit fortschreiben"
+  },
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "trigger_incidents": {
+    "okx_freigabe": {
+      "date": "2026-09-17",
+      "diagnosis": "NEXUS_10_Diagnose_2026-09-17_12-57-35_205574_UTC_77cebe3933",
+      "findings": [
+        "risk_manager lehnte den unter 10.2.2 gespeicherten Composite-EUR-Beleg fuer Trade 73 (netto 298.7258766336985 EUR) mit 'Ungueltiger Referenzbewertungsnachweis' ab (Methoden-Pin auf EUR_REFERENCE_CASHFLOWS_V1); WARNING alle ~7 Sekunden",
+        "exposure_klassifizierung ordnete den OKX-Demo-Startbestand (1.00000000279 BTC / 10.000000102 ETH) den offenen Staub-Restzeilen Trade 78 (2.79e-9 BTC) und Trade 77 (1.02e-7 ETH) zu: RESIDUAL_EXPOSURE, alle Kryptokaeufe gesperrt",
+        "Nebenbefund ohne Handlungsbedarf: OKX-Demo-Wartung HTTP 503 bei Schutzorder-Abfragen, korrekt behandelt"
+      ]
+    },
+    "pulsar_hype": {
+      "date": "2026-09-17",
+      "concept": "NEXUS_PULSAR_Umbaukonzept.md (freigegeben)",
+      "decisions": [
+        "Terra-Doppelpruefung im Kaufpfad gestrichen",
+        "Zeitstop 10 Handelstage",
+        "Earnings-Sperre behalten",
+        "X-Budget umgeschichtet (5 Kandidaten- + 2 Makro-Suchen, keine Zaehlungsabrufe, 14.11 EUR/Monat im 15-EUR-Limit)"
+      ]
+    }
+  },
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "note": "POSIX-gebundene Module (fcntl: 8 Testdateien) und Windows-Plattformklassen (Symlink-Privileg, chmod-0600, systemctl/node-Subprozesse, SQLite-Dateisperren) laufen im Pi-Volltest."
+  },
+  "checks": {
+    "ast_syntax": {
+      "errors": 0
+    },
+    "release_checklist_automated": {
+      "findings": 0
+    },
+    "targeted_regressions_10_3_0": {
+      "okx_freigabe": {
+        "suite": "tests/test_v1030_okx_freigabe.py",
+        "passed": 10,
+        "failed": 0,
+        "highlights": [
+          "Exakte Pi-Zahlen: Demo-Startbestand ueber Staub-Rest sperrt nicht mehr; Ueberhang als Konto-Asset, gebundener Staub als Staubrest ausgewiesen",
+          "Signifikanter Ledger-Rest sperrt weiterhin nur die gebundene Menge; Unterdeckung bleibt gesperrt; ohne Kursbeleg keine Staub-Entwarnung; CLOSED/EXTERNAL_OBSERVE binden nichts",
+          "Composite-Methodenkennung akzeptiert, einfache Kennung weiterhin akzeptiert, fremde Kennungen abgelehnt",
+          "Offene Abgleiche: 1 WARNING je 10 Minuten, Wiederholung als DEBUG"
+        ]
+      },
+      "pulsar_hype": {
+        "suite": "tests/test_v1030_pulsar_hype.py",
+        "passed": 20,
+        "failed": 0,
+        "highlights": [
+          "Reddit-Wachstum (>=100, >=3x) und Cold-Start (>=40 ohne Vortageswert) qualifizieren nur zusammen mit Kurs-/Volumenbestaetigung; alte/duenne Beobachtungen und fehlende Felder qualifizieren nie",
+          "X-Stichprobe (>=8 Posts / >=5 Accounts, <=24h) erfuellt das Social-Kriterium, ersetzt aber keinen Kursbeweis",
+          "Intraday-Bestaetigung gegen letzten Tagesschluss mit 2h-Frische, sonst Tageskerzen-Rueckfall (>=5%, >=3x Volumen)",
+          "Luna-REJECT blockt; stable_candidate braucht zwei eligible Messungen >=10min Abstand und ignoriert alte Regelversionen",
+          "RULES PULSAR-2.0: max_open 1, daily_nominations 1, max_hold_sessions 10; Zeitstop aus dem eingefrorenen Plan, Altplaene behalten 20",
+          "Universumsgaeste: 14-Tage-Verfall, Limit 10, nur gueltige Ticker",
+          "X-Suchplan: 5 Kandidaten-Slots (86400//5) + 2 Makro-Slots, Schaetzung <=15 EUR; gespeicherte Alt-Einstellung 3 wird angehoben, 7 abgelehnt",
+          "Hype-Alarmtext traegt Belege, 'keine Order', Modus-Hinweis"
+        ]
+      }
+    },
+    "suites_rewritten_for_new_rules": {
+      "modules": [
+        "test_v984_pulsar_and_routing (Tagesregel statt Wochenregel, Folgetag wieder frei)",
+        "test_v985_pulsar_flow_and_pages (Luna-only-Worker, Hype-Gaps statt Community)",
+        "test_v986_pulsar_research (hype_card-Fixture, Score-100-Karte ohne Kursbeweis nicht eligible, Luna-REJECT)",
+        "test_v987_pulsar_quality (valid_financials direkt, Community-Pins entfernt)",
+        "test_v989_fmp (Finanzfakten mit Provenienz ohne Score-Komponente)",
+        "test_v100_strategy_pulsar (Aggregatzahlen ohne Kursbeweis nie eligible)",
+        "test_v1013_x_market_intelligence / test_v1014_x_discovery / test_v1016_candidate_research (counts=0, 5+2-Suchplan, 12h-Makro-Slots)",
+        "test_v1014_pulsar_x_candidates (Stichproben-Frische 24h, keine Tageszaehlungs-Maschine)"
+      ],
+      "status": "alle gruen im Windows-Lauf"
+    },
+    "broad_local_pytest": {
+      "modules_run": 211,
+      "mode": "je Modul in isoliertem Prozess (Windows-Konsolen-Teardown umgangen)",
+      "environment_failures_windows_only": "jede Fehlklasse einzeln gegen die unveraenderte 10.2.2-Basis reproduziert (fcntl, WinError 1314/32, chmod 0600, systemctl/node, pytest-Pin-Checks) -- keine 10.3.0-Regression",
+      "note": "Massgeblich bleibt der Pi-Volltest der Installation."
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (Pi-Update, Pflicht vor Dienststart)",
+    "Abnahme A: keine wiederholte Meldung 'Risiko-Ergebnisabgleich ledger:73 bleibt offen'",
+    "Abnahme B: BTC/ETH als freie Konto-Assets, Kaufsperre entfaellt, OKX kauft wieder (Demo)",
+    "Abnahme C: PULSAR-Seite zeigt Hype-Spur; Alarm/Nominierung erst beim naechsten echten Hype-Treffer"
+  ]
+}

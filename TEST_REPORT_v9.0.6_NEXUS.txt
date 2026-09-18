@@ -1,0 +1,25 @@
+TRADINGBOT NEXUS 9.0.6 - TESTPROTOKOLL
+======================================
+
+Version: 9.0.6-NEXUS
+Datum: 28.08.2026
+
+Gesamttest:
+  749 Tests bestanden
+  186 Untertests bestanden
+  0 fehlgeschlagen
+
+Gezielte neue/angepasste Regressionen:
+- eToro-Fill bleibt waehrend Broker-Propagationszeit gesperrt.
+- UNPROVABLE erst nach Karenz und drei Negativ-Snapshots.
+- Ein WebSocket-pong macht keine Account-Salden frisch.
+- Account-Snapshot entfernt ausgelassene alte Waehrungen.
+- BTC, ETH, SOL und XRP werden als Konto-Assets statt offene Trades geführt.
+- Legacy-SOL unter BEOBACHTEN zaehlt nicht als aktive Botposition.
+- Telegram-Laufzeitschalter und mobile WebUI bleiben regressionsgeprueft.
+
+Zusaetzliche Pruefungen:
+- Python-Compileall ohne Syntaxfehler.
+- Versionsstand und erforderliche Release-Dateien geprüft.
+- Keine Zugangsdaten oder Laufzeitdaten fuer das Release vorgesehen.
+

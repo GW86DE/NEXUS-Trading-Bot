@@ -1,0 +1,55 @@
+{
+  "release": "10.1.9-NEXUS",
+  "build": "10.1.9-OKX-RISK-CAPITAL-AND-DIAGNOSIS-EVIDENCE",
+  "date": "2026-09-15",
+  "environment": {
+    "os": "Linux x86_64",
+    "python": "3.13.5",
+    "pytest": "9.0.2",
+    "network_guard": "offline_test_bootstrap/sitecustomize.py installed for pytest chunks"
+  },
+  "pytest": {
+    "collected": 3127,
+    "passed": 3124,
+    "skipped": 3,
+    "subtests_passed": 283,
+    "warnings": 6,
+    "warnings_kind": "multiprocessing fork DeprecationWarning in multi-threaded test processes",
+    "chunks": [
+      {"files": 55, "passed": 678, "skipped": 3, "subtests_passed": 277, "seconds": 17.08},
+      {"files": 55, "passed": 997, "skipped": 0, "subtests_passed": 6, "seconds": 16.44},
+      {"files": 55, "passed": 573, "skipped": 0, "subtests_passed": 0, "seconds": 18.83},
+      {"files": 21, "passed": 461, "skipped": 0, "subtests_passed": 0, "seconds": 11.72},
+      {"files": 7, "passed": 100, "skipped": 0, "subtests_passed": 0, "seconds": 1.49},
+      {"files": 7, "passed": 173, "skipped": 0, "subtests_passed": 0, "seconds": 23.39},
+      {"files": 7, "passed": 138, "skipped": 0, "subtests_passed": 0, "seconds": 9.93},
+      {"files": 1, "passed": 4, "skipped": 0, "subtests_passed": 0, "seconds": 0.15}
+    ],
+    "note": "The complete tests directory was executed in bounded chunks because the execution harness terminates a single command after its time ceiling. A single uninterrupted volltest.py attempt reached 53 percent before the harness stopped it; it is not counted as proof. All test files subsequently passed in the listed chunks."
+  },
+  "targeted_report_regressions": {
+    "passed": 12,
+    "seconds": 1.52,
+    "note": "Subset overlaps with the complete pytest count and is not additive."
+  },
+  "other_volltest_groups": {
+    "static_release_hygiene": "PASS",
+    "test_dependencies_webui_client": "PASS",
+    "self_test": "PASS",
+    "compileall": "PASS",
+    "pi_preflight_host_neutral": "PASS",
+    "shell_syntax": "PASS"
+  },
+  "real_external_actions": {
+    "broker_orders": 0,
+    "test_orders": 0,
+    "paid_gpt_calls": 0,
+    "paid_x_calls": 0,
+    "telegram_messages": 0
+  },
+  "limits": [
+    "No Raspberry Pi ARM64 hardware restart/long-run was performed in this environment.",
+    "No live OKX/eToro provider response was used as release proof.",
+    "Historical missing broker fees remain missing and were not estimated."
+  ]
+}

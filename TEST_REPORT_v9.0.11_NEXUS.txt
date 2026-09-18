@@ -1,0 +1,38 @@
+TRADINGBOT NEXUS 9.0.11 - TESTBERICHT
+=====================================
+Version: 9.0.11-NEXUS
+Datum: 29.08.2026
+
+ERGEBNIS
+--------
+- 781 Pytest-Tests bestanden.
+- 188 integrierte Subtests bestanden.
+- SELF TEST: OK.
+- Static Release Hygiene: OK.
+- compileall: OK.
+- Raspberry-Pi-Preflight (host-neutral): OK.
+- Shell-Syntax: OK.
+- Gesamtergebnis: VOLLTEST OK.
+
+GEZIELTE REGRESSIONEN
+---------------------
+- Öffentlicher SPOT-Katalog und privater Kontokatalog bleiben getrennt; ein
+  öffentlich sichtbares Instrument erhält dadurch keine Handelsfreigabe.
+- Ein SOL-USD-Instrument wird nur mit erlaubter und finanzierter USD-
+  tradeQuoteCcy in den handelbaren Pool aufgenommen.
+- Ohne freies USD wird dasselbe Instrument mit dem konkreten Grund
+  „kein finanzierter Handelskanal“ abgelehnt.
+- USDT bleibt selbst bei vorhandenem Testguthaben außerhalb der erlaubten
+  NEXUS-Handelskanäle.
+- Die Positionsgröße eines USD-Kanals verwendet 5.000 USD und nicht das
+  parallel vorhandene wesentlich größere EUR-Guthaben.
+- Die Diagnose weist öffentlichen Katalog, Kontokatalog und Handelskanäle
+  getrennt aus.
+- Alle bisherigen Brokerwahrheits-, Reconciliation-, Order-, Ledger-,
+  Risiko-, WebUI- und Entscheidungslog-Regressionen bestehen weiterhin.
+
+GRENZEN DES OFFLINETESTS
+------------------------
+Echte eToro-/OKX-/Telegram-/KI-Netzwerkaufrufe sowie ARM64-Hardware werden
+offline nicht simuliert. Der kontrollierte Demo-Lauf auf dem Raspberry Pi
+bleibt deshalb Bestandteil der Installation.

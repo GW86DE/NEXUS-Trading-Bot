@@ -1,0 +1,5 @@
+Build: 10.1.1-PROTECTION-AND-DIAGNOSIS / 2026-09-13
+Software: 10.1.1-NEXUS
+Basis: 10.1.0-DIAGNOSIS-REPAIR; gepruefter Reparaturstand
+Freigabe: kontrolliertes DEMO/Paper-Update; uneingeschraenkte Live-Freigabe NEIN
+Details: IMPLEMENTATION_REPORT.md, TEST_REPORT.md, KNOWN_ISSUES.md

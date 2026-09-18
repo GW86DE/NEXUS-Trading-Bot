@@ -1,0 +1,168 @@
+{
+  "release": "10.4.0-NEXUS",
+  "build": "10.4.0-CHART-SCAN-EXISTENCE",
+  "based_on": "10.3.1-NEXUS Revision 2 (auf dem Pi installiert; Abnahme Diagnose 17.09.2026 19:26 UTC: Trades 79/80 automatisch abgerechnet)",
+  "package_revision": 2,
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "approval": "Georg 17.09.2026: 'Weg A und Auch bei e-Toro. Dann fang an und nimm alle offenen Punkte mit. Denk an die saubere Installation.'",
+  "scope_items": {
+    "1_existence_risk_block": "pulsar/evidence.py _existence_risk + evaluate(); Luna-Anweisung pulsar/analysis.py; Telegram-Alarmzeilen; schwache Bilanz ausdruecklich kein Block",
+    "2_scan_overview": "scan_uebersicht.py (neu), live_trader.py Hooks, /api/logs/scan-uebersicht, Logbuch-Panel, Diagnose sichert scan_uebersicht.json",
+    "3_pulsar_db_lock": "pulsar/control.py _ensure_schema einmal je Prozess/Pfad; Leseabfrage statt executescript im Hot-Path",
+    "4_quote_price_confirmation": "pulsar/evidence.py QUOTE-Weg (FMP-Starter /quote: price, previousClose, volume, timestamp; <= 900 s, >= 5 %, >= 1.0x Durchschnittstagesvolumen)",
+    "5_candle_chart_echarts": "webui/static/echarts.min.js 5.5.1 (Apache-2.0, SHA256 e84270bd0cd5bdf60fefc26d00c2a391cb2e81f4d26a7a9ee16185a54773a3cf), etoro_chart_store.py (neu), trade_chart_data.py (Zeitrahmen, Achsenklemmung, 500 Kerzen, Paginierung), trades.js ECharts-Renderer + SVG-Rueckfall, ?bar= API"
+  },
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "note": "Node-Frontendsuite (tests/frontend_v100.test.js, um den Kerzenansichts-Test erweitert) und POSIX-gebundene Module laufen im Pi-Volltest."
+  },
+  "checks": {
+    "bom_scan_tree": {
+      "files_with_bom": 0
+    },
+    "crlf_scan_changed_files": {
+      "files_with_crlf": 0
+    },
+    "ast_syntax": {
+      "errors": 0
+    },
+    "release_checklist_automated": {
+      "findings": 0,
+      "note": "Rev 2: volltest._static_hygiene() KOMPLETT (Pflichtdateien, VERSION/config, stummer Exception-Pfad, Laufzeit-/Credential-Dateien, Alt-Brokerbegriffe, Release-Checkliste) im Bauskript vor dem Packen = 0 Befunde"
+    },
+    "new_suite_10_4_0": {
+      "suite": "tests/test_v1040_scan_chart_existence.py",
+      "passed": 33,
+      "failed": 0,
+      "highlights": [
+        "Existenzrisiko: Chapter-11-News, Going Concern, Delisting, Handelsaussetzung, SEC-Ermittlung, Insolvenzantrag (DE) -> BLOCKIERT mit Beleg; >90 Tage alt -> kein Befund; isActivelyTrading=false nur bei Symbol-Match; SEC-10-Q-Text",
+        "Schwache Bilanz (negativer Gewinn/Cashflow/Eigenkapital) -> eligible bleibt True, blocks leer, finance_note nur Information",
+        "Luna-Anweisung verlangt REJECT nur bei Existenzrisiko; Telegram zeigt 'Existenzrisiko: KEIN Befund'/'BLOCKIERT' und Bilanzhinweis",
+        "Quote frisch (+7 %, 1.2x Volumen) -> QUOTE-Bestaetigung am selben Tag; zu duenn / ohne Kursplus -> nicht bestaetigt und Tageskerze ersetzt ihn nicht; alt/unvollstaendig/fremdes Symbol -> Rueckfall Tageskerze",
+        "PULSAR-Schema: _ensure_schema einmal je Pfad, Wiederaufbau nach Dateiersatz; Leser (WAL) blockiert die Transaktion nicht",
+        "Scan-Zyklus zaehlt HOLD/SELL/blockiert/freigegeben/Fehler, gruppiert Gates; 48-Zyklen-Grenze; defekte Datei wird neu aufgebaut; Fehler beruehren den Handelspfad nie; API nur mit Sitzung (401 ohne)",
+        "live_trader-Hooks vorhanden (Zyklus, hold, freigegeben, blockiert, speichern, merke_scan, ergaenze_fuer_trades)",
+        "eToro-Kerzenspeicher: nur eToro-Aktien, kein Abruf im Scan, inkrementelles Schreiben (5 statt 62 Zeilen), 15m/1d nur fuer Trades <= 7 Tage, Ruhezeit 900 s, max_fetches",
+        "chart_for_trade eToro: Fehlertext vor erstem Scan, 1h/1d waehlbar, Achse klemmt Docht-Ausreisser (clipped=1, max < 260), data_source/data_age, Automatik bei unbekanntem Zeitrahmen",
+        "chart_for_trade OKX: 5 Seiten a 100 = Deckel 500, Zeitrahmen 5m, Marker KAUF/VERKAUF, Automatik",
+        "Frontend: ECharts lokal (> 900 kB, Lizenz), kein CDN/https in trades.html, CSP script-src 'self', REQUIRED_RELEASE_FILES kennt neue Dateien"
+      ]
+    },
+    "full_isolated_run": {
+      "date": "2026-09-18",
+      "method": "Alle 221 Testmodule je in eigenem Prozess (6 parallel, Treiber ignoriert Konsolen-Ctrl-C, Kindprozesse in eigener Prozessgruppe)",
+      "modules": 221,
+      "modules_green": 191,
+      "passed": 3084,
+      "failed": 53,
+      "errors": 8,
+      "skipped": 18,
+      "failing_modules_all_known_windows_artifacts": true,
+      "artifact_classes": {
+        "fcntl_import (nexus_update/backtest_jobs/Testmodule)": [
+          "test_alle_module_importierbar",
+          "test_etoro_protection_plan_repair",
+          "test_fix3_update",
+          "test_installer_reboot_boundary",
+          "test_v10110_backtest_webui",
+          "test_v1012_diagnosis_webui",
+          "test_v1017_okx_boundary",
+          "test_v101_candle_observation",
+          "test_v975_installer",
+          "test_v976_release_and_diagnose",
+          "test_v988_cold_migration_fix2",
+          "test_v988_staging_and_guard"
+        ],
+        "symlink WinError 1314 / chmod-Bits": [
+          "test_installer_recovery",
+          "test_v1013_release_integration",
+          "test_v1013_sources_webui",
+          "test_v974_isolation_fix1",
+          "test_v975_release_unpack",
+          "test_v988_import_migration_ui"
+        ],
+        "sqlite Windows-Dateisperre WinError 32": [
+          "test_money_path_integration",
+          "test_order_execution",
+          "test_v988_import_migration_ui"
+        ],
+        "node/systemctl-Subprozess fehlt (WinError 2)": [
+          "test_v1013_sources_webui",
+          "test_v1014_ui_and_migration",
+          "test_v1016_source_ui",
+          "test_v821_service_guard",
+          "test_v988_encoding_fix1",
+          "test_v988_import_migration_ui"
+        ],
+        "Credential-/Pfadtests POSIX": [
+          "test_v1013_x_market_intelligence",
+          "test_v80_nexus",
+          "test_v812_nexus"
+        ],
+        "pytest-Pin/Umgebung": [
+          "test_v974_test_dependencies",
+          "test_v974_isolation_fix1"
+        ],
+        "bekannte Einzelfaelle (identisch 10.3.0/10.3.1)": [
+          "test_v902_stability_fixes telegram claim",
+          "test_v990_freqtrade DataFrame-Index"
+        ]
+      },
+      "new_failures_vs_10_3_1_artifact_list": 0
+    },
+    "visual_check_windows_browser": {
+      "method": "Paketdateien (trades.html, app.css, nexus.css, common.js, trades.js, echarts.min.js) mit API-Attrappe im eigenen Browser gerendert, Canvas-PNG ueber getDataURL gesichert",
+      "results": [
+        "eToro 1h und 1d gerendert (Zeitrahmenleiste, Stand-Alter, Achsennotiz '2 Docht-Ausreisser ... 400 Kerzen geladen')",
+        "OKX 5m mit KAUF/VERKAUF-Markern, Stop-Loss/ROI/Aktuell-Linien, Volumen-Teilfenster, Schieberegler",
+        "Zoom-Erhalt bei stiller Aktualisierung (dataZoom start 80 -> 80)",
+        "keine JavaScript-Fehler"
+      ]
+    },
+    "node_frontend_suite_local": {
+      "runtime": "Node v18.4.0 (PyPI nodejs-bin)",
+      "tests": 26,
+      "passed": 26,
+      "failed": 0,
+      "note": "Rev 1 Subtest 26 hier reproduziert (undefined !== 7) und nach dem Fix gruen; auch tests/test_v100_frontend.py laeuft damit lokal (1 passed)"
+    },
+    "full_isolated_run_rev2": {
+      "date": "2026-09-18",
+      "method": "Alle 221 Testmodule je in eigenem Prozess, Node auf PATH (JS-Renderer-Tests laufen mit)",
+      "modules": 221,
+      "modules_green": 193,
+      "passed": 3110,
+      "failed": 37,
+      "errors": 8,
+      "skipped": 9,
+      "now_green_with_node": [
+        "test_v100_frontend",
+        "test_v1014_ui_and_migration",
+        "test_v1016_source_ui"
+      ],
+      "failing_modules_all_known_windows_artifacts": true,
+      "new_failures_vs_rev1": 0,
+      "remaining_js_adjacent_failures": {
+        "test_v1013_sources_webui": "1x Symlink WinError 1314",
+        "test_v988_encoding_fix1": "fcntl + POSIX-Node-Ausgabetest",
+        "test_v988_import_migration_ui": "Backslash-Zipname, SQLite WinError 32, chmod-Bits, Symlink"
+      }
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (Pi-Update, Pflicht vor Dienststart) -- Rev 2 lokal mit identischen Schritten (statische Hygiene komplett, Node-Suite) vorgeprueft",
+    "Abnahme: Logbuch zeigt Scan-Uebersicht je Broker nach dem ersten Zyklus; Systemprotokoll 'SCAN etoro: ...'",
+    "Abnahme: Kerzenansicht OKX sofort, eToro nach dem ersten Scan (1h) bzw. innerhalb 15 Minuten (15m/1d) fuer Positionen",
+    "Abnahme: keine 'database is locked'-Zeile aus pulsar/control.py waehrend einer Diagnose",
+    "Abnahme: PULSAR-Hype-Karte traegt Existenzrisiko-Zeile; Regelversion PULSAR-2.1-HYPE-LANE-EXISTENCE"
+  ],
+  "pi_fullrun_round_1": {
+    "date": "2026-09-18",
+    "result": "3274 passed, 3 skipped, 1 failed (pytest) + STATIC RELEASE HYGIENE FEHLER(1); Update vertragsgemaess abgebrochen, Staging archiviert (ALT_FEHLGESCHLAGEN_20260917T230559_TradingBot_v10.4.0_NEXUS); 10.4.0 nie installiert, Revision 2 derselben Nummer gedeckt",
+    "failure_1": "volltest._static_hygiene: live_trader.py:2127 stummer Exception-Pfad (neues 'except Exception: pass' um die Scan-Uebersichts-Zaehlung); Bauskript hatte nur _release_checklist() ausgefuehrt",
+    "failure_2": "tests/frontend_v100.test.js Subtest 26 (neu): assert.equal(context.ausgewaehlt, 7) -> undefined; let-Bindung des WebUI-Skripts ist keine vm-Kontext-Eigenschaft; Testfehler, kein Produktfehler",
+    "revision_2_fix": "live_trader: logger.debug statt pass; Test liest ausgewaehlt per run() und setzt tradeDaten per run(); Bauskript fuehrt jetzt volltest._static_hygiene() komplett UND die Node-Suite lokal aus (Node 18.4 via PyPI nodejs-bin)",
+    "lesson": "Die lokale Pruefung muss dieselben Schritte wie der Pi-Volltest ausfuehren (komplette statische Hygiene, Node-Suite); 'nur auf dem Pi pruefbar' war fuer die Node-Suite eine Ausrede, nicht ein Fakt"
+  }
+}

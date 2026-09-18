@@ -1,0 +1,38 @@
+TRADINGBOT NEXUS 9.0.8 - AENDERUNGSPROTOKOLL
+=============================================
+
+Version: 9.0.8-NEXUS
+Datum: 28.08.2026
+Basis: 9.0.7-NEXUS
+
+BEHOBENER ABSTURZ
+-----------------
+- live_trader.py importiert OrderStatusUnklar jetzt ausdruecklich. Der neue
+  Ausnahmezweig aus 9.0.7 kann deshalb den eigentlichen Brokerfehler nicht mehr
+  durch NameError verdecken und den Aktienlauf beenden.
+
+ETORO-API-LAST
+--------------
+- Der Scanner fragt das komplette eToro-Depot nicht mehr vor jeder
+  Signalauswertung ab. HOLD-Instrumente erzeugen keinen eigenen Depotabruf.
+- Bei einem echten BUY-Kandidaten bleibt die frische Positionspruefung aktiv;
+  unmittelbar vor dem POST folgt weiterhin das zweite Money-Path-Gate.
+- Standard-, Eligibility- und Execution-Aufrufe werden innerhalb ihrer
+  getrennten gleitenden Ratenfenster gleichmaessig verteilt. Das vermeidet
+  Bursts mit anschliessender 60-Sekunden-Blockade.
+- Ein ausgeschoepftes Ratenfenster bleibt ein fachlicher Einzelabruf-Fehler und
+  wird nicht als Verbindungsverlust gewertet.
+
+UNVERAENDERT
+------------
+- Die Reconciliation-, Eigentums- und Waehrungskorrekturen aus 9.0.7 bleiben
+  vollstaendig erhalten.
+- eToro bleibt PAPER, OKX bleibt DEMO.
+- EUR bleibt primaere OKX-Bot-Cashwaehrung; USDC bleibt zusaetzlich erlaubt.
+
+PRUEFUNG
+--------
+- 760 Pytest-Tests bestanden.
+- 186 Subtests bestanden.
+- Selbsttest, Volltest, Compileall, Shell-Syntax und Release-Hygiene bestanden.
+

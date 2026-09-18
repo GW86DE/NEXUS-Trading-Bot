@@ -1,0 +1,75 @@
+NEXUS 9.5.1 - Testbericht
+=========================
+
+Stand: 01.09.2026
+Release: 9.5.1-NEXUS
+
+Endergebnis
+-----------
+
+* Pytest-Gesamtsuite: 1072 bestanden, 0 fehlgeschlagen
+* Self-Test: OK
+* Python-Compileall: OK
+* Raspberry-Pi-Preflight (host-neutral): OK
+* Shell-Syntax der Installations-/Startskripte: OK
+* Statische Release-Hygiene im bereinigten Paketbaum: OK
+* Pflichtdateien und Versionskonsistenz: OK
+
+Der Volltest wurde aus einem bereinigten Releasebaum ohne lokale Logs,
+SQLite-Laufzeitdaten, Locks, Caches oder Testumgebung ausgefuehrt.
+
+Realer ADBE-Datenreplay
+-----------------------
+
+Die anonymisierten Laufzeitdateien vom 01.09.2026 wurden nur in einer Kopie
+verarbeitet. Die Originaldateien blieben hash-identisch. Gepruefte Kette:
+
+decisionId 4153277691980212224
+-> referenceId ac14a874-980a-468d-982f-57df9c4d56b9
+-> orderId 378375675
+-> positionId 3592625451
+-> Entry-Fill 51 @ 293.92
+-> brokerseitiger Close 51 @ 287.16
+-> bestehender Ledger-Trade 35
+
+Ergebnis des Replays:
+
+* Bei injiziertem Ledgerfehler bleibt der Datensatz
+  CLOSED_ACCOUNTING_PENDING und die Kontodomain gesperrt.
+* Der naechste erfolgreiche Lauf verknuepft exakt Trade 35 als
+  LINKED/BOT_VERIFIED und gibt die Domain frei.
+* Entry-orderId wird nicht als Exit-orderId weitergefuehrt.
+* Der Exitgrund wird anhand des exakten Schutzpreises als STOP_LOSS erkannt.
+* Preise, Zeiten, Gebuehren, Slippage, MFE/MAE und PnL bleiben unveraendert.
+* Auch nach wiederholtem Replay existieren genau ein Entry- und ein
+  Exit-Ereignis.
+* Zehn bereits historisch geschlossene, kontolose Altdatensaetze bleiben
+  terminal und unowned; sie blockieren das aktuelle Konto nicht erneut.
+
+Gezielte Sicherheitsfaelle
+---------------------------
+
+* `positionId`-/`positionID`-Normalisierung und strikte CID-Bindung
+* leerer oder unvollstaendiger PnL-Snapshot bleibt fail-closed
+* Worker-Start, Heartbeat, Reconnect und synchroner Hauptzyklus
+* verlorene/unklare POST-Antwort ohne Doppelorder
+* eToro limitIOC-Preisdeckel und Risikoabweichungs-Quarantaene
+* OrderId-/ReferenceId-/PnL-/History-Recovery
+* History-Cursor erst nach exakten Downstream-Fill-Commits
+* Teilverkauf bleibt OPEN, solange dieselbe positionId im PnL offen ist
+* mehrere History-Teilfills werden einzeln und genau einmal verbucht
+* identischer Close aus Close-Info und History wird quellenuebergreifend
+  dedupliziert
+* Full Close ohne UnitsToDeduct, Partial Close mit numerischer Menge
+* gemischte oder widerspruechliche Close-Info wird komplett verworfen
+* Ledgerfehler und Prozessabbruch zwischen Brokerfill und lokalem Commit
+* atomarer SELL-Replay ohne Phantomtrade oder doppelte Geldmutation
+* Commit-Reihenfolge Ledger -> Exit-Journal -> Reconciliation -> FillTracker
+* eToro-Kontodomain und OKX-Spot-Fillidentitaet bleiben getrennt korrekt
+
+Nicht durch Offline-Tests ersetzt
+---------------------------------
+
+Es wurden keine echten eToro-/OKX-Orders, Telegram-/KI-Netzwerkaufrufe oder
+ARM64-Hardware simuliert. Vor LIVE ist deshalb die in der Installationsdatei
+beschriebene vollstaendige eToro-DEMO-Abnahme verpflichtend.

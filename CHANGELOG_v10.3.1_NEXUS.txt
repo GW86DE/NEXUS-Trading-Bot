@@ -1,0 +1,52 @@
+NEXUS 10.3.1 - ETORO-CASH-DELTA-SETTLEMENT (17.09.2026, Punkt-Hotfix)
+
+WURZEL (Diagnose 17.09. 17:02 UTC, AAPL Trade 79):
+- Die eToro-History meldet fuer geschlossene Positionen netProfit = reiner
+  Kursgewinn (124,08 USD) und fees = 0, obwohl der Einstieg nachweislich
+  1,00 USD kostete (ETORO_V2_OPENING_DATA). NEXUS stuft das korrekt als
+  BROKER_HISTORY_COST_SCOPE_CONFLICT ein; das Ergebnis bleibt UNKNOWN und
+  sperrt alle eToro-Kaeufe ("Ergebnisabgleich ausstehend").
+- Laut eToro-API-Dokumentation (api-portal.etoro.com, list-trading-history)
+  ist "fees" nur "The fees of the trade" ohne Bezug zu netProfit; einen
+  Endpunkt mit Abschlusskosten geschlossener Positionen gibt es nicht
+  (totalFees nur im PnL-Endpoint fuer OFFENE Positionen). Der einzige
+  belastbare Beleg ist die authentifizierte Barbestandsbewegung des Kontos.
+- Die bisherige Cash-Delta-Zuordnung (manueller Dialog seit 10.1.5) verlangte
+  "genau eine offene Position davor, keine danach". Am 17.09. war neben AAPL
+  META offen (Belege 15:11:07 [AAPL, META] -> 16:01:36 [META]) -- damit
+  konnte weder NEXUS noch der Nutzer die Abrechnung jemals abschliessen.
+  Dabei ist die Rechnung exakt: 70.213,54 -> 84.982,02 USD = +14.768,48;
+  Bruttoerloes 44 x 335,67 = 14.769,48; Abschlusskosten genau 1,00 USD;
+  netto 122,08 USD.
+
+AENDERUNGEN:
+1. etoro_settlement_review: Zuordnung verallgemeinert. Der Positionsbestand
+   vor dem Abschluss abzueglich der geschlossenen Position muss exakt dem
+   Bestand danach entsprechen; neue Barbestandsbelege tragen zusaetzlich die
+   Stueckzahl je Position (Teilschliessungen anderer Positionen werden
+   erkannt); keine offenen Orders nach dem Abschluss; keine andere
+   Handelsbewegung im Intervall (unveraendert). Der Barbestand (credit)
+   enthaelt keine schwebenden Gewinne -- Beleg: 85.026,04 -> 70.213,54 USD
+   beim META-Kauf entspricht exakt 22 x 673,25 + 1,00.
+2. Automatische Verbuchung (auto_settle) unter engen Grenzen: Belege auf
+   beiden Seiten ohne offene Orders, Messintervall <= 30 Minuten,
+   Abschlusskosten <= max(5 USD, 0,5 % des Erloeses). Ergebnis wird als
+   fee_quality CASH_DELTA_CONFIRMED mit Audit-Eintrag (actor
+   nexus:cash-delta-auto, Belegtoken) protokolliert. Ausserhalb der Grenzen:
+   UNKNOWN bleibt UNKNOWN, der manuelle Dialog zeigt den Grund.
+3. risk_result_recovery ruft die Automatik je offener eToro-Zeile hoechstens
+   alle 5 Minuten auf; risk_manager akzeptiert das Belegpaar
+   (ETORO_AUTOMATIC_CASH_DELTA / CASH_DELTA_CONFIRMED) neben der
+   Nutzerbestaetigung. Das Ergebnis wird zum urspruenglichen Verkaufstag
+   uebernommen; die Kaufsperre faellt ohne Nutzeraktion.
+4. CASH_DELTA_CONFIRMED in ledger_result.CONFIRMED_FEES, trade_ledger
+   (Einstandskosten-Nachtrag, Exit-Abgleich) und Diagnose-Auswertungen.
+5. WebUI-Abrechnungsdialog zeigt, ob und warum die Automatik greift; der
+   manuelle Weg bleibt als Rueckfall erhalten.
+
+NICHT geaendert: Alte UNKNOWN-Zeilen ohne Barbestandsbelege (Trades 50/53
+vom 08./10.09.) bleiben historisch offen -- sie sperren nicht.
+
+Tests: tests/test_v1031_etoro_cash_delta.py (12; darunter die exakten
+Pi-Zahlen AAPL/META, Teilschliessung, Plausibilitaetsgrenze, Ordersperre,
+Intervall, Risiko-Aufloesung am Verkaufstag, Belegpaar-Pruefung).

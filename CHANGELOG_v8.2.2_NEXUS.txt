@@ -1,0 +1,24 @@
+NEXUS 8.2.2 – Installations-Korrekturrelease
+Stand: 26.08.2026
+
+WICHTIG
+- Dieses Release ersetzt das fehlerhafte 8.2.1-Installationspaket.
+- Es wird in einen neuen Ordner entpackt. Nicht Dateien in einen alten
+  Release-Ordner hineinkopieren.
+
+WEBUI-SERVICE-RECOVERY
+- Pi_WebUI_Aktivieren.sh kann eine wirklich fehlende
+  tradingbot-webui.service wieder aus der aktuellen Vorlage erzeugen.
+- Die Unit wird dabei mit Benutzer, Gruppe, Version und exakt diesem
+  Release-Ordner gerendert.
+- Existiert eine Unit bereits, wird sie NICHT still ueberschrieben.
+  Zeigt sie noch auf 8.1.5 oder einen anderen Ordner, blockiert die
+  Pfadpruefung den Start bewusst und eindeutig.
+- Damit funktionieren sowohl der Wiederherstellungsfall als auch die
+  Sicherheitsregel gegen versehentliches Starten einer alten Version.
+
+UNVERAENDERT AUS 8.2.1
+- Aktien/ETFs bleiben bei eToro; Krypto bleibt bei OKX EEA Spot.
+- Favoriten sind nur Prioritaeten und umgehen niemals Universum, Signal,
+  Kosten oder Risiko.
+- WireGuard wird weder angelegt, noch geaendert oder neu gestartet.

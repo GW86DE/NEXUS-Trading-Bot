@@ -1,0 +1,128 @@
+{
+  "release": "10.7.0-NEXUS",
+  "build": "10.7.0-BUY-GATE-SCOPE-AND-FEE-EVIDENCE",
+  "contains": ["10.6.0-NEXUS", "10.5.0-NEXUS Revision 2", "10.4.0-NEXUS Revision 2"],
+  "package_revision": 2,
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "revision_1_on_target": {
+    "date": "2026-09-18",
+    "result": "VOLLTEST auf dem Pi: 3396 passed, 3 skipped, 297 subtests, 1 FAILED -> Update vertragsgemaess abgebrochen, Staging archiviert (ALT_FEHLGESCHLAGEN_20260918T171203_TradingBot_v10.7.0_NEXUS); 10.6.0 lief weiter. Kein Netzwerkereignis.",
+    "failed_test": "tests/test_v988_staging_and_guard.py::test_new_read_gate_closes_all_its_connection_handles",
+    "cause": "Der Test prueft die Handle-Hygiene von okx_accounting.status(), benutzte aber als Nebenbedingung die alte Regel 'jeder offene Ergebnisbeleg macht die Domaene unvollstaendig'. Sein Beleg stammt vom 10.09.2026; nach Georgs Entscheidung sperrt er nicht mehr, status() liefert complete=True. Das Modul importiert nexus_update (fcntl, pwd, grp) und kam auf Windows nie bis zur Sammlung -- der Modulvergleich 'gleich viele rote Module wie 10.6.0' hat den Test deshalb nicht gesehen.",
+    "revision_2_fix": "Nur der Test: Er verlangt jetzt genau den einen RESULT-Beleg, complete=True und keine gesperrten Coins -- und weiterhin, dass jede der fuenf Verbindungen geschlossen ist. Kein Produktcode geaendert.",
+    "process_fix": "Neuer harter Bauschritt: Je-Test-Vergleich gegen das zuletzt ausgelieferte Paket mit POSIX-Shims (fcntl/pwd/grp), damit dieselben 3400 Tests laufen wie auf dem Pi; jeder Test, der neu rot ist, bricht den Bau ab. Vorab-Lauf mit dem Fix: alt 3343 Tests / 100 rot (Windows), neu 3400 / 102 rot, davon neu rot nur 2 manifestgebundene Tests des Spiegels ohne MANIFEST_SHA256.json (im Bau laeuft der Vergleich nach dem Manifest)."
+  },
+  "approval": "Georg 18.09.2026: Kaufsperren von der Wurzel analysieren und umbauen ('Analysiere das problem grundlegend und wenn noetig baue es komplett um'); 'Ja, baue es so.' (unbekanntes Ergebnis sperrt nur am Verkaufstag); 'lockere die Regel und trage einen erwartungswert ein.' (Gebuehren-Erwartungswert)",
+  "analysis": "NEXUS_Analyse_Kaufsperren_2026-09-18.md (Projektordner)",
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "node": "v18.4.0 (PyPI nodejs-bin) fuer die Frontendsuite"
+  },
+  "checks": {
+    "static_hygiene_full": {
+      "method": "volltest._static_hygiene() komplett auf frischem Spiegel der Arbeitskopie",
+      "issues": 0
+    },
+    "node_frontend_suite_local": {
+      "tests": 30,
+      "passed": 30,
+      "failed": 0,
+      "new_in_10_7_0": "buy blocks (10.7.0) list reason, scope, expiry and resolution per broker and never invent a block"
+    },
+    "new_suite_lot_rest": {
+      "module": "tests/test_v1070_lot_rest.py",
+      "tests": 11,
+      "passed": 11,
+      "belegt": [
+        "Echte Zahlen vom 18.09.2026: 18,3284 verkauft + 0,0000532 Rest deckt 18,3284532 gebucht",
+        "Ohne Restzeile bleibt der Abgang unerklaert (Luecke bleibt PENDING)",
+        "Teilverkauf mit Lot-Rest loest die Luecke im Verkaufspfad selbst",
+        "Reparaturlauf schliesst Altlasten aus Verkauf plus Restzeile (LOT_RESIDUAL_LINEAGE)",
+        "Nie verkaufte Trades, Zeilen ohne Fills und fremde Kontodomaenen werden nicht angefasst"
+      ]
+    },
+    "new_suite_aktien_stop": {
+      "module": "tests/test_v1070_aktien_stop.py",
+      "tests": 9,
+      "passed": 9,
+      "belegt": [
+        "CSCO nachgestellt: Mindestabstand 1 % vor der Mengenrechnung (108,81 statt 109,12)",
+        "Bezug auf den frischen Briefkurs mit gleichen prozentualen Abstaenden (109,15 -> Stop 108,06)",
+        "Weite Stops bleiben unveraendert; Krypto und PULSAR-Plaene werden nicht angefasst",
+        "Kaufpfad ist auf den Kaufkurs verdrahtet (Kosten, Edge, Order, Beleg) inklusive Meldung STOP ZU NAH (Quellpruefung); Mindestabstand konfigurierbar (0,5 bis 5 %)"
+      ]
+    },
+    "new_suite_gebuehrenbeleg": {
+      "module": "tests/test_v1070_gebuehrenbeleg.py",
+      "tests": 15,
+      "passed": 15,
+      "belegt": [
+        "CSCO-Muster: Kauf und Verkauf im selben Intervall aus dem Barbestand abgerechnet (CASH_DELTA_CONFIRMED, Weg INTERVAL)",
+        "Bestaetigter zweiter Verkauf wird eingerechnet; unbestaetigter bricht ab",
+        "Verschwundene Position ohne Ledgerzeile, schwebende Orders und unplausible Differenz brechen ab",
+        "Erwartungswert: Median aus mindestens drei bestaetigten Abrechnungen, fruehestens 15 Minuten nach dem Verkauf, Qualitaet EXPECTED_UNVERIFIED",
+        "Ein spaeterer Beleg ersetzt den Erwartungswert und protokolliert die Abweichung; nie umgekehrt",
+        "Risikozustand und Buchungsabgleich nehmen beide neuen Belegarten an"
+      ]
+    },
+    "new_suite_handelsfreigabe": {
+      "module": "tests/test_v1070_handelsfreigabe.py",
+      "tests": 22,
+      "passed": 22,
+      "belegt": [
+        "Bestandsbelege sperren nur ihren Coin; ACCOUNT_UNKNOWN sperrt die Domaene; unbekannte Belegarten sperren vorsichtshalber",
+        "Ergebnis von heute sperrt bis zum Tagesreset; Ergebnis von gestern bleibt offener Beleg ohne Sperre",
+        "require_tradable laesst den anderen Coin durch und lehnt den gesperrten ab; Order-Reservierung nutzt nur noch require_tradable",
+        "Beide Broker zaehlen offene Ergebnisse nach derselben Tagesregel",
+        "Sperrliste traegt bei jeder Sperre Grund, Reichweite, Ablauf und Aufloesung"
+      ]
+    },
+    "adjusted_assertions": {
+      "count": 27,
+      "modules": ["test_v988_accounting", "test_v988_staging_and_guard (Revision 2)", "test_v1013_etoro_result_scope", "test_v1017_okx_boundary", "test_v1020_exit_in_progress", "test_v954_staub_nach_verkauf", "test_v814_positionsbuch", "test_v1060_bestandsrueckkehr", "test_v1070_lot_rest"],
+      "reason": "Sie schrieben 'jede Luecke sperrt die Domaene' und 'UNKNOWN sperrt ueber Mitternacht' fest; nach Georgs Entscheidung pruefen sie die neue Regel (Coin gesperrt, Domaene frei; Sperre endet mit dem Handelstag, Beleg bleibt). Jede Umstellung ist im Test kommentiert.",
+      "real_defect_found_by_existing_tests": "test_v1031_etoro_cash_delta (2 Tests) deckte auf, dass die Intervallrechnung eine laut Beleg verschwundene Position ohne Ledgerzeile abbrechen muss; Pruefung eingebaut, Tests unveraendert gruen"
+    },
+    "full_isolated_run_1": {
+      "date": "2026-09-18",
+      "method": "228 Module je in eigenem Prozess (6 parallel), Netzwerkwaechter aktiv, Node auf PATH, frischer Spiegel",
+      "modules": 228,
+      "modules_green": 189,
+      "passed": 3219,
+      "failed": 60,
+      "errors": 7,
+      "skipped": 9,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": 13,
+      "red_modules_without_network_event": 26,
+      "diff_to_10_6_0_run": {"neu_rot": [], "neu_gruen": []}
+    },
+    "full_isolated_run_2": {
+      "date": "2026-09-18",
+      "method": "Wiederholung nach der letzten Codeaenderung (okx_accounting: alle Fehlerpfade liefern dieselben Schluessel via _fail_closed)",
+      "modules": 228,
+      "modules_green": 189,
+      "passed": 3219,
+      "failed": 60,
+      "errors": 7,
+      "skipped": 9,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": 13,
+      "red_modules_without_network_event": 26,
+      "diff_to_run_1": {"neu_rot": [], "neu_gruen": []},
+      "note": "3219 = 3162 (10.6.0) + 57 neue Tests. 13 socket-only + 26 Windows-Artefakte (fcntl, flock, Symlinks, systemd, Installerpfade) = 39 rote Module, exakt der Stand von 10.6.0 und 10.5.0 Revision 2. Keine neue Fehlstelle."
+    },
+    "network_guard": {
+      "method": "PULSAR-Worker-Module, die 10.6.0-Suiten und die vier 10.7.0-Suiten unter dem Waechter des Volltests (Bauskript)",
+      "http_or_dns_events": 0
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (Pi-Update, Pflicht vor Dienststart)",
+    "Abnahme: Logzeile 'OKX: 3 Bestandsbeleg(e) geschlossen' im ersten Zyklus; XRP, BTC, ETH frei",
+    "Abnahme: CSCO-Abrechnung per Intervall ('Weg INTERVAL') oder nach 15 Minuten als gekennzeichneter Erwartungswert; eToro frei",
+    "Abnahme: Uebersicht je Broker Block 'Kaufsperren' mit Grund, Reichweite, Ablauf, Aufloesung",
+    "Abnahme: naechster Aktienkauf mit STOP-Logzeile (Mindestabstand / frischer Kaufkurs), Logbuch mit entry_reference und stop_distance_pct"
+  ]
+}

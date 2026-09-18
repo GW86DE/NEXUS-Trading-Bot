@@ -1,0 +1,156 @@
+{
+  "running": true,
+  "pid": 79090,
+  "last_heartbeat": "2026-09-02T07:11:47.073241+00:00",
+  "broker": "etoro",
+  "mode": "PAPER",
+  "cycle": 150,
+  "state": "aktiv",
+  "broker_connected": true,
+  "connection_state": "ONLINE",
+  "reconnect_attempts": 0,
+  "reconnect_attempts_current": 0,
+  "reconnects_total": 0,
+  "offline_since": null,
+  "last_connection_error": null,
+  "last_broker_contact": "2026-09-02T07:11:37.257606+00:00",
+  "initialization_complete": true,
+  "pi_mode": true,
+  "pi_model": "Raspberry Pi 5 Model B Rev 1.1",
+  "pi_architecture": "aarch64",
+  "pi_cpu_count": 4,
+  "pi_cpu_temperature_c": 50.7,
+  "pi_cpu_usage_pct": 21.4,
+  "pi_memory_total_mb": 8062.4,
+  "pi_memory_used_mb": 2523.0,
+  "pi_memory_available_mb": 5539.4,
+  "pi_disk_total_mb": 119457.7,
+  "pi_disk_used_mb": 23604.4,
+  "pi_disk_free_mb": 90927.4,
+  "pi_system_uptime_seconds": 421705.9,
+  "pi_load_1m": 1.44,
+  "pi_throttled_hex": "0x0",
+  "pi_undervoltage_now": false,
+  "pi_throttled_now": false,
+  "pi_health_warnings": [],
+  "etoro_runtime_services_ok": true,
+  "etoro_runtime_services_detail": "Reconciliation-Worker laeuft",
+  "etoro_reconciliation_worker": {
+    "running": true,
+    "generation": 1,
+    "started_at_utc": "2026-09-01T17:45:15.963662+00:00",
+    "last_tick_started_at_utc": "2026-09-02T07:11:42.263377+00:00",
+    "last_tick_completed_at_utc": "2026-09-02T07:11:44.414680+00:00",
+    "last_success_at_utc": "2026-09-02T07:11:44.414680+00:00",
+    "last_error_at_utc": "",
+    "last_error": "",
+    "active_records": 0,
+    "changed_records": 10,
+    "thread_alive": true,
+    "stop_requested": false
+  },
+  "configured_stocks": 83,
+  "configured_crypto": 0,
+  "active_stocks": 69,
+  "active_crypto": 0,
+  "active_universe": 69,
+  "etoro_reconciliation_domain": "etoro:demo:664e7dfbc13e0cd60e493592",
+  "etoro_reconciliation_blocked": false,
+  "etoro_reconciliation_detail": "Aktueller eToro-Depot-Snapshot abgeglichen (etoro:demo:12976)",
+  "last_scan_at": "2026-09-02T09:08:41.486038+02:00",
+  "stock_trading_ready": {
+    "domaene": "etoro",
+    "trading_ready": true,
+    "kaeufe_erlaubt": true,
+    "grund": "handelsbereit",
+    "restwartezeit_sekunden": 0.0,
+    "freigabe_um": "jetzt",
+    "offen": [],
+    "bedingungen": [
+      {
+        "name": "broker_verbunden",
+        "beschreibung": "Broker authentifiziert und erreichbar",
+        "erfuellt": true,
+        "detail": "",
+        "seit": "2026-09-01T17:45:23.312199+00:00"
+      },
+      {
+        "name": "systemzeit",
+        "beschreibung": "Systemzeit plausibel",
+        "erfuellt": true,
+        "detail": "UTC-Systemzeit laeuft",
+        "seit": "2026-09-01T17:45:13.089335+00:00"
+      },
+      {
+        "name": "instrumente",
+        "beschreibung": "Instrumentkatalog geladen, Identitaet eindeutig",
+        "erfuellt": true,
+        "detail": "69 eindeutig qualifiziert",
+        "seit": "2026-09-01T17:45:23.312214+00:00"
+      },
+      {
+        "name": "handelsregeln",
+        "beschreibung": "Tick, Lot und Mindestgroesse bekannt",
+        "erfuellt": true,
+        "detail": "eToro Eligibility je Instrument geladen",
+        "seit": "2026-09-01T17:45:23.312219+00:00"
+      },
+      {
+        "name": "guthaben",
+        "beschreibung": "Kontostand und freies Guthaben abrufbar",
+        "erfuellt": true,
+        "detail": "Kontowert 99799.77 erfolgreich gelesen",
+        "seit": "2026-09-01T17:45:41.988844+00:00"
+      },
+      {
+        "name": "gebuehren",
+        "beschreibung": "Gebuehrensatz bekannt",
+        "erfuellt": true,
+        "detail": "eToro What-if-Kosten werden unmittelbar vor jeder Order zwingend geprueft",
+        "seit": "2026-09-01T17:45:23.312227+00:00"
+      },
+      {
+        "name": "reconciliation",
+        "beschreibung": "Positionen einmal mit dem Konto abgeglichen",
+        "erfuellt": true,
+        "detail": "Aktueller eToro-Depot-Snapshot abgeglichen (etoro:demo:12976)",
+        "seit": "2026-09-01T17:45:36.648063+00:00"
+      },
+      {
+        "name": "universum",
+        "beschreibung": "Universumslauf einmal durchgelaufen",
+        "erfuellt": true,
+        "detail": "69 Aktien qualifiziert",
+        "seit": "2026-09-01T17:45:23.312223+00:00"
+      },
+      {
+        "name": "kursdaten",
+        "beschreibung": "Kursdaten aktuell",
+        "erfuellt": true,
+        "detail": "QCOM: 999 auswertbare Kerzen im Scanner",
+        "seit": "2026-09-01T17:45:56.263070+00:00"
+      },
+      {
+        "name": "signalkerze",
+        "beschreibung": "Mindestens eine vollstaendige Signalkerze seit dem Start",
+        "erfuellt": true,
+        "detail": "mindestens 15 Minuten seit Prozessstart",
+        "seit": "2026-09-01T18:03:50.743578+00:00"
+      },
+      {
+        "name": "keine_unklare_order",
+        "beschreibung": "eToro-Ausfuehrungsabgleich abgeschlossen",
+        "erfuellt": true,
+        "detail": "Keine ungeklaerte eToro-Ausfuehrung in etoro:demo:664e7dfbc13e0cd60e493592",
+        "seit": "2026-09-01T17:45:36.648084+00:00"
+      },
+      {
+        "name": "protokoll",
+        "beschreibung": "Entscheidungsprotokoll beschreibbar",
+        "erfuellt": true,
+        "detail": "Decision- und Trade-Ledger initialisiert",
+        "seit": "2026-09-01T17:45:13.089353+00:00"
+      }
+    ]
+  }
+}

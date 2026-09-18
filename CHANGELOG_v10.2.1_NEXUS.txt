@@ -1,0 +1,62 @@
+NEXUS 10.2.1 - COMPOSITE-EXIT-SETTLEMENT (Hotfix)
+Stand: 17.09.2026 | Basis: 10.2.0-NEXUS (Rev. 2) | Diagnose: 1.8.1
+
+ANLASS (DOGE, 17.09.2026): Ein bot-eigener OCO-Take-Profit fuellte 1.575 von
+7.334 DOGE; der Nutzer verkaufte den Rest manuell ueber DOGE/EUR in zwei
+Market-Orders (eine davon teilgefuellt-storniert). Alle Ausfuehrungen sind
+echte, belegte OKX-Fills - aber KEINE Beweisregel des Bots konnte diesen
+Mischfall (3 Orders, 2 Handelspaare, 2 Abrechnungswaehrungen) verarbeiten.
+Die OKX-Kaufdomaene blieb gesperrt.
+
+1) ZUSAMMENGESETZTER VERKAUFSBEWEIS (broker.composite_exit_evidence +
+   okx_external_settlement.composite_receipt): Mehrere TERMINALE
+   Verkaufsorders desselben Basiswerts - eigene Schutzorders und
+   Nutzerorders, auch teilgefuellt-stornierte, ueber beliebige Quote-Paare -
+   belegen ZUSAMMEN den Bestandsabgang. Jede Order einzeln: terminaler
+   Status, accFillSz exakt gleich der Summe ihrer tradeId-Fills; die
+   Gesamtsumme muss die Ledger-Sollmenge bis auf weniger als ein Lot Staub
+   exakt decken (Unter-/Ueberdeckung, Doppel-Fills, fehlende
+   Gebuehrenwaehrung, fremde Kauf-Fills nach Einstieg: Abbruch). Erloese
+   und Gebuehren werden JE WAEHRUNG nativ verbucht (legs) - kein Mischkurs,
+   keine erfundene Paritaet.
+2) VERBUCHUNG (record_composite_exit): schliesst die Ledgerzeile atomar
+   (Fill-IDs exklusiv, bezifferte Ergebnisse werden nie ueberschrieben,
+   idempotent) und loest den PENDING-Bestandsbeleg auf. BUGFIX daneben:
+   auch der bestehende Einzel-Order-Fremdwaehrungspfad (record_native_exit)
+   loest den Bestandsbeleg jetzt auf - bisher blieb er PENDING und
+   sperrte die Domaene trotz vollstaendigen Belegs.
+3) AUTOMATISCHE EUR-REFERENZBEWERTUNG (okx_reference_autovaluation +
+   calculate_composite/store_on_composite): Fuer zusammengesetzte
+   Abschluesse holt NEXUS die Kursbelege selbst - USDC/EUR-Minutenkerzen
+   von eea.okx.com (oeffentlich, kontofrei; ROHE Antwort mit Pruefsumme
+   gespeichert) und nur fuer USD-Legs die EZB-Tagesreferenz. Es ist exakt
+   dieselbe Methode und dieselbe strenge Rates-Validierung wie bei manuell
+   gelieferten Kursexporten; neu ist nur, dass der Bot die oeffentlichen
+   Abrufe selbst ausfuehrt. Ergebnisqualitaet bleibt REFERENCE_VALUATION.
+   Damit wird das unbekannte Ergebnis beziffert, der RESULT-Beleg
+   geschlossen und die Kaufdomaene automatisch wieder FREIGEGEBEN.
+   Gelingt ein Kursbeleg nicht, bleibt das Ergebnis unbekannt und die
+   Sperre bestehen (UNKNOWN bleibt UNKNOWN; begrenzter Takt mit Backoff).
+4) TEIL-FILL EIGENER SCHUTZORDERS wird kuenftig SOFORT als Teilverkauf
+   verbucht (trade_ledger-Split, Bestandsbeleg geloest, Position laeuft
+   mit Restmenge und aktivem Restschutz weiter; Bezifferung wie immer
+   durch den Nachbeleg-Leser mit Original-Belegen). Der Hergang
+   "ACCOUNTING_PENDING-Endlosschleife + Domaenensperre" entsteht damit
+   nicht mehr. Nur EXAKT durch eigene tradeId-Fills erklaerte Abgaenge
+   qualifizieren; jeder Zweifel behaelt den konservativen Altpfad.
+5) LOG-HYGIENE: "OKX-Exit wartet auf eindeutigen Orderbeleg" erscheint als
+   WARNING nur noch bei den ersten drei Pruefungen und danach jeder 100.
+   (17.09.: ueber 2.500 identische Zeilen im Log).
+
+OKX-API-DURCHSICHT (Auftrag, Ergebnis: KEINE Aenderung noetig):
+NEXUS nutzt fuer die deutsche/EEA-Instanz bereits die offiziell
+dokumentierte Basis https://eea.okx.com fuer Live UND Demo mit dem Header
+x-simulated-trading: 1; my.okx.com ist nur die Weboberflaeche derselben
+EU-Entitaet, API-Keys sind subdomaingebunden. Alle 21 genutzten
+REST-Endpunkte sind v5-konform; Demo unterstuetzt laut EEA-Doku alle davon
+(nicht unterstuetzt sind nur Ein-/Auszahlung/Earn, die NEXUS nie nutzt).
+
+UNVERAENDERT
+Freqtrade-Regeln, Zusatzstrategien, Order-State-Machine, Schutz-/Risiko-
+grenzen, PULSAR/GPT/X ohne Orderbefugnis, kein TLS-Bypass, keine
+Gebuehren-/FX-Erfindung. Alle 10.2.0-Funktionen unveraendert enthalten.

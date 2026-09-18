@@ -1,0 +1,54 @@
+NEXUS 9.8.0 — Kauf, Verkauf, Buchung und WebUI
+
+Ausführung
+- Gemeinsames SQLite-Auftragsbuch für primäre eToro- und OKX-Kauf-/Verkaufsorders.
+  Vor jedem POST: dauerhafte Reservierung mit Broker, Konto, DEMO/LIVE,
+  Instrument, Richtung und Client-/Request-ID. Nebenläufige Duplikate gesperrt.
+- Brokerannahme, Ausführungen, terminaler Abschluss und Mengenbuchung getrennt.
+  Replays prüfen unveränderliche Fill-Identitäten; keine Freigabe durch Zeitablauf.
+- OKX-Verkauf von FOK auf preisbegrenztes IOC umgestellt. Teilfüllungen buchen
+  nur verbrauchte Menge; Restposition und Schutz werden weitergeführt.
+  Kauf bleibt preisbegrenztes FOK mit Nettomengenprüfung und Broker-OCO.
+- Bewiesene terminale Nullfüllung: regulärer Retry ab 30 Sekunden, frühestens
+  im nächsten Handelskern-Takt. Sonstige Fehler behalten ihren Backoff.
+- Auftrag möglicherweise angenommen: ausschließlich Status-/Fillabgleich,
+  kein blindes erneutes POST. Auch fehlende Order in einem begrenzten Archiv
+  ist kein Beweis für Nullfüllung.
+- Bestehende 9.7.6-Korrektur für Demo-Marktdaten, harte Preisgrenzen,
+  widersprüchliche Brokerantworten und doppelte Client-IDs bleibt enthalten.
+- eToro-Statusfehler nach Annahme halten die lesende Rekonstruktion aktiv.
+
+Buchung
+- Tatsächliche Ledger-Buchung ist Grundlage für Risiko-/Ergebnisbuchungen.
+- Permanente Ergebnisbelege verhindern Wiederholung auch nach Tageswechsel.
+  Bereits bekannte alte Tages-IDs werden bei passendem Beleg übernommen.
+- Fehlende Gebühren bleiben unbekannt; Fremdwährungsgebühren erhalten ohne
+  belegten Umrechnungskurs kein erfundenes Netto. Rabatte bleiben signiert.
+- Unbekannte Ergebnisbelege sind mengenmäßig buchbar, sofern die verbrauchte
+  Menge feststeht. Spätere Ergebnisbestätigung ist im Risikobeleg idempotent;
+  historische Gebühren werden nicht pauschal automatisch rekonstruiert.
+- Broker-/konto-/umgebungsgebundene Trade-Zuordnung auch bei Teilverkaufsgruppen.
+- Alle offenen Ledgerzeilen bleiben unabhängig vom gewählten Zeitraum sichtbar;
+  der Verkaufszeitpunkt bestimmt die Historienauswahl.
+
+WebUI
+- Fünf Hauptseiten: Übersicht, Handel, Analyse, Einstellungen, Logbuch.
+- Handel vereint Offen, Verkäufe, Klärung und Guthaben/Verwaltung in Reitern.
+  Alte URL /positions leitet authentifiziert auf Handel weiter.
+- Positionen als kompakte Karten; zwölf Einträge je Seite, ausklappbare Details.
+  Konto, Umgebung, Menge, Ergebnis und Schutzstatus bleiben erkennbar.
+- Bestehender OKX-Kerzenchart bleibt; Schutz- und Ausführungsmarkierungen bleiben.
+- Neue Übersicht konzentriert sich auf Brokerzustand, Kaufbereitschaft und
+  Störungen. Systemdaten und Prüfwerkzeuge sind ausklappbar.
+- Alle 51 Einstellungsfelder und Laufzeitschalter erhalten; Suche und zehn
+  ausklappbare Einstellungsgruppen. Analysewerkzeuge bleiben gruppiert abrufbar.
+- Gemeinsamer Bestätigungsdialog für manuelle OKX-Verkäufe/Schutzänderungen;
+  unveränderte serverseitige Konto-, Bestands-, Authentifizierungs- und CSRF-Prüfung.
+- Responsives Layout, Tastaturbedienung, lesbare Eingaben und reduzierte Bewegung.
+  Automatische Aktualisierung ersetzt keine gerade geöffneten Eingabeformulare.
+
+Auslieferung
+- Vollständiges Paket, Versionsstand 9.8.0, frischer separater Zielordner.
+- Vorhandener geprüfter Update-/Sicherungsweg; kein Überschreiben alter Handelsdaten.
+- SUI-Diagnoseexport um neues Auftragsbuch erweitert, weiterhin ohne Brokerzugriff.
+- Siehe aktuellen Prüfbericht für tatsächlich ausgeführte Tests und Grenzen.

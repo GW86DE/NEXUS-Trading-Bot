@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="csrf" content="{{CSRF}}"><meta name="diagnosis-id" content="{{DIAGNOSIS_ID}}"><title>NEXUS {{VERSION}} Diagnosebericht</title><link rel="stylesheet" href="/static/app.css"><link rel="stylesheet" href="/static/nexus.css"></head>
+<body><a class="skip-link" href="#main-content">Zum Inhalt</a>
+<header class="topbar"><div class="brand"><img class="brand-logo" src="/static/nexus-logo.png" alt="NEXUS" width="46" height="46"><span class="brand-copy">TradingBot <strong>{{VERSION}} NEXUS</strong></span></div><nav aria-label="Hauptmenü"><a href="/">Übersicht</a><a href="/trades">Handel</a><a href="/analysis">Analyse</a><a href="/universe">Universum</a><a href="/underdogs">Underdogs</a><a href="/pulsar">PULSAR</a><a href="/sources">Quellen &amp; X</a><a class="active" aria-current="page" href="/diagnosis">Diagnose</a><a href="/settings">Einstellungen</a><a href="/logbook">Logbuch</a></nav><span class="small">{{USER}}</span><button class="secondary" onclick="logout()">Abmelden</button></header>
+<main class="container report-page" id="main-content">
+<div class="page-head"><div><p class="eyebrow">Diagnose · abgeschlossener Lauf</p><h1 id="r-title">Diagnosebericht</h1><p id="r-subtitle" class="small">Wird geladen …</p></div><div class="toolbar"><a class="button secondary" id="r-download" href="#">ZIP herunterladen</a><a class="button secondary" href="/diagnosis">Zur Diagnoseliste</a></div></div>
+<p id="r-message" role="status"></p>
+<section class="panel" id="r-kpis"></section>
+<section class="panel section"><div class="section-head"><h2>Handelsbereitschaft je Broker</h2></div><div id="r-runtime"></div></section>
+<section class="panel section"><div class="section-head"><div><h2>PULSAR-Messung</h2><p class="small">Papierergebnis der Hype-Spur aus der ZIP; Urteil erst ab 30 vollständigen 5-Tage-Messungen.</p></div><span id="r-verdict" class="verdict verdict-none">KEINE MESSUNG</span></div><div id="r-measurement"></div></section>
+<section class="panel section"><div class="section-head"><h2>Befunde: Fehler, Warnungen, Auffälligkeiten</h2></div><div id="r-findings"></div></section>
+<section class="panel section"><div class="section-head"><h2>Entscheidungsblocker im Zeitfenster</h2></div><div id="r-decisions"></div></section>
+<section class="panel section"><div class="section-head"><h2>Quellen, GPT und Exporte</h2></div><div id="r-sources"></div></section>
+<details class="panel section" data-detail-key="r-report-md"><summary>Vollständiger Bericht (BERICHT.md aus der ZIP)</summary><pre id="r-report" class="small" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></details>
+<p class="scope-note" id="r-limits"></p>
+</main><script src="/static/common.js"></script><script src="/static/diagnosis_report.js"></script></body></html>

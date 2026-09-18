@@ -1,0 +1,58 @@
+TRADINGBOT NEXUS 9.0.14 - TESTBERICHT
+=====================================
+Datum: 30.08.2026
+
+ERGEBNIS
+--------
+Pytest:              800 bestanden
+Subtests:            189 bestanden
+self_test.py:        OK
+volltest.py:         OK
+Compileall:          OK
+JavaScript-Syntax:   OK
+Shell-Syntax:        OK
+Pi-Preflight:        OK (host-neutral)
+Release-Hygiene:     OK
+
+NEUE REGRESSIONSFAELLE
+----------------------
+- DOGE-Schutzpreise werden am echten Fill und nicht an einem falschen
+  Plan-/Tickerpreis verankert.
+- LINK erreicht nach drei Stunden das netto 1-%-ROI-Ziel erst nach Abzug von
+  Einstiegs- und Ausstiegsgebuehr.
+- Die Tradeansicht verwendet die exakte instId und einen Full-size-Sell-VWAP.
+- Aktives Freqtrade-ROI-Ziel, Stop, brokerseitiges TP und Livekurs bleiben
+  getrennte Werte.
+- Ein nicht lesbarer Schutz-Endpunkt ergibt PENDING und nicht MISSING.
+- Ein bestaetigter Schutzstatus wird in Position und Ledger gespiegelt.
+- Der Risikotag wechselt nach Europe/Berlin statt nach UTC/Hostzeitzone.
+
+WEITERE BESTAETIGTE PFADE
+-------------------------
+- Freqtrade SampleStrategy: ROI 4/2/1 %, Stop -10 %, Exit-Signal aktiv
+- Preisbegrenzte OKX-FOK-Ausfuehrung und brokerseitige Schutzorder
+- Exakte Instrument-, Order-, Fill- und Kontozuordnung
+- Nettobuchung inklusive anteiliger Einstiegs- und Ausstiegsgebuehr
+- Brokerbezogene Tagesverlustgrenze
+- Getrennte EUR-, USD- und USDC-Auswertung
+- eToro-Reconciliation und vorhandene Verbindungsregressionen
+- WebUI, Entscheidungsjournal, Migrationen und Raspberry-Pi-Skripte
+
+MIGRATION AUF KOPIEN DER BEREITGESTELLTEN LAUFZEITDATEN
+------------------------------------------------------
+- decision_history(7).sqlite wurde mit dem aktuellen Schema geoeffnet.
+- crypto_positions(4).json wurde unveraendert als Broker-/Positionsnachweis
+  eingelesen.
+- Offene Trades wurden ueber die exakte instId bewertet:
+    XLM-USDC: aktives netto 1-%-Ziel ca. 0,18277418 USDC
+    LINK-USDC: aktives netto 1-%-Ziel ca. 11,62451923 USDC
+    BNB-USDC: aktives netto 1-%-Ziel ca. 706,48272466 USDC
+- Die bereitgestellten Originaldateien wurden nicht veraendert.
+
+NICHT OFFLINE TESTBAR
+--------------------
+- Echte eToro-/OKX-Netzantworten und brokerseitige DEMO-Ausfuehrung
+- Telegram-Zustellung
+- ARM64-Hardwareverhalten des Raspberry Pi 5
+
+Es wurden keine Brokerorders und keine schreibenden Brokeraufrufe gesendet.

@@ -1,0 +1,75 @@
+NEXUS 9.8.4 – 10. September 2026
+Basis: exakter Quellstand 9.8.3, kein Ersatz durch den alten Stand 9.7.5.
+
+KAUF, VERKAUF UND ZUORDNUNG
+- eToro-Eigentum wird über verifizierte Position-ID, Einstiegsorder, Konto und
+  DEMO/LIVE getrennt vom Schutzstatus bestimmt. Ein Kaufwunsch oder das gleiche
+  Symbol allein übernimmt keinen Fremdbestand.
+- Eine belegte offene Position verliert ihren Eigentumsbeweis nicht nach 48 h.
+- Wiederholter Abgleich derselben PEP-Belege verändert den Datensatz nicht
+  erneut. Absicht, bestätigter Kauf und bestätigter Brokerschutz bleiben getrennt.
+- Eigene Käufe mit ausstehender Schutzprüfung bleiben im Bereich Offen.
+- Bei einem eindeutig eigenen, bestätigten Aktienbestand kann der Client-Stop
+  auch während ausstehender Schutzbestätigung greifen. Er benötigt passendes
+  Konto/Umgebung, Positions- und Snapshot-IDs, passende Menge und frischen Bid.
+  Nutzerseitig auf Beobachten gesetzte und fremde Bestände werden ausgeschlossen.
+- Nachgereichte explizite Gebühren fließen nur nach exaktem, widerspruchsfreiem
+  Entry-/Exit-Fill-Abgleich in das Ledger ein. Auch schon verknüpfte Abschlüsse
+  werden bei neuen Wirtschaftsbelegen erneut geprüft. Belegte Gebühren null sind
+  zulässig; fehlende Gebühren werden nicht zu null ergänzt.
+- Vorhandene idempotente Order-/Exitjournale und der Umgang mit unklarem
+  Übermittlungszustand bleiben die Grundlage. Ein Timeout erzeugt keinen neuen Kauf.
+
+OKX UND ABRECHNUNG
+- Authentifizierte Kontoinstrumente aus GET /api/v5/account/instruments?instType=SPOT
+  bestimmen den verfügbaren Instrumentkatalog bei eingerichtetem API-Zugang.
+  Der Cache ist kurzlebig; Fehler 51634 verwirft ihn für eine erneute Prüfung.
+- Die Supportantwort zu 51634 wird als Instrumenthinweis behandelt, nicht als
+  Beweis, dass DOGE nie gekauft wurde oder jedes USD-Instrument unzulässig sei.
+  Die neuere DOGE-Schutzbestätigung bleibt erhalten.
+- Für neue Käufe ist EUR bevorzugt. USDC ist eine ausdrücklich abschaltbare
+  Ergänzung. Neue USD-Abrechnung wird nicht automatisch ausgewählt.
+- Markt-ID und Abrechnungswährung sind getrennt: ein USD-Orderbuch kann nur dann
+  mit USDC verwendet werden, wenn der Kontokatalog diesen Weg tatsächlich erlaubt.
+- Der Vergleich prüft dieselbe geplante Basismenge mit Kauf-/Verkauf-VWAP,
+  vollständiger Tiefe, Spread, Slippage, explizitem Taker-Satz, freiem Guthaben
+  und beobachtetem Währungskurs. USDC wird bei ungeeignetem EUR-Weg oder mindestens
+  15 Basispunkten Kostenvorteil gewählt. Das sind beobachtete Kosten zum Prüfzeitpunkt.
+- Fehlende Gebühren, Tiefe oder Umrechnung sperren den jeweiligen neuen Kaufweg.
+  Es gibt keine automatische Geldumtauschorder und keine angenommene USD/USDC-Parität.
+- Bestehende Trades behalten ihre ursprüngliche Abrechnung beim normalen Verkauf.
+  Manuelle Fremdwährungsverkäufe bleiben mit nativen Erlös-/Gebührenbelegen und
+  exakter Entry-Zuordnung erfassbar. Historische FX-Lücken bleiben als solche sichtbar.
+
+OBERFLÄCHE UND UNIVERSUM
+- Eigene Aktien sind von Guthaben und fremden Depotbeständen getrennt.
+- Neue Entscheidungszeilen speichern das tatsächlich verwendete Brokerkonto und
+  dessen Umgebung. Das Logbuch zeigt diese damalige Bindung; alte Einträge ohne
+  Kontobeleg werden nicht nachträglich einem heutigen Konto zugeordnet.
+- Gewinn-/Verlustkurven bieten bestätigtes Netto und belegtes Brutto vor Gebühren,
+  jeweils getrennt nach Broker, Konto, DEMO/LIVE und Währung. Bei fehlendem Netto
+  wird die Bruttodarstellung gewählt; eine fehlende Zahl wird nicht als null gezeichnet.
+- Die kuratierte Underdog-Liste wird in den Universumszeilen ausdrücklich markiert.
+
+PULSAR
+- Eigene Seite mit fünf Beobachtungskandidaten, Quellen und Datenstand, These,
+  drei Risiken, Datenlücken, Kurszeiträumen sowie eigenem Handelsarchiv/JSON-Export.
+- ApeWisdom als Hauptquelle, Tradestie optional. Überlappende Reddit-Foren werden
+  nicht als unabhängige Bestätigung gezählt. Vorhandene FMP/MASSIVE/SEC-Zugänge
+  und Luna-/Terra-Router werden mit separaten Aufruf-/Kostenlimits verwendet.
+- Aus / Beobachten / persönliche Freigabe. Feste Nominierungs-, Risiko-, Cash-
+  und Halteregeln, zwei nachrichtengebundene Telegram-Schritte, persistenter
+  Planhash und Wochenverbrauch. Ausführung erfolgt ausschließlich im normalen
+  Handelskern nach dessen erneuten Prüfungen.
+- Aggregate liefern keine eindeutigen Autoren oder vollständigen Beiträge.
+  Die vereinbarten Pflichtnachweise werden deshalb nicht erfunden: mit diesen
+  Aggregatquellen allein bleibt PULSAR eine Beobachtungshilfe, ohne Kaufnominierung.
+
+UPDATE UND PRÜFUNG
+- Bestehende Kontozustände und aktive Orders werden übernommen, nicht durch
+  hochgeladene Diagnose-Snapshots ersetzt. PULSAR-Budgets, Wochenverbrauch und
+  Quellenhistorie überstehen Update und Neustart.
+- Ergänzte Offline-Regressionen für Zuordnung, Nachbuchungen, Kontokatalog,
+  Abrechnung, Budgetgrenzen, Freigaben, Teilausführung, Migration und Zugriffsschutz.
+- Detaillierte Ergebnisse stehen im separat beigefügten Prüfbericht. Ein positiver
+  Offline-Test ist keine Bestätigung einer tatsächlichen OKX-/eToro-Demoausführung.

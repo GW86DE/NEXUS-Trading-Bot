@@ -1,0 +1,66 @@
+================================================================================
+ TradingBot NEXUS 9.4.1 -- Aenderungsprotokoll
+ Schwerpunkt: responsive WebUI, Analyse-Seite und Nettoergebnis-Grafik
+================================================================================
+
+1. DESKTOP-LOGO
+---------------
+- Das Kopfzeilenlogo besitzt jetzt neben festen Breiten-/Hoehenwerten eine
+  harte komponentengebundene Inline-/Block-/Flex-Maximalgroesse.
+- HTML-Breiten und -Hoehen verhindern ein Aufspringen auf die intrinsischen
+  320 x 320 Pixel, auch bevor das Stylesheet geladen ist.
+- Desktop: 46 x 46 Pixel; Mobilansicht bis 600 Pixel: weiterhin 38 x 38 Pixel.
+  Die Login-Darstellung bleibt bewusst 64 x 64 Pixel.
+
+2. ANALYSE & TRAINING IN DER WEBUI
+----------------------------------
+- Neue Seite /analysis mit Navigation, Statuskarten, Werkzeuggruppen,
+  Ergebnisausgabe und Historientabelle im dunkelblauen NEXUS-Design.
+- Uebernommen wurden Backtest, Walk-Forward, Profilvergleich, Parameter-/
+  Symbol-Sweep, ML-Training, News-/Krisencheck, Underdog-Screening und
+  Newsquellen-Pruefung.
+- Es werden exakt die vorhandenen NEXUS-Programme gestartet; Berechnungen und
+  Handelslogik wurden nicht dupliziert.
+- Startaktionen sind angemeldet und CSRF-geschuetzt. Nur eine feste Allowlist
+  lokaler Programme ist erlaubt; freie Shell-Befehle sind ausgeschlossen.
+- Maximal eine Analyse laeuft gleichzeitig. Ausgaben und Status bleiben lokal
+  ueber Browser-Neuladen und WebUI-Neustart hinweg erhalten.
+- Analyseprozesse haben keine Orderrechte und aendern weder Broker- noch
+  Tradingzustand.
+
+3. KUMULIERTES NETTOERGEBNIS
+-----------------------------
+- Ursache der leeren Grafik war kein verlorenes Ledger: Bei gleichzeitigen
+  eToro-/OKX-Ergebnissen in verschiedenen Waehrungen lieferte der Endpunkt
+  absichtlich keine zusammengerechnete Scheinkurve. Das JavaScript zeigte
+  diesen korrekten Schutz jedoch wie einen leeren Datensatz an.
+- Die lokale SVG-Loesung zeichnet jetzt eine getrennte Kurve pro Waehrung und
+  eine eindeutige Legende. Waehrungen werden weiterhin niemals addiert.
+- Leere Daten zeigen einen ehrlichen Leerzustand. Ein einzelner Trade wird als
+  sichtbarer Punkt dargestellt. Ungueltige Werte werden vor der SVG-Berechnung
+  verworfen; NaN-Koordinaten koennen die Grafik nicht mehr zerstoeren.
+- Es gibt weiterhin keine externe CDN- oder Chart-Bibliotheksabhaengigkeit.
+
+4. RESPONSIVE DARSTELLUNG
+-------------------------
+- Analyse-Karten und Werkzeuggruppen verwenden Desktop-, Tablet- und
+  Mobil-Breakpoints. Auf Mobilgeraeten werden Bedienelemente untereinander
+  angeordnet und behalten beruehrungsfreundliche Mindesthoehen.
+- Die bestehende iPad-/iPhone-Logogroesse bleibt erhalten.
+
+5. SICHERHEIT UND BESTANDSSCHUTZ
+--------------------------------
+- eToro-/OKX-Ownership, Kaufkoordination, Positions-ID-Beweise,
+  Broker-Abgleich, Schutz- und Migrationsregeln aus 9.4.0 bleiben unveraendert.
+- Die Aenderungen liegen in WebUI, Analyse-Orchestrierung, Tests und
+  Dokumentation. Kein Kauf-, Verkauf-, Risiko- oder Ownership-Pfad wurde
+  gelockert.
+
+6. TESTS
+--------
+- 972 Pytest-Tests und 192 Subtests bestanden.
+- Neue Tests decken Desktop (46 px), Tablet und Mobil (38 px), Analyse-
+  Navigation und Allowlist, leere/einzelne/mehrere Trade-Datensaetze sowie
+  negative, positive und getrennte EUR-/USD-Verlaeufe ab.
+- SELF TEST, COMPILEALL, Pi-Preflight, Shell-Syntax, Release-Hygiene und
+  VOLLTEST: OK.

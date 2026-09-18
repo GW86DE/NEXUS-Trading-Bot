@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="csrf" content="{{CSRF}}"><title>NEXUS {{VERSION}} Universum</title><link rel="stylesheet" href="/static/app.css"><link rel="stylesheet" href="/static/nexus.css"></head>
+<body><a class="skip-link" href="#main-content">Zum Inhalt</a><header class="topbar"><div class="brand"><img class="brand-logo" src="/static/nexus-logo.png" alt="NEXUS" width="46" height="46"><span class="brand-copy">TradingBot <strong>{{VERSION}} NEXUS</strong></span></div><nav aria-label="Hauptmenü"><a href="/">Übersicht</a><a href="/trades">Handel</a><a href="/analysis">Analyse</a><a class="active" aria-current="page" href="/universe">Universum</a><a href="/underdogs">Underdogs</a><a href="/pulsar">PULSAR</a><a href="/sources">Quellen &amp; X</a><a href="/diagnosis">Diagnose</a><a href="/settings">Einstellungen</a><a href="/logbook">Logbuch</a></nav><span class="small">{{USER}}</span><button class="secondary" onclick="logout()">Abmelden</button></header>
+<main class="container" id="main-content"><p class="scope-note">eToro: Aktienuniversum. OKX: Spot-Kryptouniversum. Beobachtung, Zulassung und tatsächlicher Bestand sind getrennt.</p>
+<div class="page-head"><div><h1 id="universe-title">Handelsuniversum</h1><p id="universe-description">Beobachtete Instrumente und ihre Aufnahmebedingungen, getrennt nach Anbieter.</p></div><div class="toolbar"><button class="secondary" onclick="ladeUniversum()">Aktualisieren</button></div></div>
+<section class="panel" id="crypto-universum" style="margin-bottom:16px"><h2>Krypto-Universum 20 + 30</h2><p class="small">Status wird geladen …</p></section>
+
+<section id="kennzahlen" class="dashboard"></section>
+
+<section class="panel section">
+  <div class="section-head"><div><h2>Filter</h2><p class="small">Wirkt auf beide Tabellen.</p></div></div>
+  <div class="toolbar">
+    <input id="f-suche" class="grow" type="search" placeholder="Symbol suchen &hellip;" oninput="zeichne()">
+    <select id="f-zustand" onchange="zeichne()">
+      <option value="">Alle Zust&auml;nde</option>
+      <option value="AKTIV">Nur AKTIV</option>
+      <option value="BEOBACHTUNG">Nur BEOBACHTUNG</option>
+      <option value="KATALOG">Nur KATALOG</option>
+      <option value="ABGANG">Nur ABGANG</option>
+    </select>
+    <select id="f-art" onchange="zeichne()">
+      <option value="">Alle Werte</option>
+      <option value="underdog">Nur Underdogs</option>
+      <option value="kern">Nur Kernwerte</option>
+      <option value="focus">Nur Focus Set</option>
+      <option value="favorit">Nur Favoriten</option>
+      <option value="gepinnt">Nur offene Positionen</option>
+      <option value="ki">Nur mit KI-Urteil</option>
+    </select>
+    <select id="f-sortierung" onchange="zeichne()">
+      <option value="rang">Sortierung: Rang</option>
+      <option value="score">Sortierung: Score</option>
+      <option value="neu">Sortierung: zuletzt aufgenommen</option>
+      <option value="alt">Sortierung: am l&auml;ngsten dabei</option>
+      <option value="symbol">Sortierung: Symbol</option>
+    </select>
+  </div>
+</section>
+
+<section class="panel section" id="okx-section">
+  <div class="section-head"><div><h2 id="okx-titel">OKX Krypto</h2><p id="okx-info" class="small"></p></div></div>
+  <div id="okx-tabelle" class="table-wrap"></div>
+</section>
+
+<section class="panel section">
+  <div class="section-head"><div><h2 id="etoro-titel">eToro Aktien</h2><p id="etoro-info" class="small"></p></div></div>
+  <div id="etoro-tabelle" class="table-wrap"></div>
+</section>
+
+<section class="panel section">
+  <h2>Was die Spalten bedeuten</h2>
+  <div class="small">
+    <p><strong>Zustand</strong> &ndash; AKTIV kommt für einen Kauf infrage; Strategie, Kosten und Risikoprüfung müssen weiterhin erfüllt sein. KATALOG wurde noch nicht aufgenommen. BEOBACHTUNG wird bewertet, aber <em>nicht</em> gehandelt. ABGANG ist angek&uuml;ndigt und braucht drei schlechte L&auml;ufe in Folge, bevor der Wert wirklich geht.</p>
+    <p><strong>Kern</strong> &ndash; feste Werte, die dauerhaft im Universum bleiben. Sie k&ouml;nnen nicht wegen eines schlechten Rangs entfernt werden, aber ein aktueller Sicherheitsfilter kann jeden einzelnen Wert weiterhin kauf-sperren. Wie viele es je Seite sind, steht oben in der jeweiligen Kachel.</p>
+    <p><strong>Dynamisch</strong> &ndash; der Rest bis zum aktiven Limit. Die Kryptoauswahl entsteht beim Erstaufbau aus den aktuellen, vergleichbaren OKX-Spotvolumina und wird danach monatlich anhand der lokalen 30-Tage-Messhistorie neu bewertet.</p>
+    <p><strong>Bew&auml;hrung</strong> &ndash; neue Werte beginnen in BEOBACHTUNG und werden erst danach handelbar. Beide Seiten nehmen ohne Nachfrage auf; die Grenzen f&uuml;r Kern, Dynamik und Wechsel je Lauf gelten weiter. &bdquo;Im Universum&ldquo; hei&szlig;t nur: wird beobachtet &ndash; ob gekauft wird, entscheidet danach allein die Kaufkaskade.</p>
+    <p><strong>Favorit</strong> &ndash; erhöht nur die Beobachtungspriorität. Kein Kaufauftrag; sämtliche Handels- und Risikoprüfungen gelten weiter.</p>
+    <p><strong>Focus</strong> &ndash; der kleine Teil, der die teure Analyse bekommt. Offene Positionen stehen dort immer vorn.</p>
+    <p><strong>Rang und Score</strong> &ndash; Marktqualit&auml;t, nicht Performance: Liquidit&auml;t, Spanne, Umsatz, Datenqualit&auml;t, Volatilit&auml;tsg&uuml;te und Aktivit&auml;t. Ein 24h-Gewinner bekommt dadurch keinen Bonus.</p>
+    <p><strong>Aufgenommen</strong> &ndash; seit wann der Wert dabei ist. Die Mindestverweildauer verhindert, dass er sofort wieder herausf&auml;llt.</p>
+  </div>
+</section>
+</main><script src="/static/common.js"></script><script src="/static/universe.js"></script></body></html>

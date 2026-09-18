@@ -1,0 +1,32 @@
+NEXUS 9.8.4 FIX1 – korrigiertes Installationspaket
+
+Dieses Paket behebt den reproduzierten Abbruch mit sieben fehlgeschlagenen
+Tagesbuchtests um 00:30 Uhr deutscher Zeit. Die Testbuchungen verwendeten eine
+UTC-Tagesgrenze, die Tagesauswertung dagegen den lokalen Handelstag.
+
+Die Tagesbuchtests verwenden nun eine gemeinsame feste Testuhr und dieselbe
+konfigurierte Tagesgrenze. Acht weitere Grenzfaelle pruefen gestern/heute,
+Sommerzeit, Winterzeit, beide Zeitumstellungen, UTC und New York. Kein Test
+wurde entfernt oder uebersprungen. Die Kauf-/Verkaufs- und Risikologik bleibt
+gegenueber dem ausgelieferten 9.8.4-Paket unveraendert.
+
+Die Datei NEXUS_9.8.4_FIX1_Installieren.sh enthaelt das gesamte neue ZIP.
+Auf dem Pi beispielsweise nach Downloads speichern, dann als georg starten:
+
+  bash ~/Downloads/NEXUS_9.8.4_FIX1_Installieren.sh --paket-pruefen
+  bash ~/Downloads/NEXUS_9.8.4_FIX1_Installieren.sh
+
+Ohne sudo starten. Der Zielordner ist:
+  ~/Georg/TradingBot_v9.8.4_NEXUS_FIX1
+
+Der neue Ordner verhindert eine Kollision mit dem bereits entpackten 9.8.4-Paket.
+Den bisherigen Ordner nicht loeschen oder manuell ueberschreiben. Der Updater
+ermittelt die Datenquelle aus den eingerichteten Diensten, prueft den Quellstand,
+fuehrt die vollstaendigen Tests aus und sichert/uebernimmt dann die aktuellen Daten.
+
+Bei einem Fehler im vorbereitenden Volltest erfolgt noch keine Dienstumstellung.
+Die Versionsanzeige im Bot bleibt 9.8.4; der Paketstand steht in RELEASE_BUILD.txt.
+Die Hinweise zu PULSAR, Gebuehrenbelegen und Demoabnahme aus 9.8.4 gelten weiter.
+
+Nach erfolgreichem Update zeigt der Installer:
+  UPDATE UND STARTKONTROLLE ERFOLGREICH

@@ -1,0 +1,53 @@
+TRADINGBOT NEXUS 9.0.12 - TESTBERICHT
+=====================================
+Version: 9.0.12-NEXUS
+Datum: 30.08.2026
+
+ERGEBNIS
+--------
+- 788 Pytest-Tests bestanden.
+- 189 integrierte Subtests bestanden.
+- SELF TEST: OK.
+- Static Release Hygiene: OK.
+- compileall: OK.
+- Raspberry-Pi-Preflight (host-neutral): OK.
+- Shell-Syntax: OK.
+- Gesamtergebnis: VOLLTEST OK.
+
+NEUE GEZIELTE REGRESSIONEN
+--------------------------
+- Ein Markt mit kleinem, aber positivem OKX-Tagesumsatz bleibt fuer die
+  Volumenrangfolge erhalten und wird nicht mehr durch 250.000 EUR gesperrt.
+- Oeffentlicher Katalog und authentifizierter Kontokatalog bleiben getrennt.
+- EUR, USD und USDC bleiben getrennte finanzierte Handelskanäle; USDT bleibt
+  ausgeschlossen.
+- Ein unbelegter lokaler SOL-Hinweis kann nach Sicherung entfernt werden,
+  ohne einen Brokeraufruf zum Verkauf oder Loeschen auszufuehren.
+- Eine bestaetigte offene Botposition kann nicht ueber die neue WebUI-Aktion
+  geloescht werden.
+- ACCOUNT_ASSET_CONFIRMED und DISMISSED bleiben nach erneutem Datenbankstart
+  erhalten und werden nicht pauschal zu CLOSED umgeschrieben.
+- Unbestaetigte SOL-/ETH-Legacyzeilen erscheinen weder als offene Positionen
+  noch in der Telegram-Liste bestaetigter Botpositionen.
+- Konto-Assets werden getrennt und ausdruecklich als „keine Bottrades“ gezeigt.
+- BLOCKED wird in /decisions nur einmal als ABGELEHNT ausgegeben.
+- Logbuch und Telegram wandeln UTC-Zeit explizit nach Europe/Berlin um.
+- Das Entscheidungslog verwendet 15 Zeilen je Seite.
+
+BESTEHENDE SICHERHEITSREGRESSIONEN
+---------------------------------
+- Kein blinder zweiter eToro- oder OKX-POST nach unklarer Orderantwort.
+- Broker-Eigentumsnachweis ueber Order-/Fill-Beweisketten bleibt zwingend.
+- Konto-Assets werden nicht automatisch verkauft.
+- Offene eigene Orders und nachgewiesene Botpositionen sperren lokale
+  Bereinigungsaktionen.
+- eToro v3-202-Auftrag, referenceId/orderId-Lookup, Private-WebSocket,
+  Rate-Limiter und persistente Reconciliation bestehen weiter.
+- OKX Signatur, Demo-Header, Zeitabgleich, REST-Snapshot, WebSocket-Health,
+  normale Orders, Algoorders und Fills bestehen weiter.
+
+GRENZEN DES OFFLINETESTS
+------------------------
+Echte eToro-/OKX-/Telegram-/KI-Netzwerkaufrufe sowie ARM64-Hardware werden
+offline nicht simuliert. Der kontrollierte DEMO/PAPER-Lauf auf dem Raspberry
+Pi bleibt deshalb Bestandteil der Installation.

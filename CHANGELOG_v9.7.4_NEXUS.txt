@@ -1,0 +1,54 @@
+NEXUS 9.7.4 – Pflicht-Testabhaengigkeit und reproduzierbarer Pruefweg
+Stand: 07.09.2026
+Basis: ausgelieferte 9.7.3, SHA256
+94056c8e5d16d6eae614558ed75c9a468902d0eb5d41984fd6c4754ee7a98815
+
+ANLASS
+Der Pi-Volltest der 9.7.3 meldet 1 failed, 1321 passed, 5 skipped,
+204 subtests passed. Der fehlgeschlagene WebUI-Authentifizierungstest erreicht
+seine Assertions nicht: FastAPI/Starlette TestClient kann httpx nicht importieren.
+requirements-test.txt deklarierte lediglich pytest.
+Die alte Anleitung verwendete zusaetzlich eine bereits vorhandene 9.7.1-.venv,
+ohne die neuen Testabhaengigkeiten vorher zu installieren.
+
+AENDERUNGEN
+- requirements-test.txt deklariert pytest==9.0.2 und httpx==0.28.1.
+  Kein ungepinnter Paketname, keine Vorabversion, kein Test-Stub.
+- requirements.txt und requirements-lock.txt bleiben bytegleich zur 9.7.3.
+  HTTPX wird fuer Pflicht-Tests installiert, nicht als neuer Brokeradapter.
+- Pi-Installer installiert Testpakete unter den bestehenden Laufzeit-Pins
+  (-c requirements-lock.txt), fuehrt pip check und den echten TestClient-Probelauf
+  vor dem Volltest und vor jeder systemd-Umstellung aus.
+- check_test_dependencies.py prueft exakte Test-Pins, echte Imports und eine
+  lokale ASGI-Testanfrage ohne NEXUS-/Brokerimport, ohne Listener und ohne Orders.
+  Fehlende, falsche oder beschaedigte Testpakete ergeben Exitcode 78.
+- volltest.py prueft Testabhaengigkeiten vor pytest. Ist die Umgebung defekt,
+  wird KEIN erfolgreicher Testlauf vorgetaeuscht. Der Gesamtstatus bleibt Fehler.
+  pytest -ra zeigt nun auch die Gruende uebersprungener Tests an.
+- Die neue Anleitung erstellt zuerst eine eigene .venv im frischen Zielordner
+  und installiert Laufzeit- UND Testpakete zusammen. Keine Aenderung der alten
+  .venv und keine Service-/Datenmigration durch diese isolierte Pruefung.
+- VERSION.txt und config.VERSION_NEXUS: 9.7.4-NEXUS; Release-Manifest aktualisiert.
+
+TESTVERTRAG
+- Der bestehende Deklarationstest in test_release_policy.py wurde angepasst:
+  exakt die ZWEI gepinnten Pflicht-Testpakete statt ausschliesslich pytest.
+- test_read_endpoints_require_auth und alle anderen bisherigen Verhaltenstests
+  sind unveraendert. Kein bestehender Test geloescht, deaktiviert oder mit xfail
+  versehen. Es werden keine Authentifizierungspruefungen abgeschwaecht.
+- Neue Tests fuer fehlendes HTTPX, falsche Version, defekten Import, defekten
+  Transport, ungueltige/fehlende Pins und die Reihenfolge im Installer.
+
+UNVERAENDERT
+- Handels-, Strategie-, Ledger-, Fill-, Recovery- und Brokerlogik.
+- Alle WebUI-Dateien, einschliesslich Broker-/Konto-/Waehrungstrennung.
+- Zustandsmigration, Sicherheits-/Risikogrenzen und Live-Arming.
+- Historische Dokumente bleiben als solche erhalten und sind keine Anleitung
+  zur Installation der 9.7.4. Massgeblich ist die neue 9.7.4-Anleitung.
+
+PRUEFGRENZEN
+Dieses Wartungsrelease behebt den gemeldeten Testabhaengigkeitsfehler, nicht alle
+moeglichen Handelsfehler. Kein Echtgeld-/Broker-POST, kein ARM64-/systemd-Dauertest.
+Verwendete Paketversionen und tatsaechliche Testergebnisse stehen im separaten
+NEXUS_9.7.4_PAKETPRUEFUNG.txt und im Nachweisarchiv. Ein gruenes Offline-Ergebnis
+ersetzt nicht die lokale Pruefung der gepinnten Installation auf dem Pi.

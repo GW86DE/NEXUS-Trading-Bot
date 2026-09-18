@@ -1,0 +1,836 @@
+{
+  "records": {
+    "3174572892869043200": {
+      "decision_id": 3174572892869043200,
+      "symbol": "MSFT",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 29.0,
+      "price": 499.14,
+      "stop": 495.9986,
+      "take_profit": 505.4228,
+      "state": "CLOSED_BEFORE_IMPORT",
+      "created_at_utc": "2026-08-27T14:00:47.705418+00:00",
+      "updated_at_utc": "2026-09-02T07:30:56.572483+00:00",
+      "order_ids": [
+        "377432172"
+      ],
+      "reference_id": "8caceb07-75b4-4b10-a531-fae417ba9e0e",
+      "position_ids": [
+        "3590107110"
+      ],
+      "fills": [
+        {
+          "position_id": "3590107110",
+          "quantity": 29.0,
+          "price": 499.2,
+          "execution_time": "2026-08-27T14:00:48.603Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 29.0,
+      "remaining_quantity": 0.0,
+      "broker_status": "FILLED",
+      "position_verified": false,
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "closed_position_ids": [
+        "3590107110"
+      ],
+      "position_verified_at_utc": "2026-08-28T01:09:09.162541+00:00",
+      "legacy_unbound_closed": true,
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED",
+      "verified_position_ids": [],
+      "broker_execution_state": "FILLED",
+      "ledger_close_backfill": {
+        "3590107110": {
+          "status": "LEDGER_BACKFILL_PENDING",
+          "position_id": "3590107110",
+          "error": "Konto/Decision/Entry-Preis/Menge/Order fuer exakten Backfill unvollstaendig"
+        }
+      },
+      "ledger_close_backfill_updated_at_utc": "2026-09-02T07:30:56.572441+00:00"
+    },
+    "4500773422240313856": {
+      "decision_id": 4500773422240313856,
+      "symbol": "AVGO",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 40.0,
+      "price": 375.0,
+      "stop": 372.2314,
+      "take_profit": 380.5371,
+      "state": "CLOSED_BEFORE_IMPORT",
+      "created_at_utc": "2026-08-28T13:30:50.559619+00:00",
+      "updated_at_utc": "2026-09-02T07:30:56.587647+00:00",
+      "order_ids": [
+        "377660374"
+      ],
+      "reference_id": "b07852c2-07d5-46f1-90d1-8cef89102cd0",
+      "position_ids": [
+        "3590659058"
+      ],
+      "fills": [
+        {
+          "position_id": "3590659058",
+          "quantity": 40.0,
+          "price": 373.4,
+          "execution_time": "2026-08-28T13:30:51.39Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 40.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "broker_status": "FILLED",
+      "last_error": "Gespeicherte eToro-positionId weder im aktuellen Depot noch in der vollstaendig gelesenen Trade-Historie gefunden",
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "closed_position_ids": [
+        "3590659058"
+      ],
+      "position_verified_at_utc": "2026-08-28T14:20:18.723913+00:00",
+      "legacy_unbound_closed": true,
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED",
+      "verified_position_ids": [],
+      "ledger_close_backfill": {
+        "3590659058": {
+          "status": "LEDGER_BACKFILL_PENDING",
+          "position_id": "3590659058",
+          "error": "Konto/Decision/Entry-Preis/Menge/Order fuer exakten Backfill unvollstaendig"
+        }
+      },
+      "ledger_close_backfill_updated_at_utc": "2026-09-02T07:30:56.587612+00:00"
+    },
+    "22751843828414068": {
+      "decision_id": 22751843828414068,
+      "symbol": "AVGO",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 40.0,
+      "price": 375.0,
+      "stop": 372.2314,
+      "take_profit": 380.5371,
+      "state": "CLOSED_BEFORE_IMPORT",
+      "created_at_utc": "2026-08-28T13:30:59.100862+00:00",
+      "updated_at_utc": "2026-09-02T07:30:56.606955+00:00",
+      "order_ids": [
+        "377660375"
+      ],
+      "reference_id": "bd99cda0-1d96-4f22-88de-9d3b4c42d670",
+      "position_ids": [
+        "3590659077"
+      ],
+      "fills": [
+        {
+          "position_id": "3590659077",
+          "quantity": 40.0,
+          "price": 373.72,
+          "execution_time": "2026-08-28T13:30:59.477Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 40.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "broker_status": "FILLED",
+      "last_error": "Gespeicherte eToro-positionId weder im aktuellen Depot noch in der vollstaendig gelesenen Trade-Historie gefunden",
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "closed_position_ids": [
+        "3590659077"
+      ],
+      "position_verified_at_utc": "2026-08-28T14:20:18.743177+00:00",
+      "legacy_unbound_closed": true,
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED",
+      "verified_position_ids": [],
+      "ledger_close_backfill": {
+        "3590659077": {
+          "status": "LEDGER_BACKFILL_PENDING",
+          "position_id": "3590659077",
+          "error": "Konto/Decision/Entry-Preis/Menge/Order fuer exakten Backfill unvollstaendig"
+        }
+      },
+      "ledger_close_backfill_updated_at_utc": "2026-09-02T07:30:56.606923+00:00"
+    },
+    "2744483213757134336": {
+      "decision_id": 2744483213757134336,
+      "symbol": "ORCL",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 98.0,
+      "price": 152.45,
+      "stop": 151.6207,
+      "take_profit": 154.1086,
+      "state": "CLOSED_BEFORE_IMPORT",
+      "created_at_utc": "2026-08-28T13:31:38.855213+00:00",
+      "updated_at_utc": "2026-09-02T07:30:56.625519+00:00",
+      "order_ids": [
+        "377664359"
+      ],
+      "reference_id": "9d671ab4-bb59-4c48-9b6e-a4ac77939166",
+      "position_ids": [
+        "3590660074"
+      ],
+      "fills": [
+        {
+          "position_id": "3590660074",
+          "quantity": 98.0,
+          "price": 153.32,
+          "execution_time": "2026-08-28T13:31:39.05Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 98.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "broker_status": "FILLED",
+      "last_error": "Gespeicherte eToro-positionId weder im aktuellen Depot noch in der vollstaendig gelesenen Trade-Historie gefunden",
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "closed_position_ids": [
+        "3590660074"
+      ],
+      "position_verified_at_utc": "2026-08-28T14:03:35.672720+00:00",
+      "legacy_unbound_closed": true,
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED",
+      "verified_position_ids": [],
+      "ledger_close_backfill": {
+        "3590660074": {
+          "status": "LEDGER_BACKFILL_PENDING",
+          "position_id": "3590660074",
+          "error": "Konto/Decision/Entry-Preis/Menge/Order fuer exakten Backfill unvollstaendig"
+        }
+      },
+      "ledger_close_backfill_updated_at_utc": "2026-09-02T07:30:56.625494+00:00"
+    },
+    "4096276227984541184": {
+      "decision_id": 4096276227984541184,
+      "symbol": "CRM",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 57.0,
+      "price": 261.21,
+      "stop": 257.6743,
+      "take_profit": 268.2814,
+      "state": "CLOSED_BEFORE_IMPORT",
+      "created_at_utc": "2026-08-28T14:20:16.726734+00:00",
+      "updated_at_utc": "2026-09-02T07:30:56.639971+00:00",
+      "order_ids": [
+        "377660641"
+      ],
+      "reference_id": "96c4575d-bce6-42b0-b6b4-67a6c4e7a5cc",
+      "position_ids": [
+        "3590743011"
+      ],
+      "fills": [
+        {
+          "position_id": "3590743011",
+          "quantity": 57.0,
+          "price": 259.35,
+          "execution_time": "2026-08-28T14:20:17.487Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 57.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "broker_status": "FILLED",
+      "last_error": "Gespeicherte eToro-positionId weder im aktuellen Depot noch in der vollstaendig gelesenen Trade-Historie gefunden",
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "closed_position_ids": [
+        "3590743011"
+      ],
+      "position_verified_at_utc": "2026-08-28T14:57:57.918027+00:00",
+      "legacy_unbound_closed": true,
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED",
+      "verified_position_ids": [],
+      "ledger_close_backfill": {
+        "3590743011": {
+          "status": "LEDGER_BACKFILL_PENDING",
+          "position_id": "3590743011",
+          "error": "Konto/Decision/Entry-Preis/Menge/Order fuer exakten Backfill unvollstaendig"
+        }
+      },
+      "ledger_close_backfill_updated_at_utc": "2026-09-02T07:30:56.639938+00:00"
+    },
+    "1623158190667463424": {
+      "decision_id": 1623158190667463424,
+      "symbol": "CRM",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 57.0,
+      "price": 261.21,
+      "stop": 257.6743,
+      "take_profit": 268.2814,
+      "state": "REJECTED",
+      "created_at_utc": "2026-08-28T14:26:12.728511+00:00",
+      "updated_at_utc": "2026-08-28T14:26:26.456195+00:00",
+      "order_ids": [
+        "377664843"
+      ],
+      "reference_id": "eb5bef7e-1849-4d33-bc5f-32041ae2315f",
+      "position_ids": [],
+      "fills": [],
+      "filled_quantity": 0.0,
+      "remaining_quantity": 57.0,
+      "broker_execution_state": "REJECTED",
+      "position_verified": false,
+      "broker_status": "REJECTED",
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "REJECTED",
+      "open_position_ids": [],
+      "closed_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "NOT_SEEN",
+      "broker_position_status": "PROPAGATION_PENDING",
+      "verified_position_ids": []
+    },
+    "534481931402719424": {
+      "decision_id": 534481931402719424,
+      "symbol": "CRM",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 57.0,
+      "price": 261.21,
+      "stop": 257.6743,
+      "take_profit": 268.2814,
+      "state": "CLOSED_BEFORE_IMPORT",
+      "created_at_utc": "2026-08-28T14:57:54.455868+00:00",
+      "updated_at_utc": "2026-09-02T07:30:56.654105+00:00",
+      "order_ids": [
+        "377660731"
+      ],
+      "reference_id": "81dcaf1f-5ce1-4108-a584-0d69423e389f",
+      "position_ids": [
+        "3590786092"
+      ],
+      "fills": [
+        {
+          "position_id": "3590786092",
+          "quantity": 57.0,
+          "price": 260.29,
+          "execution_time": "2026-08-28T14:57:55.48Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 57.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "broker_status": "FILLED",
+      "last_error": "Gespeicherte eToro-positionId weder im aktuellen Depot noch in der vollstaendig gelesenen Trade-Historie gefunden",
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "closed_position_ids": [
+        "3590786092"
+      ],
+      "position_verified_at_utc": "2026-08-28T19:31:07.966826+00:00",
+      "legacy_unbound_closed": true,
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED",
+      "verified_position_ids": [],
+      "ledger_close_backfill": {
+        "3590786092": {
+          "status": "LEDGER_BACKFILL_PENDING",
+          "position_id": "3590786092",
+          "error": "Konto/Decision/Entry-Preis/Menge/Order fuer exakten Backfill unvollstaendig"
+        }
+      },
+      "ledger_close_backfill_updated_at_utc": "2026-09-02T07:30:56.654078+00:00"
+    },
+    "3168946388552706560": {
+      "decision_id": 3168946388552706560,
+      "symbol": "NVDA",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 66.0,
+      "price": 226.74,
+      "stop": 224.8286,
+      "take_profit": 230.5629,
+      "state": "CLOSED_BEFORE_IMPORT",
+      "created_at_utc": "2026-08-28T15:03:14.321816+00:00",
+      "updated_at_utc": "2026-09-02T07:30:56.667943+00:00",
+      "order_ids": [
+        "377664938"
+      ],
+      "reference_id": "2aaece8e-ae12-4599-8d7a-4579ceaabb8b",
+      "position_ids": [
+        "3590786765"
+      ],
+      "fills": [
+        {
+          "position_id": "3590786765",
+          "quantity": 66.0,
+          "price": 222.0,
+          "execution_time": "2026-08-28T15:03:15.36Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 66.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "broker_status": "FILLED",
+      "last_error": "Gespeicherte eToro-positionId weder im aktuellen Depot noch in der vollstaendig gelesenen Trade-Historie gefunden",
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "closed_position_ids": [
+        "3590786765"
+      ],
+      "position_verified_at_utc": "2026-08-28T15:46:06.244146+00:00",
+      "legacy_unbound_closed": true,
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED",
+      "verified_position_ids": [],
+      "ledger_close_backfill": {
+        "3590786765": {
+          "status": "LEDGER_BACKFILL_PENDING",
+          "position_id": "3590786765",
+          "error": "Konto/Decision/Entry-Preis/Menge/Order fuer exakten Backfill unvollstaendig"
+        }
+      },
+      "ledger_close_backfill_updated_at_utc": "2026-09-02T07:30:56.667895+00:00"
+    },
+    "1974852219759465728": {
+      "decision_id": 1974852219759465728,
+      "symbol": "NVDA",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 66.0,
+      "price": 226.74,
+      "stop": 224.8286,
+      "take_profit": 230.5629,
+      "state": "REJECTED",
+      "created_at_utc": "2026-08-28T15:24:39.566946+00:00",
+      "updated_at_utc": "2026-08-28T15:24:43.097853+00:00",
+      "order_ids": [
+        "377660814"
+      ],
+      "reference_id": "06b1a08e-405c-41b1-b5b8-e6931c12a5c9",
+      "position_ids": [],
+      "fills": [],
+      "filled_quantity": 0.0,
+      "remaining_quantity": 66.0,
+      "broker_execution_state": "REJECTED",
+      "position_verified": false,
+      "broker_status": "REJECTED",
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "REJECTED",
+      "open_position_ids": [],
+      "closed_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "NOT_SEEN",
+      "broker_position_status": "PROPAGATION_PENDING",
+      "verified_position_ids": []
+    },
+    "290261241349942016": {
+      "decision_id": 290261241349942016,
+      "symbol": "TXN",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 57.0,
+      "price": 262.71,
+      "stop": 259.8236,
+      "take_profit": 268.4829,
+      "state": "REJECTED",
+      "created_at_utc": "2026-08-28T15:45:55.355810+00:00",
+      "updated_at_utc": "2026-08-28T15:46:01.040497+00:00",
+      "order_ids": [
+        "377660884"
+      ],
+      "reference_id": "c9395472-6124-4917-9547-df57fa580a62",
+      "position_ids": [],
+      "fills": [],
+      "filled_quantity": 0.0,
+      "remaining_quantity": 57.0,
+      "broker_execution_state": "REJECTED",
+      "position_verified": false,
+      "broker_status": "REJECTED",
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "REJECTED",
+      "open_position_ids": [],
+      "closed_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "NOT_SEEN",
+      "broker_position_status": "PROPAGATION_PENDING",
+      "verified_position_ids": []
+    },
+    "187686096418179904": {
+      "decision_id": 187686096418179904,
+      "symbol": "QCOM",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 91.0,
+      "price": 164.37,
+      "stop": 163.0725,
+      "take_profit": 166.965,
+      "state": "CLOSED_BEFORE_IMPORT",
+      "created_at_utc": "2026-08-28T15:46:03.663016+00:00",
+      "updated_at_utc": "2026-09-02T07:30:56.682678+00:00",
+      "order_ids": [
+        "377665040"
+      ],
+      "reference_id": "025d6bdf-593a-4d4b-902a-44d7c10d3212",
+      "position_ids": [
+        "3590809508"
+      ],
+      "fills": [
+        {
+          "position_id": "3590809508",
+          "quantity": 91.0,
+          "price": 163.54,
+          "execution_time": "2026-08-28T15:46:03.903Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 91.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "broker_status": "FILLED",
+      "last_error": "Gespeicherte eToro-positionId weder im aktuellen Depot noch in der vollstaendig gelesenen Trade-Historie gefunden",
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "closed_position_ids": [
+        "3590809508"
+      ],
+      "position_verified_at_utc": "2026-08-28T19:31:07.990475+00:00",
+      "legacy_unbound_closed": true,
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED",
+      "verified_position_ids": [],
+      "ledger_close_backfill": {
+        "3590809508": {
+          "status": "LEDGER_BACKFILL_PENDING",
+          "position_id": "3590809508",
+          "error": "Konto/Decision/Entry-Preis/Menge/Order fuer exakten Backfill unvollstaendig"
+        }
+      },
+      "ledger_close_backfill_updated_at_utc": "2026-09-02T07:30:56.682632+00:00"
+    },
+    "2789962700704941056": {
+      "decision_id": 2789962700704941056,
+      "symbol": "QCOM",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 91.0,
+      "price": 164.37,
+      "stop": 163.0725,
+      "take_profit": 166.965,
+      "state": "REJECTED",
+      "created_at_utc": "2026-08-28T15:56:49.398937+00:00",
+      "updated_at_utc": "2026-08-28T15:56:52.741871+00:00",
+      "order_ids": [
+        "377660908"
+      ],
+      "reference_id": "2d596197-c6be-40bf-9d07-fd0ea2b60938",
+      "position_ids": [],
+      "fills": [],
+      "filled_quantity": 0.0,
+      "remaining_quantity": 91.0,
+      "broker_execution_state": "REJECTED",
+      "position_verified": false,
+      "broker_status": "REJECTED",
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "REJECTED",
+      "open_position_ids": [],
+      "closed_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "NOT_SEEN",
+      "broker_position_status": "PROPAGATION_PENDING",
+      "verified_position_ids": []
+    },
+    "4239246128568052736": {
+      "decision_id": 4239246128568052736,
+      "symbol": "MSFT",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 29.0,
+      "price": 508.9,
+      "stop": 506.5246,
+      "take_profit": 513.6508,
+      "state": "CLOSED_BEFORE_IMPORT",
+      "created_at_utc": "2026-08-31T13:33:53.171463+00:00",
+      "updated_at_utc": "2026-09-02T07:30:56.699033+00:00",
+      "order_ids": [
+        "378067227"
+      ],
+      "reference_id": "ef752616-aa51-46cd-8c31-f29b177c0295",
+      "position_ids": [
+        "3591289223"
+      ],
+      "fills": [
+        {
+          "position_id": "3591289223",
+          "quantity": 29.0,
+          "price": 509.35,
+          "execution_time": "2026-08-31T13:33:55.36Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 29.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "position_confirmation_started_at_utc": "2026-08-31T13:33:56.869992+00:00",
+      "position_absence_checks": 2,
+      "broker_status": "FILLED",
+      "last_position_absence_check_at_utc": "2026-08-31T16:12:35.843460+00:00",
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "last_error": "Gespeicherte eToro-positionId weder im aktuellen Depot noch in der vollstaendig gelesenen Trade-Historie gefunden; Karenz 300 s und 3 Negativ-Snapshots abgelaufen",
+      "closed_position_ids": [
+        "3591289223"
+      ],
+      "position_verified_at_utc": "2026-08-31T21:24:40.206603+00:00",
+      "legacy_unbound_closed": true,
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED",
+      "verified_position_ids": [],
+      "ledger_close_backfill": {
+        "3591289223": {
+          "status": "LEDGER_BACKFILL_PENDING",
+          "position_id": "3591289223",
+          "error": "Konto/Decision/Entry-Preis/Menge/Order fuer exakten Backfill unvollstaendig"
+        }
+      },
+      "ledger_close_backfill_updated_at_utc": "2026-09-02T07:30:56.698986+00:00"
+    },
+    "636373865431955072": {
+      "decision_id": 636373865431955072,
+      "symbol": "SPGI",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo",
+      "quantity": 34.0,
+      "price": 437.88,
+      "stop": 433.89,
+      "take_profit": 445.86,
+      "state": "CLOSED_BEFORE_IMPORT",
+      "created_at_utc": "2026-08-31T18:51:04.326029+00:00",
+      "updated_at_utc": "2026-09-02T07:30:56.712479+00:00",
+      "order_ids": [
+        "378288023"
+      ],
+      "reference_id": "decdff04-397c-4b96-825c-2dd892326e61",
+      "position_ids": [
+        "3592010843"
+      ],
+      "fills": [
+        {
+          "position_id": "3592010843",
+          "quantity": 34.0,
+          "price": 436.19,
+          "execution_time": "2026-08-31T18:51:06.067Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 34.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "position_confirmation_started_at_utc": "2026-08-31T18:51:07.447058+00:00",
+      "position_absence_checks": 2,
+      "broker_status": "FILLED",
+      "last_position_absence_check_at_utc": "2026-08-31T19:14:44.864090+00:00",
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "last_error": "eToro-positionId noch nicht sichtbar; erneuter Abgleich (1417/300 s, Snapshot 2/3)",
+      "closed_position_ids": [
+        "3592010843"
+      ],
+      "position_verified_at_utc": "2026-08-31T21:24:40.225883+00:00",
+      "legacy_unbound_closed": true,
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED",
+      "verified_position_ids": [],
+      "ledger_close_backfill": {
+        "3592010843": {
+          "status": "LEDGER_BACKFILL_PENDING",
+          "position_id": "3592010843",
+          "error": "Konto/Decision/Entry-Preis/Menge/Order fuer exakten Backfill unvollstaendig"
+        }
+      },
+      "ledger_close_backfill_updated_at_utc": "2026-09-02T07:30:56.712457+00:00"
+    },
+    "1518482734946954240": {
+      "decision_id": 1518482734946954240,
+      "symbol": "CRM",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo:ba32f97fe3482fcbc326e51a",
+      "account_fingerprint": "ba32f97fe3482fcbc326e51a",
+      "quantity": 58.0,
+      "price": 256.22,
+      "stop": 254.2614,
+      "take_profit": 260.1371,
+      "state": "CLOSED_ACCOUNTING_PENDING",
+      "created_at_utc": "2026-09-01T14:02:47.292667+00:00",
+      "updated_at_utc": "2026-09-01T14:38:35.098276+00:00",
+      "order_ids": [
+        "378375526"
+      ],
+      "reference_id": "892f7f08-3970-4874-8548-1e667aba8e2c",
+      "position_ids": [
+        "3592539858"
+      ],
+      "fills": [
+        {
+          "position_id": "3592539858",
+          "quantity": 58.0,
+          "price": 257.23,
+          "execution_time": "2026-09-01T14:02:49.597Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 58.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "position_confirmation_started_at_utc": "2026-09-01T14:02:53.204886+00:00",
+      "position_absence_checks": 1,
+      "broker_status": "FILLED",
+      "last_position_absence_check_at_utc": "2026-09-01T14:02:54.741410+00:00",
+      "broker_position_status": "CLOSED_CONFIRMED",
+      "last_error": "eToro meldet eine Ausfuehrung, die positionId ist im aktuellen Depot aber noch nicht bestaetigt; kein lokaler Trade und kein erneuter Kauf.",
+      "verified_position_ids": [],
+      "position_verified_at_utc": "2026-09-01T14:38:35.098262+00:00",
+      "closed_position_ids": [
+        "3592539858"
+      ],
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "unresolved_position_ids": [],
+      "position_state": "CLOSED_CONFIRMED"
+    },
+    "4153277691980212224": {
+      "decision_id": 4153277691980212224,
+      "symbol": "ADBE",
+      "broker": "etoro",
+      "paper": true,
+      "profile": "offensiv",
+      "domain": "etoro:demo:ba32f97fe3482fcbc326e51a",
+      "account_fingerprint": "ba32f97fe3482fcbc326e51a",
+      "quantity": 51.0,
+      "price": 290.07,
+      "stop": 287.1696,
+      "take_profit": 295.8707,
+      "state": "AWAITING_POSITION_CONFIRMATION",
+      "created_at_utc": "2026-09-01T14:38:30.452691+00:00",
+      "updated_at_utc": "2026-09-01T14:38:35.136096+00:00",
+      "order_ids": [
+        "378375675"
+      ],
+      "reference_id": "ac14a874-980a-468d-982f-57df9c4d56b9",
+      "position_ids": [
+        "3592625451"
+      ],
+      "fills": [
+        {
+          "position_id": "3592625451",
+          "quantity": 51.0,
+          "price": 293.92,
+          "execution_time": "2026-09-01T14:38:32.343Z",
+          "execution_id": ""
+        }
+      ],
+      "filled_quantity": 51.0,
+      "remaining_quantity": 0.0,
+      "broker_execution_state": "FILLED",
+      "position_verified": false,
+      "position_confirmation_started_at_utc": "2026-09-01T14:38:33.397585+00:00",
+      "position_absence_checks": 1,
+      "broker_status": "FILLED",
+      "last_position_absence_check_at_utc": "2026-09-01T14:38:35.125023+00:00",
+      "broker_position_status": "PROPAGATION_PENDING",
+      "last_error": "eToro meldet eine Ausfuehrung, die positionId ist im aktuellen Depot aber noch nicht bestaetigt; kein lokaler Trade und kein erneuter Kauf.",
+      "stream_position_ids": [],
+      "submit_state": "ACCEPTED",
+      "execution_state": "FILLED",
+      "open_position_ids": [],
+      "closed_position_ids": [],
+      "unresolved_position_ids": [
+        "3592625451"
+      ],
+      "position_state": "NOT_SEEN",
+      "verified_position_ids": []
+    }
+  },
+  "schema": 3,
+  "updated_at_utc": "2026-09-02T07:30:56.712722+00:00"
+}

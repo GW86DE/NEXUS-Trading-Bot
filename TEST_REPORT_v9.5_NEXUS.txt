@@ -1,0 +1,48 @@
+================================================================================
+ TradingBot NEXUS 9.5.0 -- Testbericht
+================================================================================
+
+Datum: 2026-09-01
+
+ERGEBNIS
+--------
+PYTEST                              986 bestanden
+UNITTEST-SUBTESTS                   198 bestanden
+SELF TEST                           OK
+COMPILEALL                          OK
+PI PREFLIGHT (host-neutral)         OK
+SHELL-SYNTAX                        OK
+STATIC RELEASE HYGIENE              OK
+VOLLTEST                            OK
+
+KRITISCHE REGRESSIONEN
+----------------------
+- eToro positionId-Feldvarianten werden zentral normalisiert.
+- Eine offene eToro-Zeile ohne positionId sperrt die Automatik.
+- positionId und Reconciliation-Beleg ueberschreiten keine Kontogrenze.
+- Eigentum aktiviert AUTO erst nach exakter SL-/TP-Ruecklesung.
+- Ein eToro-Close ohne orderId erzeugt auch nach Wiederholung nur einen POST.
+- eToro-Teilfills werden fill-idempotent bis zur Gesamtmenge kumuliert.
+- OKX-Fills gleicher roher tradeId bleiben je Konto/Instrument/Order getrennt.
+- ONDO-Legacy-Recovery braucht exakte registrierte ordId und volle Fillkette.
+- OKX-Schutz darf nur ueber gespeicherte eigene algoId storniert werden.
+- Unklare OKX-Exits erzeugen keinen zweiten SELL.
+- Bestaetigter Brokerfill plus lokale Buchungsstoerung bleibt
+  ACCOUNTING_PENDING und wird nicht aus dem Positionsbuch entfernt.
+- Legacy-Ledgerersatz behaelt Konto-, Instrument- und Entry-Order-Identitaet.
+- Ein Nullbestand braucht mindestens zwei Snapshots und 30 Sekunden.
+- Freqtrade-ROI wird vor dem Kerzenabruf geprueft.
+- FMP-Referenz und optionale News teilen das harte Tagesbudget.
+- Das FMP-Automatiklimit bleibt auch bei parallelen Threads atomar.
+- Bei geschlossenem Aktienmarkt und deaktiviertem eToro gibt es keinen
+  automatischen FMP-Netzabruf.
+- Krypto-Backtest verwendet keine privaten OKX-Zugangsdaten.
+- Kryptoanalyse verwendet konfigurierte Takergebuehr und Slippage.
+- Walk-Forward-Folds sind strikt chronologisch.
+
+ABNAHMEGRENZE
+-------------
+Nicht offline simuliert werden echte eToro-, OKX-, FMP-, Telegram- und
+OpenAI-Netzwerkaufrufe sowie ARM64-Hardware des Raspberry Pi 5. Eine
+vollstaendige DEMO-/Paper-Abnahme bleibt vor LIVE verpflichtend.
+================================================================================

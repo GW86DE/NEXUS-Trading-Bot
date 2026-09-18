@@ -1,0 +1,45 @@
+TRADINGBOT 8.1.1 NEXUS – TEST REPORT
+=================================
+
+Datum: 24.08.2026
+Testumgebung: Linux x86_64, Python 3.12.13
+Zielumgebung: Raspberry Pi 5 / ARM64, Python >= 3.11
+
+ERGEBNIS
+--------
+VOLLTEST OK
+
+- Static Release Hygiene: OK
+- Pytest Geldpfad / Regressionen: 299 bestanden
+- Unittest-Subtests: 163 bestanden
+- Self Test: OK
+- compileall: OK
+- Pi-Preflight (host-neutral): OK
+- Shell-Syntax: OK
+
+ZUSÄTZLICH IN 8.1.1 GEPRÜFT
+---------------------------
+- Release-Hygiene bleibt für ZIP-Pakete strikt.
+- Installierte Arbeitsordner dürfen bei einem Wiederholungslauf lokale Zustandsdateien enthalten.
+- Der Installer testet vor dem Erzeugen von web_ui_settings.json.
+- Die WebUI-Aktivierung kann eine nach Teilabbruch fehlende systemd-Unit wiederherstellen.
+- Vollständiger Installer-Ablauf mit bereits vorhandenen WebUI-Einstellungen: OK.
+- systemd-Vorlagen wurden im simulierten ARM64-Installationslauf erzeugt und installiert.
+- Demo/LIVE-Moduswahl verlangt für LIVE die exakte zweite Bestätigung.
+- Jeder Broker-Moduswechsel entfernt das brokerbezogene LIVE-Arming.
+- OFFENSIV kann nicht ohne zweite Bestätigung aktiviert werden.
+- Migration ersetzt eine nur initialisierte/leere Decision-DB durch die alte Historie.
+- Migration lässt die Quelle unverändert und erzwingt Demo/Paper.
+- OKX-Healthcheck ist authentifiziert und auf das konfigurierte Intervall gedrosselt.
+- Telegram-RESUME ist sessiongebunden, einmalig und update-idempotent.
+- Alte Telegram-Callbacks werden nach Bot-Neustart abgelehnt.
+- Dashboard enthält Entscheidungen/Ablehnungen, Pi-Zustand und Migration.
+- Settings enthalten Demo/LIVE, Risikoprofil und Telegram NotificationMode.
+- Python-Module importierbar, JavaScript-Syntax und Shell-Syntax geprüft.
+
+BEWUSSTE OFFLINE-GRENZEN
+-----------------------
+Echte Netzwerkaufrufe zu eToro, OKX, Telegram, OpenAI und News-Anbietern sowie
+ARM64-Hardware-/Temperatursensoren werden im Offline-Volltest nicht simuliert.
+NEXUS 8.1.1 stellt dafür explizite read-only Verbindungstests in der WebUI bereit.
+Vor LIVE ist ein echter Test auf dem Raspberry Pi im jeweiligen Broker-Modus Pflicht.

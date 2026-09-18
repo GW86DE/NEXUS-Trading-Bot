@@ -1,0 +1,80 @@
+let snapshot={};function getPath(o,path){return path.split('.').reduce((v,k)=>v?.[k],o)}function setPath(o,path,value){const bits=path.split('.');let x=o;bits.forEach((k,i)=>{if(i===bits.length-1)x[k]=value;else x=x[k]||(x[k]={})})}
+async function loadSettings(){try{snapshot=await api('/api/settings');renderFMP(snapshot.news?.fmp_status||{});renderMassive(snapshot.news?.massive_status||{});renderRiskLevels(snapshot.risk_levels||{});document.querySelectorAll('[data-field]').forEach(el=>{const v=getPath(snapshot,el.dataset.field);if(el.type==='checkbox')el.checked=!!v;else if(v!==undefined&&el.type!=='password')el.value=v});document.querySelectorAll('[data-state]').forEach(el=>{const set=!!getPath(snapshot,el.dataset.state);el.textContent=set?'Vorhandener Wert gespeichert':'Noch nicht gesetzt';el.style.color=set?'var(--green)':'var(--amber)'});for(const broker of ['etoro','okx']){const x=snapshot[broker]||{},mode=x.mode||'demo';document.querySelector(`#${broker}-demo`).classList.toggle('selected',mode==='demo');document.querySelector(`#${broker}-live`).classList.toggle('selected',mode==='live');document.querySelector(`#${broker}-mode-state`).textContent=`Für nächsten Core-Start gewählt: ${mode.toUpperCase()} · LIVE-Arming: ${x.live_arm_detail||'nicht freigegeben'}`;}const tg=snapshot.telegram||{};document.querySelector('#telegram-on')?.classList.toggle('selected',!!tg.enabled);document.querySelector('#telegram-off')?.classList.toggle('selected',!tg.enabled);const tgState=document.querySelector('#telegram-runtime-state');if(tgState)tgState.textContent=`Aktiv: ${tg.enabled?'JA':'NEIN'} · Zugang: ${tg.bot_token_set&&tg.chat_id?'vollständig':'unvollständig'} · Modus ${tg.notification_mode||'ON'}`;const strategy=snapshot.crypto_strategy||{},strategyMode=strategy.active_mode||'CRYPTO_PAUSED';for(const [id,value] of [['crypto-standard','NEXUS_STANDARD'],['crypto-freqtrade','FREQTRADE_SAMPLE'],['crypto-paused','CRYPTO_PAUSED'],['crypto-tsmom','TSMOM_LONG_FLAT'],['crypto-keltner','KELTNER_BREAKOUT'],['crypto-macd','MACD_TREND_CRYPTO']])document.querySelector(`#${id}`)?.classList.toggle('selected',strategyMode===value);const strategyState=document.querySelector('#crypto-strategy-state');if(strategyState)strategyState.textContent=`Aktiv: ${strategyMode} · Revision ${strategy.revision||0}${strategy.error?' · FEHLER: '+strategy.error:''}`;const eStrategy=snapshot.etoro_strategy||{},eStrategyMode=eStrategy.active_mode||'NEXUS_STANDARD';for(const [id,value] of [['etoro-strategy-standard','NEXUS_STANDARD'],['etoro-strategy-rsi2','RSI2_MEAN_REVERSION'],['etoro-strategy-high52','HIGH_52W_MOMENTUM'],['etoro-strategy-goldencross','GOLDEN_CROSS_TREND']])document.querySelector(`#${id}`)?.classList.toggle('selected',eStrategyMode===value);const eStrategyState=document.querySelector('#etoro-strategy-state');if(eStrategyState)eStrategyState.textContent=`Aktiv: ${eStrategyMode} · Revision ${eStrategy.revision||0}${eStrategy.error?' · FEHLER: '+eStrategy.error:''}`;const profiles=snapshot.risk_profile?.profiles||{},active=snapshot.risk_profile?.active;document.querySelector('#profiles').innerHTML=Object.entries(profiles).map(([name,p])=>`<div class="profile ${name===active?'selected':''}"><h3>${esc(name.toUpperCase())}</h3><p>${esc(p.description)}</p><div class="small">Risiko/Trade ${p.risk_per_trade_pct} % · max. Position ${p.max_position_pct} % · ${p.max_open_positions} Positionen · Tageslimit ${p.daily_loss_pct} %</div><button class="${name==='offensiv'?'danger':'secondary'}" onclick="setProfile('${name}')">Profil wählen</button></div>`).join('')}catch(e){show(e.message,false)}}
+function collect(){const out={};document.querySelectorAll('[data-field]').forEach(el=>{let v=el.type==='checkbox'?el.checked:el.value;if(el.type==='number')v=Number(v||0);setPath(out,el.dataset.field,v)});return out}function show(msg,ok){document.querySelector('#message').innerHTML=`<p class="alert ${ok?'success':'danger'}">${esc(msg)}</p>`}
+async function saveAll(){try{const out=collect();
+// 10.1.10: Neue USD/USDG-Freigabe ist eine bewusste Entscheidung und braucht die exakte Phrase.
+const okxPrev=snapshot.okx||{};
+const neuUsd=!!out.okx?.allow_usd&&!okxPrev.allow_usd,neuUsdg=!!out.okx?.allow_usdg&&!okxPrev.allow_usdg;
+if(neuUsd||neuUsdg){const confirm=prompt('OKX-Abrechnungswährungen erweitern ('+[neuUsd?'USD':'',neuUsdg?'USDG':''].filter(Boolean).join(', ')+'). Exakt WAEHRUNGEN FREIGEBEN eingeben:')||'';if(confirm!=='WAEHRUNGEN FREIGEBEN'){show('Währungsfreigabe abgebrochen; nichts gespeichert.',false);return}out.okx.confirm_currencies=confirm}
+const r=await api('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(out)});show(r.detail,true);await loadSettings()}catch(e){show(e.message,false)}}
+async function setMode(broker,mode){let confirm='';if(mode==='live'){confirm=prompt(`LIVE wählt echte Zugangsdaten, führt aber noch keine Order aus. Exakt ${broker.toUpperCase()} LIVE AUSWAHL eingeben:`)||'';if(confirm!==`${broker.toUpperCase()} LIVE AUSWAHL`)return}try{const r=await api('/api/brokers/mode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({broker,mode,confirm})});show(r.detail,true);await loadSettings()}catch(e){show(e.message,false)}}
+async function setProfile(profile){let confirm='';if(profile==='offensiv'){confirm=prompt('Exakt OFFENSIV AKTIVIEREN eingeben:')||'';if(confirm!=='OFFENSIV AKTIVIEREN')return}try{const r=await api('/api/risk-profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile,confirm})});show(r.detail,true);await loadSettings()}catch(e){show(e.message,false)}}
+const ZUSATZ_OKX=['TSMOM_LONG_FLAT','KELTNER_BREAKOUT','MACD_TREND_CRYPTO'];const ZUSATZ_ETORO=['RSI2_MEAN_REVERSION','HIGH_52W_MOMENTUM','GOLDEN_CROSS_TREND'];
+async function setCryptoStrategy(mode){let confirm='';if(mode==='FREQTRADE_SAMPLE'){confirm=prompt('Die offizielle SampleStrategy ist ein Beispiel und keine Gewinnzusage. Exakt FREQTRADE AKTIVIEREN eingeben:')||'';if(confirm!=='FREQTRADE AKTIVIEREN')return}if(ZUSATZ_OKX.includes(mode)){confirm=prompt('Eine Zusatzstrategie ist regelbasiert dokumentiert, aber keine Gewinnzusage. Sie gilt nur für neue Einstiege. Exakt STRATEGIE AKTIVIEREN eingeben:')||'';if(confirm!=='STRATEGIE AKTIVIEREN')return}try{const r=await api('/api/crypto-strategy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode,confirm,reason:'WebUI-Laufzeitwechsel'})});show(r.detail,true);await loadSettings()}catch(e){show(e.message,false)}}
+async function setEtoroStrategy(mode){let confirm='';if(ZUSATZ_ETORO.includes(mode)){confirm=prompt('Eine Zusatzstrategie ist regelbasiert dokumentiert, aber keine Gewinnzusage. Sie gilt nur für neue Aktien-Einstiege. Exakt STRATEGIE AKTIVIEREN eingeben:')||'';if(confirm!=='STRATEGIE AKTIVIEREN')return}try{const r=await api('/api/etoro-strategy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode,confirm,reason:'WebUI-Laufzeitwechsel'})});show(r.detail,true);await loadSettings()}catch(e){show(e.message,false)}}
+async function setTelegramRuntime(enabled){try{const r=await api('/api/telegram/runtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enabled})});show(r.detail,true);await loadSettings()}catch(e){show(e.message,false)}}
+async function testBroker(broker,mode){try{const x=await api('/api/brokers/test',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({broker,mode})});show(`${broker.toUpperCase()} ${mode.toUpperCase()}: ${x.ok?'Verbindung OK':'Fehler'} · ${x.detail||''} · ${x.latency_ms||0} ms`,x.ok)}catch(e){show(e.message,false)}}
+// 10.6.0: Einsatzstufe je Broker. Angezeigt wird immer der WIRKSAME Wert --
+// auch wenn noch keine Stufe gewaehlt ist und die Vorgabe aus Profil und
+// Konfiguration gilt. Eine Seite, die eine andere Zahl nennt als der Kaufpfad
+// rechnet, waere schlimmer als gar keine Anzeige.
+const BROKER_TITEL={okx:'OKX · Krypto',etoro:'eToro · Aktien'};
+// Deutsche Schreibweise wie auf den uebrigen Seiten: Komma, keine Punkte.
+function pct(v,stellen){const d=stellen===undefined?2:stellen;return Number(v)>=0&&v!==null&&v!==undefined?(Number(v)*100).toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d}):'unbekannt'}
+function renderRiskLevels(data){const ziel=document.querySelector('#risk-levels');if(!ziel)return;
+if(data&&data.error){ziel.innerHTML=`<p class="alert danger">${esc(data.error)}</p>`;return}
+const teile=[];
+for(const broker of ['okx','etoro']){const row=data[broker];if(!row)continue;
+const wirksam=row.wirksam||{};
+const warnung=row.error?`<p class="alert danger">Stufendatei nicht verwendbar: ${esc(row.error)} · Es gilt vorsichtshalber die kleinste Stufe.</p>`:'';
+const gewaehlt=row.chosen?`Gewählt am ${esc((row.updated_at_utc||'').slice(0,16).replace('T',' '))} UTC`:'Noch keine Stufe gewählt · es gilt die bisherige Vorgabe';
+const karten=(row.options||[]).map(opt=>`<div class="profile ${opt.aktiv?'selected':''}"><h3>${esc(opt.label)}</h3><p>${esc(opt.beschreibung)}</p><div class="small">Risiko/Trade ${pct(opt.risiko_pro_trade_pct)} % · max. Position ${pct(opt.max_position_pct,0)} %</div><button class="${opt.level==='erhoeht'?'danger':'secondary'}" onclick="setRiskLevel('${esc(broker)}','${esc(opt.level)}')">${opt.aktiv?'Aktiv':'Diese Stufe wählen'}</button></div>`).join('');
+teile.push(`<div class="risk-level-broker"><h3>${esc(BROKER_TITEL[broker]||broker)}</h3><p class="small">Wirksam: <strong>${esc(wirksam.label||'')}</strong> · ${pct(wirksam.risiko_pro_trade_pct)} % Risiko je Trade · höchstens ${pct(wirksam.max_position_pct,0)} % je Position<br>Bezugsgröße: ${esc(row.bezugsgroesse||'')}<br>${esc(gewaehlt)}</p>${warnung}<div class="profile-grid">${karten}</div></div>`)}
+ziel.innerHTML=teile.join('')||'<p class="small">Keine Einsatzstufen verfügbar.</p>'}
+async function setRiskLevel(broker,level){let confirm='';if(level==='erhoeht'){confirm=prompt('Die höchste Stufe vervielfacht den Einsatz je Trade. Verluste wachsen im selben Verhältnis wie Gewinne. Exakt EINSATZ ERHOEHEN eingeben:')||'';if(confirm!=='EINSATZ ERHOEHEN')return}try{const r=await api('/api/risk-level',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({broker,level,confirm})});show(r.detail,true);await loadSettings()}catch(e){show(e.message,false)}}
+loadSettings();
+
+// v8.1.4: Bis 8.1.3 gab es fuer eToro, OKX und die Nachrichtenquellen je einen
+// Testknopf -- fuer die KI keinen.
+async function testAI(){
+  const ziel = document.querySelector('#ai-test-result');
+  ziel.textContent = 'teste …';
+  try{
+    const r = await api('/api/ai/test', {method:'POST', body:'{}'});
+    if(r.ok){
+      ziel.innerHTML = `<span class="status ok">OK</span> ${esc(r.modell||'')} · ${esc(r.detail||'')} · ${r.kosten_usd??0} USD`;
+    }else{
+      ziel.innerHTML = `<span class="status warn">FEHLER</span> ${esc(r.detail||'unbekannt')}`;
+    }
+  }catch(e){
+    ziel.innerHTML = `<span class="status warn">FEHLER</span> ${esc(e.message)}`;
+  }
+}
+
+function renderFMP(state){
+ const target=document.querySelector('#fmp-status');if(!target)return;
+ if(!state.konfiguriert){target.innerHTML='<p>'+esc(state.detail||'FMP: noch kein API-Key hinterlegt.')+'</p>'+fmpUsageView(state.packet_usage||{});return}
+ const s=state.tarif||state.budget||{},fmt=n=>Number(n||0).toLocaleString('de-DE'),date=n=>n?new Date(n*1000).toLocaleString('de-DE'):'noch nicht geprüft';
+ const bandwidth=`${(Number(s.bandwidth_bytes||0)/1e6).toFixed(1)} / ${(Number(s.bandwidth_limit||0)/1e6).toFixed(0)} MB`;
+ target.innerHTML=`<p><strong>Aktive Abrufgrenze: ${esc(s.effective||'unbekannt')}</strong> · ${esc(s.reason||'')}</p>
+ <p class="small">Heute ${fmt(s.verbraucht)}${s.limit?' / '+fmt(s.limit):''} Abrufe · letzte Minute ${fmt(s.minute_used)} / ${fmt(s.minute_limit)} · 30 Tage ${bandwidth}<br>Letzter erfolgreicher Datenabruf: ${date(s.last_success)} · Tageswechsel: UTC</p>
+ ${s.gesperrt?'<p class="warn">'+esc(s.sperrgrund)+' · bis '+date(s.blocked_until)+'</p>':''}
+ <p class="small">Wiederverwendete Daten in 30 Tagen: ${fmt((s.month_metrics?.cache_hits||0)+(s.month_metrics?.history_cache_hits||0))} · Abgelehnte Zusatzberechtigungen: ${fmt(s.month_metrics?.entitlement_refusals)}</p>
+ <p class="small">Dokumentierte Nutzungen verschiedener Belege in 30 Tagen: ${Object.entries(s.month_evidence_uses||{}).map(([k,v])=>esc(({PULSAR_FMP_FINANZWERTUNG:'PULSAR-Finanzbewertungen',GPT_WEBSUCHE_DURCH_ORIGINALHINWEIS_GESPART:'Originalquellen ohne zusätzliche GPT-Websuche',NEXUS_ZWEITMEINUNG_MIT_FMP:'NEXUS-Prüfungen mit FMP'})[k]||k)+': '+fmt(v)).join(' · ')||'noch keine gesonderten Nutzungsbelege'}</p><p class="small">Fehlende Nutzungsbelege bedeuten nicht, dass FMP-Daten ungenutzt sind; gespeicherte PULSAR-Pakete und GPT-Verarbeitungsbelege sind getrennte Nachweise.</p>
+ ${fmpUsageView(state.packet_usage||{})}<details><summary>FMP-Datenarten und Abrufe</summary><div class="table-wrap"><table><thead><tr><th>Datenart</th><th>Letzte Prüfung</th><th>Zustand</th></tr></thead><tbody>${(s.capabilities||[]).map(c=>`<tr><td>${esc(c.path)}</td><td>${date(c.checked)}</td><td>${esc(c.detail)}${!c.ok?' · neuer Versuch ab '+date(c.retry):''}</td></tr>`).join('')}</tbody></table></div>
+ <p class="small">Der Zähler erfasst NEXUS und PULSAR. Abrufe anderer Programme und Verbrauch vor Einführung dieses Zählers sind nicht enthalten. Historische Daten behalten ihren Zeitstand; Tageskurse sind keine ausführbaren Brokerkurse.</p></details>`;
+}
+
+function renderMassive(state={}) {
+ const target=document.querySelector('#massive-status');if(!target)return;
+ const number=n=>knownNumber(n)?Number(n).toLocaleString('de-DE'):'unbekannt';
+ const date=n=>knownNumber(n)&&Number(n)>0?new Date(Number(n)*1000).toLocaleString('de-DE'):'nicht belegt';
+ target.innerHTML=`<h3>Massive · gemeinsames Free-Budget</h3><p>${badge(({ready:'Abrufbudget verfügbar',paused:'Gemeinsame Abrufpause',unknown:'Noch kein Budgetbeleg'})[state.state]||'Zustand unbekannt',state.state==='paused'?'warn':'')} · ${state.configured===true?'Zugang eingerichtet':state.configured===false?'Kein Zugang eingerichtet':'Konfiguration unbekannt'}</p>
+ <p class="small">Letzte Minute: ${number(state.minute_used)} / ${number(state.minute_limit)} NEXUS-Abrufe · Anbietergrenze: ${number(state.provider_minute_limit)} pro Minute<br>Heute: ${number(state.verbraucht)} HTTP-Versuche · gemeinsamer Cache: ${number(state.cache_hits)} Wiederverwendungen seit Zählerbeginn<br>Letzter HTTP-Versuch: ${date(state.last_http_attempt_at)} · letzter Erfolg: ${date(state.last_http_success_at)}<br>Nächster Abruf frühestens: ${date(state.next_allowed_at)}${state.sperrgrund?'<br>'+esc(state.sperrgrund):''}${state.detail?'<br>'+esc(state.detail):''}</p>
+ <p class="small">Eine neue Anzeige verbraucht kein API-Budget. Ein verfügbares Budget bestätigt keine aktuelle Verbindung; Nutzung außerhalb von NEXUS ist hier nicht messbar.</p>`;
+}
+
+function fmpUsageView(usage={}) {
+ const rows=Array.isArray(usage.receipts)?usage.receipts:[];
+ return `<details class="fmp-packet-usage"><summary>FMP in gespeicherten GPT-Eingaben: ${usage.state==='OBSERVED'?esc(usage.input_packets)+' validierte Eingabepakete':'noch nicht belegt'}</summary><p class="small">${esc(usage.scope||'Gespeicherter Ausschnitt')}. ${usage.complete===false?'Ausschnitt nicht vollständig lesbar. ':''}${esc(usage.detail||'Keine getrennten Paketbelege verfügbar.')} Die Übergabe belegt weder eine bestimmte Gewichtung durch GPT noch eine Handelswirkung.</p>${rows.map(row=>`<p class="small"><strong>${esc(row.symbol)} · ${esc(({precheck:'Vorprüfung',analysis:'Analyse',countercheck:'Gegenprüfung'})[row.phase]||row.phase)}</strong> · ${esc(row.kind||'FMP-Daten')}<br>Daten bis ${esc(row.as_of||'nicht belegt')} · ${knownNumber(row.included_rows)?esc(row.included_rows)+' Datenzeilen':'Zeilenzahl nicht belegt'}${row.truncated?' · gekürzt':''}<br>Beleg ${esc(row.source_id)}<br>Eingabe-Prüfsumme ${esc(row.input_hash)}</p>`).join('')}</details>`;
+}

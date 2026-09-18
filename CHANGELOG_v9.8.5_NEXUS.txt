@@ -1,0 +1,47 @@
+NEXUS 9.8.5 – Änderungen gegenüber 9.8.4 FIX1
+
+WEBUI
+- Universum und Underdogs im Hauptmenü und mobilen Auswahlmenü.
+- Eigene /underdogs-Seite mit aktivem Menüeintrag und festem Underdog-Filter.
+- Katalogkandidaten ohne Universumsmitgliedschaft sichtbar, Zustand KATALOG.
+  Keine automatische Aufnahme durch die Anzeige. UNDERDOG-Kennzeichnung bleibt.
+- Acht Menüpunkte: kompakte Navigation bis 1359 Pixel, Desktop ab 1360 Pixel.
+- Kontogebundene abgeschlossene Trades mit ungeklärtem Netto auch in Klärung.
+  Gebühren-/Einstands-/Währungsbelege werden benannt. Verkäufe bleiben geschlossen
+  und erhalten dort keine Verkaufs- oder Konto-Asset-Aktion.
+
+PULSAR
+- Luna prüft alle fünf Kandidaten mit individueller These, drei Risiken und
+  Quellenreferenzen. Die tatsächlichen Urteile bestimmen die Terra-Priorität.
+- Social-Quellen bleiben im KI-Paket; Nachrichten und Kursreihen werden für die
+  Sammelprüfung begrenzt. Ungültige/fehlende/vertauschte Antworten werden verworfen.
+- Vorhandene Terra-Analysen anderer Kandidaten bleiben im Cache erhalten.
+  Pro Zyklus höchstens eine neue Vertiefung; eigener Gegencheck des Favoriten.
+- Kein generischer Drei-Risiken-Text als vermeintliche Individualanalyse.
+- Datenstand, Analysephase, Herkunft der Texte, Quellenreferenzen, Prüfkomponenten
+  und konkrete Datenlücken in der Oberfläche.
+- FMP-Earnings-Kalender mit exaktem Symbol und Datum. Maximal sechs Stunden alt;
+  zwei folgende US-Handelstage einschließlich Feiertagen vor Kauf geprüft.
+  Fehlendes Datum bleibt sperrend; widersprüchliche Termine nehmen den näheren.
+- Höchstens 20 erstmals angereicherte Kandidaten je Berliner Kalendertag,
+  dauerhaft reserviert, zusätzlich zu den bisherigen Abruf-/KI-Budgets.
+- Im Beobachtungsmodus ein gespeicherter simulierter Recherchefavorit pro Woche
+  nach Analyse und Gegenprüfung; vollständig getrennt von Orders und Handelswochen.
+
+ÜBERNOMMENE KORREKTUREN AUS 9.8.4 / FIX1
+- Exakte eToro-Kauf-/Positionszuordnung statt Verwechslung mit Fremdbestand.
+- Gebührennachweise nach IDs, Menge, Preis, Konto und Umgebung; keine geschätzte
+  Nullgebühr. Getrennte Brutto-/Nettodarstellung und Kontodomänen.
+- Kontospezifischer OKX-Instrumentkatalog und Behandlung von 51634.
+- EUR-Priorität; zugelassenes USDC nur nach Kosten-/Tiefen-/Währungsprüfung;
+  bestehende Trades behalten ihre gespeicherte Abrechnungswährung.
+- Der Mitternachtsfehler in den sieben Tagesbuch-Testfällen aus 9.8.4 ist
+  weiterhin korrigiert. Tests werden weder übersprungen noch abgeschaltet.
+
+NICHT ALS GELÖST AUSGEGEBEN
+- PULSAR: individuelle Community-Belege und verifizierter Primäranlass fehlen
+  im Datenanschluss. Ein vollständiger Belegscore oder eine Kaufnominierung
+  wird dadurch nicht erzeugt. 14-/28-Tage-Basis muss lokal entstehen.
+- Historische eToro-Gebühren und SUI-Wechselkurs können aus den vorhandenen
+  Daten nicht sicher rekonstruiert werden. Betroffene Nettoergebnisse bleiben offen.
+- Echte API-/KI-Antworten und Betrieb auf Georgs Pi wurden hier nicht ausgeführt.

@@ -1,0 +1,6282 @@
+[
+  {
+    "symbol": "QMCO",
+    "name": "Quantum Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ABG",
+    "name": "Asbury Automotive Group Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HTB",
+    "name": "HomeTrust Bancshares, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ULCC",
+    "name": "Frontier Group Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GCGR",
+    "name": "General Catalyst Global Resilience Merger Corp. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CMP",
+    "name": "Compass Minerals Intl Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "JAKK",
+    "name": "JAKKS Pacific, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NTIC",
+    "name": "Northern Technologies International Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AQB",
+    "name": "AquaBounty Technologies, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LGN",
+    "name": "Legence Corp. - Class A Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MCHB",
+    "name": "Mechanics Bancorp - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FIG",
+    "name": "Figma, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TREX",
+    "name": "Trex Company, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PAGP",
+    "name": "Plains GP Holdings, L.P. - Class A Shares representing limited partner interests",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HLF",
+    "name": "Herbalife Ltd. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AIRS",
+    "name": "AirSculpt Technologies, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EVF",
+    "name": "Eaton Vance Senior Income Trust Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EMAT",
+    "name": "Evolution Metals & Technologies Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FTRE",
+    "name": "Fortrea Holdings Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SHLS",
+    "name": "Shoals Technologies Group, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ACRS",
+    "name": "Aclaris Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AMC",
+    "name": "AMC Entertainment Holdings, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BST",
+    "name": "BlackRock Science and Technology Trust Common Shares of Beneficial Interest",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LOB",
+    "name": "Live Oak Bancshares, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "UCTT",
+    "name": "Ultra Clean Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GDTC",
+    "name": "CytoMed Therapeutics Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LUNR",
+    "name": "Intuitive Machines, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SITC",
+    "name": "SITE Centers Corp. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GRDX",
+    "name": "GridAI Technologies Corp.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ODFL",
+    "name": "Old Dominion Freight Line, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GBR",
+    "name": "New Concept Energy, Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BUSE",
+    "name": "First Busey Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FURY",
+    "name": "Fury Gold Mines Limited Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BOW",
+    "name": "Bowhead Specialty Holdings Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ACR",
+    "name": "ACRES Commercial Realty Corp. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ONFO",
+    "name": "Onfolio Holdings Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SB",
+    "name": "Safe Bulkers, Inc Common Stock ($0.001 par value)",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NPKI",
+    "name": "NPK International Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HRB",
+    "name": "H&R Block, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BNY",
+    "name": "The Bank of New York Mellon Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CDE",
+    "name": "Coeur Mining, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NCRA",
+    "name": "Nocera, Inc. - common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ELMT",
+    "name": "The Elmet Group Co. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FXHO",
+    "name": "UTime Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CJMB",
+    "name": "Callan JMB Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ECVT",
+    "name": "Ecovyst Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NXDR",
+    "name": "Nextdoor Holdings, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PDS",
+    "name": "Precision Drilling Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CWD",
+    "name": "CaliberCos Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "QSR",
+    "name": "Restaurant Brands International Inc. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "APA",
+    "name": "APA Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NCNO",
+    "name": "nCino, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NOMA",
+    "name": "NOMADAR Corp. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FLOC",
+    "name": "Flowco Holdings Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LCII",
+    "name": "LCI Industries",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ZJYL",
+    "name": "JIN MEDICAL INTERNATIONAL LTD. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TZOO",
+    "name": "Travelzoo - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MITQ",
+    "name": "Moving iMage Technologies, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BANR",
+    "name": "Banner Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HSHP",
+    "name": "Himalaya Shipping Ltd. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BMGL",
+    "name": "Basel Medical Group Ltd - ordinary shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VCTR",
+    "name": "Victory Capital Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SNYR",
+    "name": "Synergy CHC Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ARKR",
+    "name": "Ark Restaurants Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CCBG",
+    "name": "Capital City Bank Group - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OBE",
+    "name": "Obsidian Energy Ltd. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "QS",
+    "name": "QuantumScape Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CASS",
+    "name": "Cass Information Systems, Inc - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FFAI",
+    "name": "Faraday Future Intelligent Electric Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ADV",
+    "name": "Advantage Solutions Inc.  - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WNC",
+    "name": "Wabash National Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AVX",
+    "name": "Avax One Technology Ltd. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WST",
+    "name": "West Pharmaceutical Services, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ELMD",
+    "name": "Electromed, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DRIO",
+    "name": "DarioHealth Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PAX",
+    "name": "Patria Investments Limited - Class A Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PHI",
+    "name": "PLDT Inc. Sponsored ADR",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RJF",
+    "name": "Raymond James Financial, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PSBD",
+    "name": "Palmer Square Capital BDC Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NEUP",
+    "name": "Neuphoria Therapeutics Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PAC",
+    "name": "Grupo Aeroportuario Del Pacifico, S.A. B. de C.V. Grupo Aeroportuario Del Pacifico, S.A. de C.V. (each representing 10 Series B shares)",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AKTS",
+    "name": "Aktis Oncology, Inc. - Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DOCS",
+    "name": "Doximity, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VIR",
+    "name": "Vir Biotechnology, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DTI",
+    "name": "Drilling Tools International Corporation  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AEP",
+    "name": "American Electric Power Company, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ADGM",
+    "name": "Adagio Medical Holdings, Inc - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SABR",
+    "name": "Sabre Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SND",
+    "name": "Smart Sand, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CTOR",
+    "name": "Citius Oncology, Inc.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CBZ",
+    "name": "CBIZ, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GNSS",
+    "name": "Genasys Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MRKR",
+    "name": "Marker Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ITRI",
+    "name": "Itron, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CLRB",
+    "name": "Cellectar Biosciences, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WCT",
+    "name": "Wellchange Holdings Company Limited - Class A Ordinary shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BIOA",
+    "name": "BioAge Labs, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CNC",
+    "name": "Centene Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AYI",
+    "name": "Acuity Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "JCSE",
+    "name": "JE Cleantech Holdings Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FLYX",
+    "name": "flyExclusive, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IRT",
+    "name": "Independence Realty Trust, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NGVC",
+    "name": "Natural Grocers by Vitamin Cottage, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MPLT",
+    "name": "MapLight Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SNSC",
+    "name": "SunScout Holding Limited Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MSA",
+    "name": "MSA Safety Incorporated Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IMA",
+    "name": "ImageneBio, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ATER",
+    "name": "Aterian, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DPU",
+    "name": "Top KingWin Ltd - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ANIK",
+    "name": "Anika Therapeutics Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SUPX",
+    "name": "SuperX AI Technology Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SRFM",
+    "name": "Surf Air Mobility Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FIVN",
+    "name": "Five9, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LYV",
+    "name": "Live Nation Entertainment, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CEPL",
+    "name": "Capstone Energy Plus, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ACRE",
+    "name": "Ares Commercial Real Estate Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KXIN",
+    "name": "Kaixin Holdings - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SAIA",
+    "name": "Saia, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HGTY",
+    "name": "Hagerty, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TBBK",
+    "name": "The Bancorp, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ARCB",
+    "name": "ArcBest Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RFL",
+    "name": "Rafael Holdings, Inc. Class B Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BESS",
+    "name": "Bimergen Energy Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EXPO",
+    "name": "Exponent, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DUKB",
+    "name": "Duke Energy Corporation 5.625% Junior Subordinated Debentures due 2078",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CNTB",
+    "name": "Connect Biopharma Holdings Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PTN",
+    "name": "Palatin Technologies, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ALLT",
+    "name": "Allot Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ALV",
+    "name": "Autoliv, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CMCL",
+    "name": "Caledonia Mining Corporation Plc Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MLYS",
+    "name": "Mineralys Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GLBS",
+    "name": "Globus Maritime Limited - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BCAL",
+    "name": "California BanCorp - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HKPD",
+    "name": "Cellyan Biotechnology Co., Ltd  - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NYC",
+    "name": "American Strategic Investment Co. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EXP",
+    "name": "Eagle Materials Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FCEL",
+    "name": "FuelCell Energy, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BATRA",
+    "name": "Atlanta Braves Holdings, Inc. - Series A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CABO",
+    "name": "Cable One, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BRO",
+    "name": "Brown & Brown, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HURC",
+    "name": "Hurco Companies, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LLYVK",
+    "name": "Liberty Live Holdings, Inc. - Series C Liberty Live Group Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EHGO",
+    "name": "Eshallgo Inc. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CUBE",
+    "name": "CubeSmart Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NNNN",
+    "name": "Anbio Biotechnology - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HLIO",
+    "name": "Helios Technologies, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BDC",
+    "name": "Belden Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SW",
+    "name": "Smurfit WestRock plc Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GDOT",
+    "name": "Green Dot Corporation Class A Common Stock, $0.001 par value",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "APPS",
+    "name": "Digital Turbine, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ONDS",
+    "name": "Ondas Inc - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DGXX",
+    "name": "Digi Power X Inc. - Common Subordinate Voting Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PRVA",
+    "name": "Privia Health Group, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NTSK",
+    "name": "Netskope, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SLS",
+    "name": "SELLAS Life Sciences Group, Inc.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MWA",
+    "name": "MUELLER WATER PRODUCTS Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TOP",
+    "name": "TOP Financial Group Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SLNG",
+    "name": "Stabilis Solutions, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FTV",
+    "name": "Fortive Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FHTX",
+    "name": "Foghorn Therapeutics Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CVV",
+    "name": "CVD Equipment Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PLRX",
+    "name": "Pliant Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LFVN",
+    "name": "Lifevantage Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TUSK",
+    "name": "Mammoth Energy Services, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VPG",
+    "name": "Vishay Precision Group, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MED",
+    "name": "MEDIFAST INC Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ESOA",
+    "name": "Energy Services of America Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ONIT",
+    "name": "Onity Group Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LCLN",
+    "name": "Lincoln International, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PHAT",
+    "name": "Phathom Pharmaceuticals, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AHT",
+    "name": "Ashford Hospitality Trust Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CHRW",
+    "name": "C.H. Robinson Worldwide, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HLI",
+    "name": "Houlihan Lokey, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DXPE",
+    "name": "DXP Enterprises, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EFOR",
+    "name": "Everforth, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FUL",
+    "name": "H. B. Fuller Company Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FMC",
+    "name": "FMC Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SYY",
+    "name": "Sysco Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PFAI",
+    "name": "Pinnacle Food Group Limited - Class A Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "M",
+    "name": "Macy's Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ARTV",
+    "name": "Artiva Biotherapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SKE",
+    "name": "Skeena Resources Limited Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DTIL",
+    "name": "Precision BioSciences, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FLEX",
+    "name": "Flex Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ERNA",
+    "name": "Ernexa Therapeutics Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HMN",
+    "name": "Horace Mann Educators Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ODYS",
+    "name": "Odysight.ai Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HAS",
+    "name": "Hasbro, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EVLV",
+    "name": "Evolv Technologies Holdings, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EXPD",
+    "name": "Expeditors International of Washington, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FF",
+    "name": "FutureFuel Corp.  Common shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AUGO",
+    "name": "Aura Minerals Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FRT",
+    "name": "Federal Realty Investment Trust Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WT",
+    "name": "WisdomTree, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ISPC",
+    "name": "iSpecimen Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HTCR",
+    "name": "Heartcore Enterprises, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PAGS",
+    "name": "PagSeguro Digital Ltd. Class A Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ELTK",
+    "name": "Eltek Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DRI",
+    "name": "Darden Restaurants, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GSBC",
+    "name": "Great Southern Bancorp, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PLUT",
+    "name": "Plutus Financial Group Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ENS",
+    "name": "EnerSys Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IHRT",
+    "name": "iHeartMedia, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CHH",
+    "name": "Choice Hotels International, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FABC",
+    "name": "Fabric.AI, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SANA",
+    "name": "Sana Biotechnology, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NUTX",
+    "name": "Nutex Health Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BBCP",
+    "name": "Concrete Pumping Holdings, Inc.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PACK",
+    "name": "Ranpak Holdings Corp Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ALRS",
+    "name": "Alerus Financial Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KTF",
+    "name": "DWS Municipal Income Trust",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "JOUT",
+    "name": "Johnson Outdoors Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RZLT",
+    "name": "Rezolute, Inc. - Common Stock (NV)",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PGR",
+    "name": "Progressive Corporation (The) Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SENEB",
+    "name": "Seneca Foods Corp. - Class B Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PBHC",
+    "name": "Pathfinder Bancorp, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BMO",
+    "name": "Bank Of Montreal Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HY",
+    "name": "Hyster-Yale, Inc. Class A common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DFH",
+    "name": "Dream Finders Homes, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "INO",
+    "name": "Inovio Pharmaceuticals, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ATAI",
+    "name": "AtaiBeckley Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BELFB",
+    "name": "Bel Fuse Inc. - Class B Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BYAH",
+    "name": "Park Ha Biological Technology Co., Ltd. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DAIC",
+    "name": "CID HoldCo, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TDOC",
+    "name": "Teladoc Health, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WAB",
+    "name": "Westinghouse Air Brake Technologies Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BRBR",
+    "name": "BellRing Brands, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TOST",
+    "name": "Toast, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RNA",
+    "name": "Atrium Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OIO",
+    "name": "OIO Group - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SKIN",
+    "name": "SkinHealth Systems Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SPTX",
+    "name": "Seaport Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PMA",
+    "name": "Ming Shing Group Holdings Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "STRO",
+    "name": "Sutro Biopharma, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LXU",
+    "name": "LSB Industries, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "COOK",
+    "name": "Traeger, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "QUBT",
+    "name": "Quantum Computing Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ONB",
+    "name": "Old National Bancorp - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CPNG",
+    "name": "Coupang, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "STDN",
+    "name": "Standard Nuclear, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AEIS",
+    "name": "Advanced Energy Industries, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VAC",
+    "name": "Marriott Vacations Worldwide Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TG",
+    "name": "Tredegar Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CATX",
+    "name": "Perspective Therapeutics, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ALLO",
+    "name": "Allogene Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "JZXN",
+    "name": "Jiuzi Holdings, Inc. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LIFE",
+    "name": "Ethos Technologies Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RC",
+    "name": "Ready Capital Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SJT",
+    "name": "San Juan Basin Royalty Trust Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PAYC",
+    "name": "Paycom Software, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MEC",
+    "name": "Mayville Engineering Company, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ISBA",
+    "name": "Isabella Bank Corporation - Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WLFC",
+    "name": "Willis Lease Finance Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EOSE",
+    "name": "Eos Energy Enterprises, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HSDT",
+    "name": "Solana Company - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SECZ",
+    "name": "Securitize Corp. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BLSH",
+    "name": "Bullish Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "USIO",
+    "name": "Usio, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HQL",
+    "name": "abrdn Life Sciences Investors Shares of Beneficial Interest",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GNW",
+    "name": "Genworth Financial Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VEEA",
+    "name": "Veea Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MSS",
+    "name": "Maison Solutions Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FTRA",
+    "name": "FutureCorp Space Acquisition 1 Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DAN",
+    "name": "Dana Incorporated Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LTGO",
+    "name": "Latigo Biotherapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SUNE",
+    "name": "SUNation Energy, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HALO",
+    "name": "Halozyme Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ADVB",
+    "name": "Advanced Biomed Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VGM",
+    "name": "Invesco Trust for Investment Grade Municipals Common Stock (DE)",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ANVS",
+    "name": "Annovis Bio, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CLAR",
+    "name": "Clarus Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ARL",
+    "name": "American Realty Investors, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OCG",
+    "name": "Oriental Culture Holding LTD - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BTQ",
+    "name": "BTQ Technologies Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LOOP",
+    "name": "Loop Industries, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RDW",
+    "name": "Redwire Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PEB",
+    "name": "Pebblebrook Hotel Trust Common Shares of Beneficial Interest",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KSCP",
+    "name": "Knightscope, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AZZ",
+    "name": "AZZ Inc.",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MPB",
+    "name": "Mid Penn Bancorp - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NEXA",
+    "name": "Nexa Resources S.A. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BBDC",
+    "name": "Barings BDC, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PBF",
+    "name": "PBF Energy Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DMRA",
+    "name": "Damora Therapeutics, Inc. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FPH",
+    "name": "Five Point Holdings, LLC Class A Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CRVS",
+    "name": "Corvus Pharmaceuticals, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TORO",
+    "name": "Toro Corp. - Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CADL",
+    "name": "Candel Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NVEC",
+    "name": "NVE Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FSV",
+    "name": "FirstService Corporation - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WLTH",
+    "name": "Wealthfront Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TSN",
+    "name": "Tyson Foods, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SEB",
+    "name": "Seaboard Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SYNX",
+    "name": "Silynxcom Ltd. Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BOOM",
+    "name": "DMC Global Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SWMR",
+    "name": "Swarmer, Inc - common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "COOT",
+    "name": "Australian Oilseeds Holdings Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CDT",
+    "name": "CDT Equity Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ALNT",
+    "name": "Allient Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TYRA",
+    "name": "Tyra Biosciences, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SFBS",
+    "name": "ServisFirst Bancshares, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SVC",
+    "name": "Service Properties Trust - Common Shares of Beneficial Interest",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RYDE",
+    "name": "Ryde Group Ltd. Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CRTO",
+    "name": "Criteo S.A. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MKZR",
+    "name": "MacKenzie Realty Capital, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GEN",
+    "name": "Gen Digital Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BRLT",
+    "name": "Brilliant Earth Group, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "UNM",
+    "name": "Unum Group Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WK",
+    "name": "Workiva Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LGO",
+    "name": "Largo Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VICR",
+    "name": "Vicor Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CMRC",
+    "name": "Commerce.com, Inc. - Series 1 Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "XHR",
+    "name": "Xenia Hotels & Resorts, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CV",
+    "name": "CapsoVision, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LEG",
+    "name": "Leggett & Platt, Incorporated Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EVN",
+    "name": "Eaton Vance Municipal Income Trust Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "JRSH",
+    "name": "Jerash Holdings (US), Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MGTX",
+    "name": "MeiraGTx Holdings plc - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "INIO",
+    "name": "INNIO N.V. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VEL",
+    "name": "Velocity Financial, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BLND",
+    "name": "Blend Labs, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IBO",
+    "name": "Impact BioMedical, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "UPST",
+    "name": "Upstart Holdings, Inc. - Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MEOH",
+    "name": "Methanex Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AHRT",
+    "name": "AH Realty Trust, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KREF",
+    "name": "KKR Real Estate Finance Trust Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SCPQ",
+    "name": "Social Commerce Partners Corporation - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "POR",
+    "name": "Portland General Electric Co Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EPD",
+    "name": "Enterprise Products Partners L.P. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KALA",
+    "name": "KALA BIO, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CCTG",
+    "name": "CCSC Technology International Holdings Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TARA",
+    "name": "Protara Therapeutics, Inc.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AFL",
+    "name": "AFLAC Incorporated Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OPTX",
+    "name": "Syntec Optics Holdings, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AMPG",
+    "name": "Amplitech Group, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ACCS",
+    "name": "ACCESS Newswire Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BWFG",
+    "name": "Bankwell Financial Group, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NEGG",
+    "name": "Newegg Commerce, Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SAFE",
+    "name": "Safehold Inc. New Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "INBX",
+    "name": "Inhibrx Biosciences, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LECO",
+    "name": "Lincoln Electric Holdings, Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SANM",
+    "name": "Sanmina Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NMAD",
+    "name": "Nomad Power Solutions, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CNDT",
+    "name": "Conduent Incorporated - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LAND",
+    "name": "Gladstone Land Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PNW",
+    "name": "Pinnacle West Capital Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "UPBD",
+    "name": "Upbound Group, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FRSH",
+    "name": "Freshworks Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MLP",
+    "name": "Maui Land & Pineapple Company, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PAYX",
+    "name": "Paychex, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "XTIA",
+    "name": "XTI Aerospace, Inc. Common Stock  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SCM",
+    "name": "Stellus Capital Investment Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BWXT",
+    "name": "BWX Technologies, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ZYME",
+    "name": "Zymeworks Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RMBI",
+    "name": "Richmond Mutual Bancorporation, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AEG",
+    "name": "Aegon Ltd. New York Registry Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NXRT",
+    "name": "NexPoint Residential Trust, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FOSL",
+    "name": "Fossil Group, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SHAK",
+    "name": "Shake Shack, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CMCT",
+    "name": "Creative Media  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ELVN",
+    "name": "Enliven Therapeutics, Inc.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VHC",
+    "name": "VirnetX Holding Corp - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LPG",
+    "name": "Dorian LPG Ltd. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MBBC",
+    "name": "Marathon Bancorp, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TYGO",
+    "name": "Tigo Energy, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CTVA",
+    "name": "Corteva, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PALI",
+    "name": "Palisade Bio, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AI",
+    "name": "C3.ai, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ATI",
+    "name": "ATI Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TPB",
+    "name": "Turning Point Brands, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CNMD",
+    "name": "CONMED Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "UONE",
+    "name": "Urban One, Inc.  - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AVNT",
+    "name": "Avient Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ITG",
+    "name": "ITG, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BOLT",
+    "name": "Bolt Biotherapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GLIBA",
+    "name": "Liberty Capital Corporation - Series A GCI Group Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ATEX",
+    "name": "Anterix Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TRTX",
+    "name": "TPG RE Finance Trust, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OPXS",
+    "name": "Optex Systems Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "JYD",
+    "name": "Jayud Global Logistics Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CFG",
+    "name": "Citizens Financial Group, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MIRM",
+    "name": "Mirum Pharmaceuticals, Inc. - common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ANRO",
+    "name": "Alto Neuroscience, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LOBO",
+    "name": "LOBO TECHNOLOGIES LTD. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WW",
+    "name": "WW International, Inc.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HMY",
+    "name": "Harmony Gold Mining Company Limited",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MXCT",
+    "name": "MaxCyte, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SPB",
+    "name": "Spectrum Brands Holdings, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OVV",
+    "name": "Ovintiv Inc. (DE)",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LEA",
+    "name": "Lear Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GPRO",
+    "name": "GoPro, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KWR",
+    "name": "Quaker Houghton Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DTE",
+    "name": "DTE Energy Company Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BIO",
+    "name": "Bio-Rad Laboratories, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FTHM",
+    "name": "Fathom Holdings Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DTB",
+    "name": "DTE Energy Company 2020 Series G 4.375% Junior Subordinated Debentures due 2080",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IMTE",
+    "name": "Integrated Media Technology Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OXBR",
+    "name": "Oxbridge Re Holdings Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "THH",
+    "name": "TryHard Holdings Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WHWK",
+    "name": "Whitehawk Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MTRX",
+    "name": "Matrix Service Company - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FUFU",
+    "name": "BitFuFu Inc. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TDTH",
+    "name": "Trident Digital Tech Holdings Ltd - Class B Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NGVT",
+    "name": "Ingevity Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PLBY",
+    "name": "Playboy, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DVLT",
+    "name": "Datavault AI Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WEX",
+    "name": "WEX Inc. common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KDP",
+    "name": "Keurig Dr Pepper Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "APRE",
+    "name": "Aprea Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MCI",
+    "name": "Barings Corporate Investors Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BLSM",
+    "name": "BlossomHill Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WIT",
+    "name": "Wipro Limited Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ROC",
+    "name": "Rank One Computing Corporation - Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BRIA",
+    "name": "BrilliA Inc Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VCV",
+    "name": "Invesco California Value Municipal Income Trust Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HTZ",
+    "name": "Hertz Global Holdings, Inc - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ALCO",
+    "name": "Alico, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SU",
+    "name": "Suncor Energy  Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SOC",
+    "name": "Sable Offshore Corp. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FVRR",
+    "name": "Fiverr International Ltd. Ordinary Shares, no par value",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PAM",
+    "name": "Pampa Energia S.A.",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CNTY",
+    "name": "Century Casinos, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CRML",
+    "name": "Critical Metals Corp. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RGS",
+    "name": "Regis Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "UWMC",
+    "name": "UWM Holdings Corporation Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MTSI",
+    "name": "MACOM Technology Solutions Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DETX",
+    "name": "Liberty Defense Holdings, Ltd. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CABR",
+    "name": "Caring Brands, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ELAB",
+    "name": "PMGC Holdings Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PNBK",
+    "name": "Patriot National Bancorp Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HUBB",
+    "name": "Hubbell Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NXGL",
+    "name": "NexGel, Inc - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MBIN",
+    "name": "Merchants Bancorp - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PURR",
+    "name": "Hyperliquid Strategies Inc - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ILAG",
+    "name": "Intelligent Living Application Group Inc. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CSAN",
+    "name": "Cosan S.A. ADS",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EFC",
+    "name": "Ellington Financial Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NWFL",
+    "name": "Norwood Financial Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NN",
+    "name": "NextNav Inc. - Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DWSN",
+    "name": "Dawson Geophysical Company - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "YSS",
+    "name": "York Space Systems Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HLMN",
+    "name": "Hillman Solutions Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "STKE",
+    "name": "Sol Strategies Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BPOP",
+    "name": "Popular, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LOGI",
+    "name": "Logitech International S.A. - Registered Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HR",
+    "name": "Healthcare Realty Trust Incorporated Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "THO",
+    "name": "Thor Industries, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PTON",
+    "name": "Peloton Interactive, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ACDC",
+    "name": "ProFrac Holding Corp. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PLBL",
+    "name": "Polibeli Group Ltd - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SHOT",
+    "name": "RMG ML Sports Holdings - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PWP",
+    "name": "Perella Weinberg Partners - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SWKS",
+    "name": "Skyworks Solutions, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GWRE",
+    "name": "Guidewire Software, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NEOV",
+    "name": "NeoVolta Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "XP",
+    "name": "XP Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VVOS",
+    "name": "Vivos Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ARE",
+    "name": "Alexandria Real Estate Equities, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ACAD",
+    "name": "ACADIA Pharmaceuticals Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GLU",
+    "name": "Gabelli Global Utility Common Shares of Beneficial Ownership",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HTFL",
+    "name": "Heartflow, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TSCO",
+    "name": "Tractor Supply Company - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MSGE",
+    "name": "Madison Square Garden Entertainment Corp. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ORRF",
+    "name": "Orrstown Financial Services, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FFIN",
+    "name": "First Financial Bankshares, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AUNA",
+    "name": "Auna SA Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TAOX",
+    "name": "Tao Synergies Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BBY",
+    "name": "Best Buy Co., Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IOT",
+    "name": "Samsara Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MI",
+    "name": "NFT Limited Class A Ordinary Share",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SBAC",
+    "name": "SBA Communications Corporation - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IBP",
+    "name": "Installed Building Products, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CLRO",
+    "name": "ClearOne, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FORR",
+    "name": "Forrester Research, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LVO",
+    "name": "LiveOne, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FEBO",
+    "name": "Fenbo Holdings Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NVRI",
+    "name": "Enviri Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PD",
+    "name": "PagerDuty, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "REKR",
+    "name": "Rekor Systems, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PHR",
+    "name": "Phreesia, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LVWR",
+    "name": "LiveWire Group, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EQ",
+    "name": "Equillium, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ATOS",
+    "name": "Atossa Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CAMP",
+    "name": "CAMP4 Therapeutics Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SKYX",
+    "name": "SKYX Platforms Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EDIT",
+    "name": "Editas Medicine, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FLWS",
+    "name": "1-800-FLOWERS.COM, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BSP",
+    "name": "Bending Spoons S.p.A. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PEPG",
+    "name": "PepGen Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AYTU",
+    "name": "Aytu BioPharma, Inc.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GGT",
+    "name": "Gabelli Multi-Media Trust, Inc. (The) Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MH",
+    "name": "McGraw Hill, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ADT",
+    "name": "ADT Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CTGO",
+    "name": "Contango Silver & Gold Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CACI",
+    "name": "CACI International, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NCEW",
+    "name": "New Century Logistics (BVI) Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BEEP",
+    "name": "Mobile Infrastructure Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PMN",
+    "name": "ProMIS Neurosciences Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "STM",
+    "name": "STMicroelectronics N.V. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SN",
+    "name": "SharkNinja, Inc. Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GJH",
+    "name": "Synthetic Fixed-Income Securities Inc 6.375% (STRATS) Cl A-1",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ASAN",
+    "name": "Asana, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LCUT",
+    "name": "Lifetime Brands, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ORIC",
+    "name": "Oric Pharmaceuticals, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GPN",
+    "name": "Global Payments Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VHI",
+    "name": "Valhi, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IQST",
+    "name": "iQSTEL Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HCSG",
+    "name": "Healthcare Services Group, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NEO",
+    "name": "NeoGenomics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PSNY",
+    "name": "Polestar Automotive Holding UK Limited - Class A ADS",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "STRA",
+    "name": "Strategic Education, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DOLE",
+    "name": "Dole plc Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ZTG",
+    "name": "Zenta Group Company Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "UFPI",
+    "name": "UFP Industries, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RXO",
+    "name": "RXO, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TLF",
+    "name": "Tandy Leather Factory, Inc. - common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NRP",
+    "name": "Natural Resource Partners LP Limited Partnership",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HYNE",
+    "name": "Hoyne Bancorp, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PRGS",
+    "name": "Progress Software Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OSUR",
+    "name": "OraSure Technologies, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KFRC",
+    "name": "Kforce, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SBXE",
+    "name": "SilverBox Corp V Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RMSG",
+    "name": "Real Messenger Corporation - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TACT",
+    "name": "TransAct Technologies Incorporated - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SIEB",
+    "name": "Siebert Financial Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ACON",
+    "name": "Aclarion, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SI",
+    "name": "Shoulder Innovations, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LHAI",
+    "name": "Linkhome Holdings Inc. - Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SDRL",
+    "name": "Seadrill Limited Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GROV",
+    "name": "Grove Collaborative Holdings, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FCHL",
+    "name": "Fitness Champs Holdings Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NRIX",
+    "name": "Nurix Therapeutics, Inc. - Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DDC",
+    "name": "DDC Enterprise Limited Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FRPH",
+    "name": "FRP Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CGEN",
+    "name": "Compugen Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AIV",
+    "name": "Apartment Investment and Management Company Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EIC",
+    "name": "Eagle Point Income Company Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MPU",
+    "name": "Mega Matrix Inc. Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FIBK",
+    "name": "First Interstate BancSystem, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CYAB",
+    "name": "Cyabra, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CIGI",
+    "name": "Colliers International Group Inc.  - Subordinate Voting Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SYBT",
+    "name": "Stock Yards Bancorp, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MCAH",
+    "name": "Mountain Crest Acquisition 6 Corp. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TRU",
+    "name": "TransUnion Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AVD",
+    "name": "American Vanguard Corporation Common Stock ($0.10 Par Value)",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ARTW",
+    "name": "Art's-Way Manufacturing Co., Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AFYA",
+    "name": "Afya Limited - Class A Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EIG",
+    "name": "Employers Holdings Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ABEO",
+    "name": "Abeona Therapeutics Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CAR",
+    "name": "Avis Budget Group, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CXII",
+    "name": "Churchill Capital Corp XII - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FLYE",
+    "name": "Fly-E Group, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ROAD",
+    "name": "Construction Partners, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VIVK",
+    "name": "Vivakor, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RGNT",
+    "name": "Regentis Biomaterials Ltd. Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CRE",
+    "name": "Cre8 Enterprise Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ASTH",
+    "name": "Astrana Health Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WLDN",
+    "name": "Willdan Group, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MYSE",
+    "name": "Myseum.AI, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CLOV",
+    "name": "Clover Health Investments, Corp.  - Class A Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BAER",
+    "name": "Bridger Aerospace Group Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AUB",
+    "name": "Atlantic Union Bankshares Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LABT",
+    "name": "Lakewood-Amedex Biotherapeutics Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TIC",
+    "name": "TIC Solutions, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NBIX",
+    "name": "Neurocrine Biosciences, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DY",
+    "name": "Dycom Industries, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DASH",
+    "name": "DoorDash, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FBP",
+    "name": "First BanCorp. New Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PRFX",
+    "name": "PRF Technologies Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TDAY",
+    "name": "USA TODAY Co., Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "YTRA",
+    "name": "Yatra Online, Inc. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ANAB",
+    "name": "AnaptysBio, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HVII",
+    "name": "Hennessy Capital Investment Corp. VII - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "UA",
+    "name": "Under Armour, Inc. Class C Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KTTA",
+    "name": "Pasithea Therapeutics Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MB",
+    "name": "MasterBeef Group - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CREX",
+    "name": "Creative Realities, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BMNR",
+    "name": "BitMine Immersion Technologies, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WINA",
+    "name": "Winmark Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NVCR",
+    "name": "NovoCure Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LZM",
+    "name": "Lifezone Metals Limited Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OFG",
+    "name": "OFG Bancorp Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ODC",
+    "name": "Oil-Dri Corporation Of America Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RYM",
+    "name": "RYTHM, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RCI",
+    "name": "Rogers Communication, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BLBD",
+    "name": "Blue Bird Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OFLX",
+    "name": "Omega Flex, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CLGN",
+    "name": "CollPlant Biotechnologies Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "INGM",
+    "name": "Ingram Micro Holding Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OMSE",
+    "name": "OMS Energy Technologies Inc. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CLH",
+    "name": "Clean Harbors, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GEOS",
+    "name": "Geospace Technologies Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EWTX",
+    "name": "Edgewise Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CRNT",
+    "name": "Ceragon Networks Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OSRH",
+    "name": "OSR Health, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VOYA",
+    "name": "Voya Financial, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PBH",
+    "name": "Prestige Consumer Healthcare Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LBRDA",
+    "name": "Liberty Broadband Corporation - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GRBK",
+    "name": "Green Brick Partners, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "XBP",
+    "name": "XBP Global Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SNDK",
+    "name": "Sandisk Corporation - Common Stock When-Issued",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GMHS",
+    "name": "Gamehaus Holdings Inc. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KMPB",
+    "name": "Kemper Corporation 5.875% Fixed-Rate Reset Junior Subordinated Debentures due 2062",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MUX",
+    "name": "McEwen Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MNRO",
+    "name": "Monro, Inc.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PBA",
+    "name": "Pembina Pipeline Corp. Ordinary Shares (Canada)",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TWLO",
+    "name": "Twilio Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CBRL",
+    "name": "Cracker Barrel Old Country Store, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WMG",
+    "name": "Warner Music Group Corp. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SACH",
+    "name": "Sachem Capital Corp. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CBIO",
+    "name": "Crescent Biopharma, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ARRY",
+    "name": "Array Technologies, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NIVF",
+    "name": "NewGenIvf Group Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BCE",
+    "name": "BCE, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BDCI",
+    "name": "BTC Development Corp. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CDZI",
+    "name": "Cadiz, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MAC",
+    "name": "Macerich Company (The) Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SPT",
+    "name": "Sprout Social, Inc - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KROS",
+    "name": "Keros Therapeutics, Inc. - common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FENC",
+    "name": "Fennec Pharmaceuticals Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MDAI",
+    "name": "Spectral AI, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DMII",
+    "name": "Drugs Made In America Acquisition II Corp. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HAPN",
+    "name": "Happen, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SKYE",
+    "name": "Skye Bioscience, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GAME",
+    "name": "GameSquare Holdings, Inc. - Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VREX",
+    "name": "Varex Imaging Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SID",
+    "name": "Companhia Siderurgica Nacional S.A. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NDLS",
+    "name": "Noodles & Company - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NVAX",
+    "name": "Novavax, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KIDS",
+    "name": "OrthoPediatrics Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PINS",
+    "name": "Pinterest, Inc. Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AAME",
+    "name": "Atlantic American Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LHSW",
+    "name": "Lianhe Sowell International Group Ltd - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MP",
+    "name": "MP Materials Corp. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WEN",
+    "name": "Wendy's Company (The) - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IMPP",
+    "name": "Imperial Petroleum Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FG",
+    "name": "F&G Annuities & Life, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ELAN",
+    "name": "Elanco Animal Health Incorporated Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MTC",
+    "name": "MMTec, Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NMRA",
+    "name": "Neumora Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "THG",
+    "name": "Hanover Insurance Group Inc",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BRID",
+    "name": "Bridgford Foods Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NA",
+    "name": "Nano Labs Ltd - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ABM",
+    "name": "ABM Industries Incorporated Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VYGR",
+    "name": "Voyager Therapeutics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BDMD",
+    "name": "Baird Medical Investment Holdings Ltd - Ordinary Share",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LZ",
+    "name": "LegalZoom.com, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CRSP",
+    "name": "CRISPR Therapeutics AG - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LIEN",
+    "name": "Chicago Atlantic BDC, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GPRE",
+    "name": "Green Plains, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SBEV",
+    "name": "Splash Beverage Group, Inc. (NV) Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WILC",
+    "name": "G. Willi-Food International,  Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WKSP",
+    "name": "Worksport, Ltd. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ATRO",
+    "name": "Astronics Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LAKE",
+    "name": "Lakeland Industries, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "UNB",
+    "name": "Union Bankshares, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NCL",
+    "name": "Northann Corp. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "INMD",
+    "name": "InMode Ltd.  - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OTIS",
+    "name": "Otis Worldwide Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CNS",
+    "name": "Cohen & Steers Inc Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ALDF",
+    "name": "Aldel Financial II Inc. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SATL",
+    "name": "Satellogic Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PC",
+    "name": "Premium Catering (Holdings) Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MBC",
+    "name": "MasterBrand, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CSL",
+    "name": "Carlisle Companies Incorporated Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AUST",
+    "name": "Austin Gold Corp. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "URGN",
+    "name": "UroGen Pharma Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KLTR",
+    "name": "Kaltura, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GDYN",
+    "name": "Grid Dynamics Holdings, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HOLO",
+    "name": "MicroCloud Hologram Inc. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AVIR",
+    "name": "Atea Pharmaceuticals, Inc. - common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RCKT",
+    "name": "Rocket Pharmaceuticals, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VLOS",
+    "name": "Velos Acquisition I Corp. - Class A Ordinary shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GKOS",
+    "name": "Glaukos Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CZFS",
+    "name": "Citizens Financial Services, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BORR",
+    "name": "Borr Drilling Limited Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MTUS",
+    "name": "Metallus Inc. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IDAC",
+    "name": "Iron Dome Acquisition I Corp. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BILL",
+    "name": "BILL Holdings, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TLSI",
+    "name": "TriSalus Life Sciences, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TR",
+    "name": "Tootsie Roll Industries, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WMK",
+    "name": "Weis Markets, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BHVN",
+    "name": "Biohaven Ltd. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LILAK",
+    "name": "Liberty Latin America Ltd. - Class C Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ALM",
+    "name": "Almonty Industries Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PRI",
+    "name": "Primerica, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DCOM",
+    "name": "Dime Commercial Bancshares, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RHLD",
+    "name": "Resolute Holdings Management Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PAVS",
+    "name": "Paranovus Entertainment Technology Ltd. - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FISV",
+    "name": "Fiserv, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WABC",
+    "name": "Westamerica Bancorporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DBRG",
+    "name": "DigitalBridge Group, Inc.",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BGC",
+    "name": "BGC Group, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FGBI",
+    "name": "First Guaranty Bancshares, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TP",
+    "name": "Ticketplus Ltd. Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PSFE",
+    "name": "Paysafe Limited Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MLR",
+    "name": "Miller Industries, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SLSR",
+    "name": "Solaris Resources Inc. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ECHO",
+    "name": "EchoStar Corporation - Common stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DK",
+    "name": "Delek US Holdings, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BBLG",
+    "name": "Bone Biologics Corp - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LFCR",
+    "name": "Lifecore Biomedical, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ELPW",
+    "name": "Elong Power Holding Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "INUV",
+    "name": "Inuvo, Inc.",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MOB",
+    "name": "Mobilicom Limited - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "USBC",
+    "name": "USBC, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WTM",
+    "name": "White Mountains Insurance Group, Ltd. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TTD",
+    "name": "The Trade Desk, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ABCL",
+    "name": "AbCellera Biologics Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BBVA",
+    "name": "Banco Bilbao Vizcaya Argentaria S.A. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AFJK",
+    "name": "Aimei Health Technology Co., Ltd - Ordinary Share",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EBF",
+    "name": "Ennis, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BLDP",
+    "name": "Ballard Power Systems, Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KIDZ",
+    "name": "KIDZ AI Inc. - Class B Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BEAM",
+    "name": "Beam Therapeutics Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ENLT",
+    "name": "Enlight Renewable Energy Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PMM",
+    "name": "Franklin Managed Municipal Income Trust Shares of Beneficial Interest",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FND",
+    "name": "Floor & Decor Holdings, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VFS",
+    "name": "VinFast Auto Ltd. - Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DFLI",
+    "name": "Dragonfly Energy Holdings Corp - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MITK",
+    "name": "Mitek Systems, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MKTX",
+    "name": "MarketAxess Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BOF",
+    "name": "BranchOut Food Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KNRX",
+    "name": "KNOREX LTD. Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ZONE",
+    "name": "CleanCore Solutions Inc. Class B Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CMTG",
+    "name": "Claros Mortgage Trust, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RLI",
+    "name": "RLI Corp. Common Stock (DE)",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FDSB",
+    "name": "Fifth District Bancorp, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "MGA",
+    "name": "Magna International, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ETR",
+    "name": "Entergy Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ADAG",
+    "name": "Adagene Inc. - ADS, each representing 1.25 ordinary shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VMD",
+    "name": "Viemed Healthcare, Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SNFCA",
+    "name": "Security National Financial Corporation - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ENVA",
+    "name": "Enova International, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "AME",
+    "name": "AMETEK, Inc.",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "VERI",
+    "name": "Veritone, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RES",
+    "name": "RPC, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SKK",
+    "name": "SKK Holdings Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ASBP",
+    "name": "Aspire Biopharma Holdings, Inc.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "TNL",
+    "name": "Travel   Leisure Co. Common  Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ELE",
+    "name": "Elemental Royalty Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GSAT",
+    "name": "Globalstar, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KDK",
+    "name": "Kodiak AI, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GLOO",
+    "name": "Gloo Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CLNE",
+    "name": "Clean Energy Fuels Corp. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "IMO",
+    "name": "Imperial Oil Limited Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RITR",
+    "name": "Reitar Logtech Holdings Limited - Ordinary shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "LITE",
+    "name": "Lumentum Holdings Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ADSK",
+    "name": "Autodesk, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NODK",
+    "name": "NI Holdings, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "JVA",
+    "name": "Coffee Holding Co., Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DPC",
+    "name": "DPC Holdings PLC Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DJCO",
+    "name": "Daily Journal Corp. (S.C.) - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CBNK",
+    "name": "Capital Bancorp, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "HE",
+    "name": "Hawaiian Electric Industries, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FTAI",
+    "name": "FTAI Aviation Ltd. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FTDR",
+    "name": "Frontdoor, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CZNC",
+    "name": "Citizens & Northern Corp - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "APAC",
+    "name": "StoneBridge Acquisition II Corporation - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "NAVI",
+    "name": "Navient Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ESTA",
+    "name": "Establishment Labs Holdings Inc. - Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SRXH",
+    "name": "SRX Global Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "BTU",
+    "name": "Peabody Energy Corporation Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PPSI",
+    "name": "Pioneer Power Solutions, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DCTH",
+    "name": "Delcath Systems, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GTX",
+    "name": "Garrett Motion Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ETS",
+    "name": "Elite Express Holding Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CBSH",
+    "name": "Commerce Bancshares, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SRI",
+    "name": "Stoneridge, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CNH",
+    "name": "CNH Industrial N.V. Common Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "UFPT",
+    "name": "UFP Technologies, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "DIBS",
+    "name": "1stdibs.com, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "KLXE",
+    "name": "KLX Energy Services Holdings, Inc.  - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "SLGB",
+    "name": "Smart Logistics Global Limited - Class A Ordinary Shares",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "PED",
+    "name": "Pedevco Corp. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GOOD",
+    "name": "Gladstone Commercial Corporation - Real Estate Investment Trust",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "GOLF",
+    "name": "Acushnet Holdings Corp. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RPID",
+    "name": "Rapid Micro Biosystems, Inc. - Class A Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "RDN",
+    "name": "Radian Group Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "ANGO",
+    "name": "AngioDynamics, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "FLO",
+    "name": "Flowers Foods, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "CLMB",
+    "name": "Climb Global Solutions, Inc. - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "EDUC",
+    "name": "Educational Development Corporation - Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "OPHC",
+    "name": "OptimumBank Holdings, Inc. Common Stock",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  },
+  {
+    "symbol": "WSM",
+    "name": "Williams-Sonoma, Inc. Common Stock (DE)",
+    "exchange": "SMART",
+    "currency": "USD",
+    "sector": "UNCLASSIFIED",
+    "gruppe": "broad"
+  }
+]

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=TradingBot WebUI
+Comment=Oeffnet das NEXUS-Dashboard im Browser
+Exec=__BOTDIR__/.venv/bin/python __BOTDIR__/webui_open.py
+Path=__BOTDIR__
+Icon=web-browser
+Terminal=false
+Categories=Utility;Finance;
+StartupNotify=true

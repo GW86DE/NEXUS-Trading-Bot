@@ -1,0 +1,55 @@
+NEXUS 9.8.8 FIX2 - Installer mit korrekter Datenbankbindung im Reparaturprozess
+Build: 9.8.8-FIX2-COLD-MIGRATION / 2026-09-12
+
+DATEI AUF DEM PI IN DOWNLOADS SPEICHERN
+NEXUS_9.8.8_Installieren_FIX2.sh
+
+ALS BENUTZER GEORG, OHNE VORANGESTELLTES SUDO:
+bash "$HOME/Downloads/NEXUS_9.8.8_Installieren_FIX2.sh"
+
+NUR PAKETDATEN PRUEFEN, KEINE DIENSTAKTION:
+bash "$HOME/Downloads/NEXUS_9.8.8_Installieren_FIX2.sh" --paket-pruefen
+
+Der vorherige Installer muss vollstaendig beendet sein. Nicht zwei Updates
+parallel starten. Die Ordner TradingBot_v9.8.8_NEXUS und
+TradingBot_v9.8.8_NEXUS_FIX1 samt Datenbanken, Zwischenkopien und Sicherungen
+NICHT loeschen oder von Hand austauschen. Das neue Ziel heisst
+TradingBot_v9.8.8_NEXUS_FIX2; die Quelle wird aus den tatsaechlichen
+Core- und WebUI-Dienstpfaden bestimmt. Unterschiedliche Pfade oder unbekannte
+Startgrenzen bleiben Abbruchgruende. Keine automatische LIVE-Freischaltung.
+
+Ursache des FIX1-Abbruchs: Der kalte Buchungsreparaturprozess importierte ein
+Modul mit Datenbankinitialisierung, bevor er auf die Zwischenkopie umschaltete.
+Dadurch entstand decision_history.sqlite im neuen Programmordner und die
+Ueberschreibsperre brach korrekt ab. Die Reparatur bindet jetzt die existierende
+Arbeitsdatenbank vor den Imports. Es wird keine Schutzsperre entfernt und keine
+unbekannte Datenbank als vermeintlich leer geloescht. Der Installer kontrolliert
+zusaetzlich nach der Vorpruefung und jedem Migrationsprozess, ob der Zielbaum
+noch frei von Laufzeitdaten ist.
+
+Die UTF-8-Korrekturen aus FIX1 bleiben enthalten. Broker-, Strategie-, PULSAR-,
+Grafik- und finanzielle Rechenlogik werden durch FIX2 nicht nochmals umgebaut.
+Die Softwareanzeige bleibt 9.8.8; RELEASE_BUILD.txt kennzeichnet diesen Fix.
+
+Der persoenliche SH-Installer enthaelt unveraenderte private DOGE-Belege, keine
+API-Schluessel. Nicht oeffentlich weitergeben. Das separate Quell-ZIP enthaelt
+keine privaten Handelsdatenbanken oder Zugangsdaten. Nicht zusaetzlich ueber
+den laufenden Bot entpacken. Der Installer uebernimmt den dann aktuellen
+Dienstzustand; er spielt keine alte Diagnose-Datenbank zurueck.
+
+ERFOLG IST ERST:
+UPDATE UND STARTKONTROLLE ERFOLGREICH
+
+'applied: true' mit '.nexus_state_' ist nur eine bearbeitete Zwischenkopie,
+noch keine erfolgreiche Dienstumstellung. 'VOLLTEST OK' allein bestaetigt
+keinen frischen Brokerbetrieb. Bei einem Abbruch den Text und das Journal
+erhalten. Nicht durch Loeschen einer Datenbank entsperren.
+
+Vor dem ersten neuen Dienststart kann der Updater die vorherigen Dienste
+wiederherstellen. Nach moeglichem neuen Handel ist kein alter Datenrollback
+erlaubt; neueste Daten bleiben erhalten. Client-Stops brauchen einen laufenden
+Core. Aktive Brokerschutzorders werden durch den Installer nicht storniert.
+
+Alte eToro-Gebuehrenluecken, native Fremdwaehrung ohne historischen FX-Beleg
+und andere echte ungeklärte Abschluesse bleiben offen. Ein korrigierter
+Installer ist keine Zusage, dass saemtliche Handels-Kaufsperren verschwinden.

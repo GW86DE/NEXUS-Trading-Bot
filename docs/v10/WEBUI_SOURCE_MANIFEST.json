@@ -1,0 +1,573 @@
+{
+  "retrieved_at": "2026-09-13",
+  "projects": [
+    {
+      "repo": "freqtrade/frequi",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "commit_date": "2026-09-10T04:39:34Z"
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "commit_date": "2025-10-27T16:41:45Z"
+    },
+    {
+      "repo": "hummingbot/condor",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "commit_date": "2026-09-07T21:21:40Z"
+    },
+    {
+      "repo": "hummingbot/hummingbot-api",
+      "sha": "7e86651b69b13b39e0cb3e1afbf080eedd461e8d"
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "commit_date": "2026-08-10T09:47:27Z"
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "commit_date": "2026-09-05T02:54:47Z"
+    },
+    {
+      "repo": "jesse-ai/jesse",
+      "sha": "60f882e88c2d28e0f8cbc7f916758434e6ab7ce6"
+    },
+    {
+      "repo": "Lumiwealth/lumibot",
+      "sha": "f987da3e2c81a5ae2cb6edf35457d2aa54aacf8b"
+    },
+    {
+      "repo": "TauricResearch/TradingAgents",
+      "sha": "be952b8eccb49720509af544c6675233bc1f10d0"
+    }
+  ],
+  "files": [
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/components/ftbot/BotControls.vue",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/components/ftbot/BotControls.vue",
+      "characters": 3446
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/components/ftbot/TradeActions.vue",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/components/ftbot/TradeActions.vue",
+      "characters": 2507
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/components/ftbot/LogViewer.vue",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/components/ftbot/LogViewer.vue",
+      "characters": 1751
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/components/ftbot/TradeDetail.vue",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/components/ftbot/TradeDetail.vue",
+      "characters": 8214
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/components/ftbot/MobileTradesList.vue",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/components/ftbot/MobileTradesList.vue",
+      "characters": 1370
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/components/general/ConfirmDialogBox.vue",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/components/general/ConfirmDialogBox.vue",
+      "characters": 987
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/composables/api.ts",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/composables/api.ts",
+      "characters": 2320
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/stores/ftbot.ts",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/stores/ftbot.ts",
+      "characters": 50557
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/pages/dashboard.vue",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/pages/dashboard.vue",
+      "characters": 7554
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/components/ftbot/BotStatus.vue",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/components/ftbot/BotStatus.vue",
+      "characters": 3902
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "path": "frontend/pages/orchestration/instances/app.py",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "url": "https://github.com/hummingbot/dashboard/blob/ee42595bec85518eda0b9fe1a56046d09a3e36c6/frontend/pages/orchestration/instances/app.py",
+      "characters": 17293
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "path": "frontend/pages/orchestration/trading/app.py",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "url": "https://github.com/hummingbot/dashboard/blob/ee42595bec85518eda0b9fe1a56046d09a3e36c6/frontend/pages/orchestration/trading/app.py",
+      "characters": 59437
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "path": "frontend/pages/orchestration/portfolio/app.py",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "url": "https://github.com/hummingbot/dashboard/blob/ee42595bec85518eda0b9fe1a56046d09a3e36c6/frontend/pages/orchestration/portfolio/app.py",
+      "characters": 14619
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/components/ftbot/BackgroundJobTracking.vue",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/components/ftbot/BackgroundJobTracking.vue",
+      "characters": 2703
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/stores/ftbotwrapper.ts",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/stores/ftbotwrapper.ts",
+      "characters": 19252
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "path": "frontend/visualization/executors.py",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "url": "https://github.com/hummingbot/dashboard/blob/ee42595bec85518eda0b9fe1a56046d09a3e36c6/frontend/visualization/executors.py",
+      "characters": 2247
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "path": "frontend/st_utils.py",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "url": "https://github.com/hummingbot/dashboard/blob/ee42595bec85518eda0b9fe1a56046d09a3e36c6/frontend/st_utils.py",
+      "characters": 5894
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "path": "frontend/pages/permissions.py",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "url": "https://github.com/hummingbot/dashboard/blob/ee42595bec85518eda0b9fe1a56046d09a3e36c6/frontend/pages/permissions.py",
+      "characters": 2397
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "path": "frontend/visualization/pnl.py",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "url": "https://github.com/hummingbot/dashboard/blob/ee42595bec85518eda0b9fe1a56046d09a3e36c6/frontend/visualization/pnl.py",
+      "characters": 790
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "path": "requirements.txt",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "url": "https://github.com/hummingbot/dashboard/blob/ee42595bec85518eda0b9fe1a56046d09a3e36c6/requirements.txt",
+      "characters": 127
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "web/src/components/common/ConfirmDialog.tsx",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/web/src/components/common/ConfirmDialog.tsx",
+      "characters": 2957
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "web/src/components/trader/DecisionCard.tsx",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/web/src/components/trader/DecisionCard.tsx",
+      "characters": 18572
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "path": "frontend/components/risk_management.py",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "url": "https://github.com/hummingbot/dashboard/blob/ee42595bec85518eda0b9fe1a56046d09a3e36c6/frontend/components/risk_management.py",
+      "characters": 2515
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "api/handler_order.go",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/api/handler_order.go",
+      "characters": 11434
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "web/src/components/trader/ConfigStatusGrid.tsx",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/web/src/components/trader/ConfigStatusGrid.tsx",
+      "characters": 13817
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "web/src/components/trader/PositionHistory.tsx",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/web/src/components/trader/PositionHistory.tsx",
+      "characters": 31977
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "api/handler_ai_cost.go",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/api/handler_ai_cost.go",
+      "characters": 985
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "web/src/components/charts/ChartWithOrders.tsx",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/web/src/components/charts/ChartWithOrders.tsx",
+      "characters": 18241
+    },
+    {
+      "repo": "jesse-ai/jesse",
+      "path": "jesse/controllers/order_controller.py",
+      "sha": "60f882e88c2d28e0f8cbc7f916758434e6ab7ce6",
+      "url": "https://github.com/jesse-ai/jesse/blob/60f882e88c2d28e0f8cbc7f916758434e6ab7ce6/jesse/controllers/order_controller.py",
+      "characters": 2442
+    },
+    {
+      "repo": "jesse-ai/jesse",
+      "path": "jesse/controllers/websocket_controller.py",
+      "sha": "60f882e88c2d28e0f8cbc7f916758434e6ab7ce6",
+      "url": "https://github.com/jesse-ai/jesse/blob/60f882e88c2d28e0f8cbc7f916758434e6ab7ce6/jesse/controllers/websocket_controller.py",
+      "characters": 1687
+    },
+    {
+      "repo": "jesse-ai/jesse",
+      "path": "jesse/controllers/system_controller.py",
+      "sha": "60f882e88c2d28e0f8cbc7f916758434e6ab7ce6",
+      "url": "https://github.com/jesse-ai/jesse/blob/60f882e88c2d28e0f8cbc7f916758434e6ab7ce6/jesse/controllers/system_controller.py",
+      "characters": 6474
+    },
+    {
+      "repo": "jesse-ai/jesse",
+      "path": "jesse/controllers/live_controller.py",
+      "sha": "60f882e88c2d28e0f8cbc7f916758434e6ab7ce6",
+      "url": "https://github.com/jesse-ai/jesse/blob/60f882e88c2d28e0f8cbc7f916758434e6ab7ce6/jesse/controllers/live_controller.py",
+      "characters": 11215
+    },
+    {
+      "repo": "jesse-ai/jesse",
+      "path": "jesse/services/web.py",
+      "sha": "60f882e88c2d28e0f8cbc7f916758434e6ab7ce6",
+      "url": "https://github.com/jesse-ai/jesse/blob/60f882e88c2d28e0f8cbc7f916758434e6ab7ce6/jesse/services/web.py",
+      "characters": 9767
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "api/handler_trader_status.go",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/api/handler_trader_status.go",
+      "characters": 17772
+    },
+    {
+      "repo": "jesse-ai/jesse",
+      "path": "jesse/static/index.html",
+      "sha": "60f882e88c2d28e0f8cbc7f916758434e6ab7ce6",
+      "url": "https://github.com/jesse-ai/jesse/blob/60f882e88c2d28e0f8cbc7f916758434e6ab7ce6/jesse/static/index.html",
+      "characters": 13120
+    },
+    {
+      "repo": "TauricResearch/TradingAgents",
+      "path": "cli/utils.py",
+      "sha": "be952b8eccb49720509af544c6675233bc1f10d0",
+      "url": "https://github.com/TauricResearch/TradingAgents/blob/be952b8eccb49720509af544c6675233bc1f10d0/cli/utils.py",
+      "characters": 25583
+    },
+    {
+      "repo": "Lumiwealth/lumibot",
+      "path": "docsrc/backtesting.tearsheet_html.rst",
+      "sha": "f987da3e2c81a5ae2cb6edf35457d2aa54aacf8b",
+      "url": "https://github.com/Lumiwealth/lumibot/blob/f987da3e2c81a5ae2cb6edf35457d2aa54aacf8b/docsrc/backtesting.tearsheet_html.rst",
+      "characters": 5490
+    },
+    {
+      "repo": "Lumiwealth/lumibot",
+      "path": "tests/test_ui_defaults.py",
+      "sha": "f987da3e2c81a5ae2cb6edf35457d2aa54aacf8b",
+      "url": "https://github.com/Lumiwealth/lumibot/blob/f987da3e2c81a5ae2cb6edf35457d2aa54aacf8b/tests/test_ui_defaults.py",
+      "characters": 2055
+    },
+    {
+      "repo": "hummingbot/dashboard",
+      "path": "frontend/pages/performance/bot_performance/app.py",
+      "sha": "ee42595bec85518eda0b9fe1a56046d09a3e36c6",
+      "url": "https://github.com/hummingbot/dashboard/blob/ee42595bec85518eda0b9fe1a56046d09a3e36c6/frontend/pages/performance/bot_performance/app.py",
+      "characters": 1274
+    },
+    {
+      "repo": "TauricResearch/TradingAgents",
+      "path": "cli/main.py",
+      "sha": "be952b8eccb49720509af544c6675233bc1f10d0",
+      "url": "https://github.com/TauricResearch/TradingAgents/blob/be952b8eccb49720509af544c6675233bc1f10d0/cli/main.py",
+      "characters": 56892
+    },
+    {
+      "repo": "Lumiwealth/lumibot",
+      "path": "docs/TEARSHEET_METRICS.md",
+      "sha": "f987da3e2c81a5ae2cb6edf35457d2aa54aacf8b",
+      "url": "https://github.com/Lumiwealth/lumibot/blob/f987da3e2c81a5ae2cb6edf35457d2aa54aacf8b/docs/TEARSHEET_METRICS.md",
+      "characters": 3773
+    },
+    {
+      "repo": "freqtrade/frequi",
+      "path": "src/components/ftbot/PairListLive.vue",
+      "sha": "d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e",
+      "url": "https://github.com/freqtrade/frequi/blob/d8591ace9eeb387c0976a8e66ad466ca2ab5fc7e/src/components/ftbot/PairListLive.vue",
+      "characters": 4828
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/web_interface/websockets/dashboard.py",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/web_interface/websockets/dashboard.py",
+      "characters": 5631
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/web_interface/api/trading.py",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/web_interface/api/trading.py",
+      "characters": 5692
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/web_interface/models/dashboard.py",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/web_interface/models/dashboard.py",
+      "characters": 14852
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/node_web_interface/src/components/OctoBots/StopAutomationDialog.tsx",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/node_web_interface/src/components/OctoBots/StopAutomationDialog.tsx",
+      "characters": 5240
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/node_web_interface/src/lib/debug/queries.ts",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/node_web_interface/src/lib/debug/queries.ts",
+      "characters": 371
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/node_web_interface/src/components/Debug/ImportedDebugSnapshotBanner.tsx",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/node_web_interface/src/components/Debug/ImportedDebugSnapshotBanner.tsx",
+      "characters": 1671
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/node_web_interface/src/components/Debug/dialogs/JsonDetailDialog.tsx",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/node_web_interface/src/components/Debug/dialogs/JsonDetailDialog.tsx",
+      "characters": 919
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/node_web_interface/src/components/Debug/dialogs/DownloadLogsDialog.tsx",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/node_web_interface/src/components/Debug/dialogs/DownloadLogsDialog.tsx",
+      "characters": 6762
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/web_interface/static/js/common/tables_display.js",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/web_interface/static/js/common/tables_display.js",
+      "characters": 6636
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/web_interface/static/js/common/pnl_history.js",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/web_interface/static/js/common/pnl_history.js",
+      "characters": 6853
+    },
+    {
+      "repo": "hummingbot/hummingbot-api",
+      "path": "routers/bot_orchestration.py",
+      "sha": "7e86651b69b13b39e0cb3e1afbf080eedd461e8d",
+      "url": "https://github.com/hummingbot/hummingbot-api/blob/7e86651b69b13b39e0cb3e1afbf080eedd461e8d/routers/bot_orchestration.py",
+      "characters": 21068
+    },
+    {
+      "repo": "hummingbot/hummingbot-api",
+      "path": "routers/portfolio.py",
+      "sha": "7e86651b69b13b39e0cb3e1afbf080eedd461e8d",
+      "url": "https://github.com/hummingbot/hummingbot-api/blob/7e86651b69b13b39e0cb3e1afbf080eedd461e8d/routers/portfolio.py",
+      "characters": 12524
+    },
+    {
+      "repo": "hummingbot/hummingbot-api",
+      "path": "routers/trading.py",
+      "sha": "7e86651b69b13b39e0cb3e1afbf080eedd461e8d",
+      "url": "https://github.com/hummingbot/hummingbot-api/blob/7e86651b69b13b39e0cb3e1afbf080eedd461e8d/routers/trading.py",
+      "characters": 26127
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/web_interface/static/js/common/candlesticks.js",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/web_interface/static/js/common/candlesticks.js",
+      "characters": 18071
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/web_interface/models/trading.py",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/web_interface/models/trading.py",
+      "characters": 21663
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "web/src/lib/api/traders.ts",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/web/src/lib/api/traders.ts",
+      "characters": 4516
+    },
+    {
+      "repo": "hummingbot/hummingbot-api",
+      "path": "routers/system.py",
+      "sha": "7e86651b69b13b39e0cb3e1afbf080eedd461e8d",
+      "url": "https://github.com/hummingbot/hummingbot-api/blob/7e86651b69b13b39e0cb3e1afbf080eedd461e8d/routers/system.py",
+      "characters": 2367
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "web/src/pages/TraderDashboardPage.tsx",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/web/src/pages/TraderDashboardPage.tsx",
+      "characters": 54491
+    },
+    {
+      "repo": "NoFxAiOS/nofx",
+      "path": "web/src/lib/api/data.ts",
+      "sha": "638d4042118995fbf1a38d3822b1139aa3c6b467",
+      "url": "https://github.com/NoFxAiOS/nofx/blob/638d4042118995fbf1a38d3822b1139aa3c6b467/web/src/lib/api/data.ts",
+      "characters": 13679
+    },
+    {
+      "repo": "Drakkar-Software/OctoBot",
+      "path": "packages/tentacles/Services/Interfaces/web_interface/static/js/common/bot_connection.js",
+      "sha": "dc0efc8ec36c138bd619272b2b59042778668408",
+      "url": "https://github.com/Drakkar-Software/OctoBot/blob/dc0efc8ec36c138bd619272b2b59042778668408/packages/tentacles/Services/Interfaces/web_interface/static/js/common/bot_connection.js",
+      "characters": 5921
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "condor/web/routes/positions.py",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/condor/web/routes/positions.py",
+      "characters": 6912
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "frontend/src/components/agent/ConfirmDialog.tsx",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/frontend/src/components/agent/ConfirmDialog.tsx",
+      "characters": 2434
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "frontend/src/components/bots/LogsSection.tsx",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/frontend/src/components/bots/LogsSection.tsx",
+      "characters": 3200
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "condor/web/routes/confirmations.py",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/condor/web/routes/confirmations.py",
+      "characters": 2153
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "condor/web/routes/meta.py",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/condor/web/routes/meta.py",
+      "characters": 2506
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "frontend/src/components/agent/ActivityFeed.tsx",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/frontend/src/components/agent/ActivityFeed.tsx",
+      "characters": 11465
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "frontend/src/components/agent/workspace/reconcile.ts",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/frontend/src/components/agent/workspace/reconcile.ts",
+      "characters": 13488
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "frontend/src/components/agent/agentStatus.ts",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/frontend/src/components/agent/agentStatus.ts",
+      "characters": 1583
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "frontend/src/components/agent/StatusBadge.tsx",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/frontend/src/components/agent/StatusBadge.tsx",
+      "characters": 434
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "frontend/src/lib/websocket.ts",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/frontend/src/lib/websocket.ts",
+      "characters": 3816
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "condor/runtime/confirmations.py",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/condor/runtime/confirmations.py",
+      "characters": 16108
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "frontend/src/lib/queryClient.ts",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/frontend/src/lib/queryClient.ts",
+      "characters": 11321
+    },
+    {
+      "repo": "hummingbot/condor",
+      "path": "frontend/src/hooks/useWebSocket.ts",
+      "sha": "1890c0871694c8b1c7c93ecdadb6350cd20eab6a",
+      "url": "https://github.com/hummingbot/condor/blob/1890c0871694c8b1c7c93ecdadb6350cd20eab6a/frontend/src/hooks/useWebSocket.ts",
+      "characters": 3187
+    }
+  ]
+}

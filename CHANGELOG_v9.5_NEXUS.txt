@@ -1,0 +1,161 @@
+================================================================================
+ TradingBot NEXUS 9.5.0 -- Aenderungsprotokoll
+ Schwerpunkt: Brokerwahrheit, idempotente Geldpfade, FMP-Budget und Kryptoanalyse
+================================================================================
+
+1. ETORO: EINE POSITION, EINE IDENTITAET
+----------------------------------------
+- API-Feldvarianten wie positionId/positionID, instrumentId/instrumentID und
+  orderId/orderID werden unmittelbar am Adapterrand normalisiert.
+- Eine offene Depotzeile ohne genau eine positionId fuehrt fail-closed zu
+  BROKER_POSITION_ID_MISSING. Symbol und Menge ersetzen den Beweis nie.
+- Jeder interne eToro-Datensatz gehoert zu genau einer Position-Line. Der
+  Schluessel bindet Broker, Kontofingerabdruck, DEMO/LIVE und positionId.
+- Beobachtete und bewiesene IDs sind getrennt. Eine Depot-ID darf nicht mehr
+  in denselben Satz wie eine unbelegte Bot-ID geschrieben werden und sich im
+  Folgezyklus selbst bestaetigen.
+- Accountlose Altdaten und Belege eines anderen Kontos koennen bei bekanntem
+  aktivem Kontofingerabdruck keine Position uebernehmen oder bestaetigen.
+- Ein bewiesener eigener Fill bestaetigt das Eigentum, aktiviert aber noch
+  keine Automatik. AUTO entsteht erst nach exakter SL-/TP-Ruecklesung fuer
+  dieselbe positionId.
+- Ein fehlgeschlagener Uebernahmeversuch rollt Herkunft, Verwaltungsmodus und
+  Benutzerstatus vollstaendig zurueck. Ein ausdrueckliches "Nur beobachten"
+  bleibt als eigene Benutzersperre erhalten.
+
+2. ETORO: KAUF, SCHUTZ, VERKAUF UND NEUSTART
+--------------------------------------------
+- Die Kette decisionId -> referenceId -> orderId -> Execution-positionId ->
+  offene Depot-positionId bleibt persistent und wird in jedem Abgleich erneut
+  ausgewertet.
+- Beim ersten Poll nach einem Prozessstart reicht der History-Abgleich bis
+  zum aeltesten offenen, exakt kontogebundenen Bottrade zurueck, maximal 365
+  Tage. Danach bleibt der normale Poll bei sieben Tagen.
+- Uebernahme und Schutzpruefung adressieren eine konkrete positionId und
+  vergleichen den gewuenschten Stop sowie Take-Profit gegen einen frischen,
+  gemeinsamen Broker-Snapshot.
+- Verkaeufe akzeptieren nur genau eine bewiesene positionId. Ein Symbol- oder
+  instrumentId-Sammelverkauf ist nicht mehr zulaessig.
+- Vor jedem Close-POST wird ein Exit-Intent dauerhaft in SQLite geschrieben.
+  Bleibt die Antwort ohne orderId oder ist der Transportzustand unklar, wird
+  derselbe Intent weiter abgeglichen und kein zweiter POST gesendet.
+- Teilfills werden ueber stabile Fill-Identitaeten kumuliert. Derselbe Poll
+  kann die Menge nicht doppelt buchen; FILLED entsteht erst bei der
+  angeforderten Gesamtmenge.
+
+3. OKX: EINDUTIGE FILLS UND SICHERE AUSSTIEGE
+---------------------------------------------
+- Eine OKX-Fill-ID ist nun kontoweit zusammengesetzt:
+  Konto + Instrument + ordId + tradeId. Eine rohe tradeId darf deshalb bei
+  LINK und ONDO vorkommen, ohne dass der zweite Fill als Duplikat verschwindet.
+- Fehlen instId oder ordId in einer einzelnen History-Fillzeile, werden sie
+  aus dem exakt abgefragten Orderkontext ergaenzt; die Identitaet bleibt voll.
+- Alte, als CANCELED gelesene 9.4.1-Entries werden einmalig nachgeprueft. Eine
+  Wiederherstellung ist nur mit registrierter exakter ordId, aktuellem Konto,
+  terminalem Brokerstatus und vollstaendigen echten Fills erlaubt.
+- Schutzorders gelten nur als aktiv, wenn algoId/algoClOrdId, Instrument,
+  Menge, Stop und Ziel beim Broker exakt rueckgelesen wurden. Ein erfolgreicher
+  POST allein ist kein Schutzbeweis.
+- Automatische SELLs besitzen vor dem Brokeraufruf eine persistente
+  exit_attempt_id und clOrdId. Bei unklarem Status erfolgt zuerst die exakte
+  Order-/Fill-Recovery; es gibt keinen zweiten SELL fuer dieselbe Menge.
+- Schutzorders werden nur ueber ihre gespeicherte NEXUS-ID storniert. Eine
+  pauschale Stornierung aller Orders eines Symbols ist entfernt.
+- Bestaetigt OKX den Fill, aber Ledger oder Risikotopf kann lokal nicht sicher
+  schreiben, bleibt die Position als ACCOUNTING_PENDING erhalten. NEXUS
+  wiederholt nur die idempotente Buchung, nie den Verkauf.
+- Nachtraeglich angelegte Ledgerzeilen fuer bewiesene Legacy-Positionen
+  speichern Instrument, Kontofingerabdruck und Entry-Order-ID mit und sind
+  unmittelbar wieder exakt auffindbar.
+- Ein verschwundener Spotbestand gilt erst nach mindestens zwei vollstaendigen
+  Snapshots und 30 Sekunden als bestaetigt. Ein einzelner Nullstand loescht
+  keine Position.
+
+4. FREQTRADE-ROI UND DER LINK-SCREENSHOT
+----------------------------------------
+- Zeitabhaengiger ROI und Stop werden vor einem Kerzen-Historienabruf geprueft.
+  Ein Ausfall der 5-Minuten-Historie kann einen bereits erreichten ROI-Exit
+  deshalb nicht mehr blockieren.
+- Die Staffel bleibt 4 % ab Einstieg, 2 % ab 30 Minuten und 1 % ab 60
+  Minuten. Der tatsaechliche Verkaufsschwellenkurs beruecksichtigt zusaetzlich
+  Einstiegs- und Ausstiegsgebuehren.
+- Im geprueften LINK-Screenshot lag der aktuelle Verkaufs-VWAP 11,331 USDC
+  unter dem eingeblendeten aktiven 1-%-Schwellenkurs 11,62451923 USDC. In
+  genau diesem Moment war ein Verkauf daher korrekt noch nicht faellig.
+- Sobald der netto kostenbereinigte Schwellenkurs erreicht ist, kann der
+  ROI-Exit jetzt auch bei voruebergehend nicht abrufbarer Historie ausloesen.
+
+5. ONDO-RECOVERY
+----------------
+- Der im Screenshot als "APPROVED - nicht ausgefuehrt" gezeigte ONDO-Auftrag
+  wird ueber seine registrierte OKX-orderId erneut gegen Orderstatus und
+  echte Fills geprueft.
+- Eine Position entsteht nur aus der exakten Order-/Fill-Kette. Symbol,
+  sichtbarer Kontosaldo oder passende Menge reichen nicht aus.
+- Die Recovery ist auf eindeutig erkennbare 9.4.1-Legacy-Entries begrenzt,
+  damit normale abgelehnte Orders nicht nachtraeglich erfunden werden.
+
+6. FMP UND NACHRICHTENBUDGET
+----------------------------
+- FMP-Referenz- und optionale FMP-Newswege teilen ein einziges dauerhaftes,
+  thread- und prozesssicheres Tagesbudget.
+- Harte Obergrenze: 250 Calls pro Tag. Die Automatik darf davon standardmaessig
+  maximal 80 verbrauchen; der Rest bleibt fuer bewusste Diagnose reserviert.
+- Pro Aktien-Universumslauf sind hoechstens acht FMP-Calls erlaubt. Profile
+  und 20-Tage-Umsatzdaten werden sieben Tage persistent gecacht.
+- Automatische FMP-Referenzabrufe laufen nur ab 30 Minuten vor dem
+  Aktienmarktfenster und waehrend dieses Fensters.
+- Ist eToro deaktiviert, wird weder Aktienkern noch Aktienuniversum gestartet.
+  Ein reiner OKX-/Freqtrade-Betrieb erzeugt damit keine automatischen FMP-
+  oder Aktien-News-Aufrufe.
+- FMP-News bleiben im Free-Plan standardmaessig deaktiviert. Der passive
+  Dashboardstatus verbraucht keinen API-Call; nur ein ausdruecklicher Test
+  darf die manuelle Reserve verwenden.
+- Am ersten Update-Tag kennt NEXUS bereits vor dem Update verbrauchte Calls
+  nicht. Nach 03:00 UTC bleibt die FMP-Automatik deshalb bis zum naechsten
+  Tageswechsel vorsorglich gesperrt; manuelle Diagnose bleibt moeglich.
+
+7. KRYPTO-BACKTEST UND WALK-FORWARD IN DER WEBUI
+------------------------------------------------
+- Die Analyse-Seite bietet zwei neue Aufgaben:
+  "Krypto - Freqtrade Backtest" und "Krypto - Walk-Forward".
+- Beide verwenden ausschliesslich oeffentliche, abgeschlossene OKX-5m-Kerzen,
+  leere API-Zugangsdaten und denselben SampleStrategy-Regelcode wie der Core.
+- Standardmaessig werden passende BTC-, ETH- und LINK-Spotmaerkte analysiert;
+  Instrumentwahl, Kerzenzahl und Fold-Anzahl sind konfigurierbar.
+- Kostenannahmen entsprechen dem Livekern: 0,35 % Takergebuehr und 0,15 %
+  Slippage je Ausfuehrungsseite, sofern nicht bewusst anders konfiguriert.
+- Walk-Forward ist strikt chronologisch. Jeder Test-Fold liegt nach seinem
+  Trainings-/Warmup-Bereich; Zukunftsdaten gelangen nicht in fruehere Folds.
+- Analyseprogramme besitzen keine Konto-, Schutz- oder Orderrechte.
+
+8. PERSISTENZ UND NEBENLAEUFIGKEIT
+----------------------------------
+- Kritische JSON-Zustaende verwenden einen gemeinsamen Thread-/Prozess-Lock
+  und atomare Dateiersetzung. Lese-Aendere-Schreibfolgen laden unter derselben
+  Sperre neu, bevor sie schreiben.
+- Order-Registry, Fill-Tracker, Positionsauftraege, eToro-Reconciliation,
+  Risiko- und Potzustand ueberschreiben keine neueren Parallelupdates mehr.
+- Beschaedigte Ownership-, Positions- oder Fill-Zustaende sperren neue
+  Geldpfade fail-closed, statt mit leerem Besitzstand weiterzulaufen.
+- Trade-Ledger-Abschluesse und Fill-Ereignisse werden in einer SQLite-
+  Transaktion idempotent geschrieben.
+- Die Migration uebernimmt api_daily_budgets.json und
+  broker_exit_journal.sqlite aus 9.4.1.
+
+9. TESTS
+--------
+- 986 Pytest-Tests und 198 Subtests bestanden.
+- Neue Regressionen decken eToro-Konto-/positionId-Grenzen, Schutz vor AUTO,
+  Exit-Intent-Neustarts, Teilfills, OKX-Fillkollisionen, ONDO-Recovery,
+  ACCOUNTING_PENDING, ROI ohne Historie, FMP-Budget/Nebenlaeufigkeit sowie
+  Krypto-Backtest und chronologische Walk-Forward-Folds ab.
+- SELF TEST, COMPILEALL, Pi-Preflight, Shell-Syntax, Release-Hygiene und
+  VOLLTEST werden fuer das endgueltige ZIP erneut ausgefuehrt.
+
+WICHTIGE BETRIEBSGRENZE
+-----------------------
+Offline-Tests ersetzen keinen echten Broker-Netzwerkdurchlauf. Nach dem
+Update zuerst eToro DEMO und OKX DEMO/Paper pruefen. LIVE erst aktivieren,
+wenn Position, Schutz und Verkauf mit den konkreten Konto-IDs bestaetigt sind.
+================================================================================

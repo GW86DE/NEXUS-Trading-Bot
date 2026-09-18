@@ -1,0 +1,42 @@
+TRADINGBOT NEXUS 9.0.5 – TESTPROTOKOLL
+=====================================
+
+Release-Basis
+-------------
+Version: 9.0.5-NEXUS
+Python: 3.12.13
+Testumgebung: Linux x86_64, hostneutraler Raspberry-Pi-Preflight
+
+Gezielte OKX-/Altfehler-Regression
+---------------------------------
+59 Tests bestanden.
+
+Enthalten:
+- HTTP 401 mit OKX 50102 bleibt transienter Zeitfehler.
+- Echter 401/50111 bleibt dauerhafter Authentifizierungsfehler.
+- Serverzeit wird am Request-Mittelpunkt gemessen.
+- Demo und Live blockieren bei 195,3 Sekunden Zeitabweichung.
+- WebSocket-Login nutzt den REST-Zeitoffset.
+- Fehlendes Text-pong und OKX-notice erzwingen Reconnect.
+- Krypto-Worker überlebt den initialen Verbindungsfehler.
+- WebUI trennt Worker, Broker und Cachezustand fail-closed.
+- SOL-Legacy-/Bestandsschutz, Unified-USD, MSFT-Phantomfill und
+  Telegram-Laufzeitschalter/Deduplizierung bleiben grün.
+
+Vollständiger Testlauf
+----------------------
+pytest: 746 Tests + 186 Subtests bestanden.
+
+Volltest-Prüfungen:
+- Static Release Hygiene: OK
+- Pytest Geldpfad/Regressionen: OK
+- Self Test: OK
+- Compileall: OK
+- Raspberry-Pi-Preflight (hostneutral): OK
+- Shell-Syntax: OK
+
+Nicht offline simuliert
+-----------------------
+Echte eToro-, OKX-, Telegram- und OpenAI-Netzwerkaufrufe sowie ARM64-Hardware.
+Die OKX-Vorgaben wurden zusätzlich gegen die bereitgestellte offizielle
+OKX-WebSocket-/API-PDF geprüft.

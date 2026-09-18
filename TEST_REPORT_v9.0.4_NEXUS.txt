@@ -1,0 +1,44 @@
+TradingBot NEXUS 9.0.4 – Testprotokoll
+======================================
+
+Status: BESTANDEN
+Datum: 28.08.2026
+
+ERGEBNIS IM ARBEITSBAUM
+- 733 Pytest-Tests bestanden.
+- 186 parametrische Untertests bestanden.
+- Keine echten eToro- oder OKX-Orders gesendet.
+- Keine echten Telegram-, GPT- oder News-Anfragen gesendet.
+
+ABSCHLIESSENDER RELEASE-VOLLTEST
+- Statische Release-Hygiene: bestanden.
+- 733 Pytest-Tests und 186 parametrische Untertests: bestanden.
+- Selbsttest: bestanden.
+- Python-Compile-Prüfung: bestanden.
+- Host-neutraler Raspberry-Pi-Preflight: bestanden.
+- Shell-Syntax aller mitgelieferten Skripte: bestanden.
+- JavaScript-Syntax von common.js, settings.js, dashboard.js und trades.js:
+  bestanden.
+- Eine getrennt aus dem ZIP entpackte Paketkopie bestand denselben Volltest
+  erneut vollständig.
+
+NEUE PFLICHTREGRESSIONEN
+- MSFT: eToro-Lookup-Fill ohne aktuelle exakte positionId erzeugt keinen Trade.
+- SOL: unbelegbarer Legacy-Ledger-Eintrag wird erst nach zwei vollständigen
+  OKX-Abgleichen geschlossen; echter SOL-Bestand bleibt EXTERNAL_HOLDING.
+- SOL: verknüpfter Trade bleibt bei Widerspruch fail-closed und wird nicht
+  administrativ verworfen.
+- OKX: Unified-USD-Instrument verwendet eine von `tradeQuoteCcyList` erlaubte
+  und im Konto verfügbare Handelswährung.
+- OKX: neue Position ohne gültigen Stop und Ziel wird blockiert.
+- Telegram: gleiche Meldungen werden vor dem ersten Versand zusammengeführt.
+- Telegram: Callback-Quittierung und Laufzeitschalter funktionieren.
+- Version: VERSION.txt und config.VERSION_NEXUS stimmen überein.
+
+SICHERHEITSGRENZEN
+- Brokerantworten, Neustarts, Historienseiten, Kontostände und Parallelversand
+  wurden offline mit Testdoubles simuliert.
+- Es wurde kein realer eToro-/OKX-Auftrag und keine echte Telegram-Nachricht
+  ausgelöst.
+- Reale Brokerlatenz, ARM64-Paketinstallation und systemd auf dem Raspberry Pi
+  müssen zusätzlich im PAPER-/DEMO-Betrieb beobachtet werden.

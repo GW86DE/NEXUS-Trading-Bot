@@ -1,0 +1,39 @@
+TradingBot NEXUS 9.0.1 – Testprotokoll
+======================================
+
+Status: BESTANDEN
+Datum: 27.08.2026
+
+ERGEBNIS IM ARBEITSBAUM
+- 708 Pytest-Tests bestanden.
+- 186 parametrische Untertests bestanden.
+- Offline-Selbsttest bestanden.
+- statische Release-Hygiene bestanden.
+- vollständige Python-Compile-Prüfung bestanden.
+- Raspberry-Pi-Preflight host-neutral bestanden.
+- Shell-Syntax aller ausgelieferten Skripte bestanden.
+
+Neue Regressionen prüfen insbesondere:
+- exakt 20 feste und 30 dynamische Kryptoplätze;
+- persistenter Erstaufbau und Neustart;
+- monatliche 30-Tage-Rotation sowie STALE-Verhalten;
+- Wahl des liquidesten vergleichbaren EUR-/USDC-Paars;
+- sichtbare, aber kaufgesperrte Kernwerte bei fehlenden Marktdaten;
+- öffentliche historische OKX-Kerzen und Ausschluss laufender Kerzen;
+- keine erfundene 0,00-Bewertung offener Trades;
+- tatsächliche Kauf-/Verkaufsmarker und gespeicherter Einstiegsmodus;
+- deutsche, responsive und rein lesende Trade-Webseite.
+
+SICHERHEITSGRENZEN DES OFFLINETESTS
+- Es wurden keine echten eToro- oder OKX-Orders gesendet.
+- Es wurden keine echten Telegram- oder KI-Anfragen gesendet.
+- Der öffentliche OKX-Kerzenendpunkt wurde durch Testdaten simuliert; geprüft
+  wurden Pfad, Parameter, Sortierung und Ausschluss von confirm=0.
+- ARM64/Raspberry-Pi-Hardware und reale Brokerlatenz sind offline nicht
+  vollständig simulierbar. Dafür bleiben Pi-Preflight, Demo-Betrieb und die
+  vorhandenen Laufzeitdiagnosen verbindlich.
+
+PAKETTEST
+- Der vollständige Volltest wurde in der getrennten 9.0.1-Paketkopie erneut
+  ausgeführt: 708 Tests und 186 Untertests sowie Selbsttest, Hygiene,
+  Compile-Prüfung, Preflight und Shell-Syntax bestanden.

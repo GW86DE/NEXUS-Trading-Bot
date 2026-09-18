@@ -1,0 +1,45 @@
+NEXUS 9.8.2 — 9. September 2026
+
+Ersetzt 9.8.1; direktes Update von 9.8.0. Historische 9.8.1-Dokumente sind keine aktuelle Freigabe.
+
+Verkauf / Zuordnung / Risiko:
+- Manuellen Wunsch, vorbereitete Reservierung und tatsächlich gestartete Order trennen.
+- Eigene manuelle Anfrage darf genau einmal verkaufen; Quoteausfall deaktiviert AUTO nicht.
+- Bewiesen nie gesendete alte Anfragen gezielt reparieren; unklare Übermittlungen nicht freigeben.
+- Verkaufsabsicht dauerhaft reservieren, bevor Schutz storniert wird. Finale Menge/Preis vor POST festschreiben.
+- Unklare BUY und SELL blockieren konkurrierende Aufträge derselben Kontodomäne und desselben Instruments.
+- Fehlende Orderdetails über exakt zugeordnete OKX-Historie/Archiv nachklären; leere Historie ist kein Stornobeweis.
+- Letzten Abgleich und dessen Ergebnis dauerhaft anzeigen; offene bestätigte Positionen dürfen Belegabgleich anfordern.
+- Ledger lehnt Nullmenge, negative und nichtendliche Mengen ab. DEMO/LIVE auch am letzten Buchungsschritt prüfen.
+- Geschlossene Entry-Order ohne neue Fillbelege nicht als neuen Kauf eröffnen; Replay-Claims um Umgebung ergänzen.
+- Gleichzeitige Erweiterung der Ausführungsdatenbank serialisieren; keine verlorenen Reservierungen.
+- Manuellen Abschluss nach Absturz aus exakter Ledger-Lineage nachführen; Wiedereinstiegssperre nicht erneut verlängern.
+- Unbekannte Ergebnisse sperren neue Käufe im betroffenen Brokerrisikotopf. Ausstiege bleiben möglich.
+- Später belegte Ergebnisse genau einmal nachbuchen; verfügbare OKX-Ausstiegsgebühren beleggebunden ergänzen.
+- Fehlende Einstiegsgebühren, historische Wechselkurse und fremde Kontobelege nicht schätzen.
+- BTC-51138-Preisbandkorrektur, typisierte eToro-Instrumentauflösung und native SUI-Erlösnachpflege aus 9.8.1 bleiben.
+
+Nachrichten:
+- MASSIVE und FMP einschließlich Einstellungen und Anbieterpfaden beibehalten.
+- Offiziellen Fed-Monetary-RSS als Makroquelle ohne API-Key ergänzen.
+- Erreichbarkeit, letzte erfolgreiche Prüfung, Meldungsalter, Pause und Anbieterfehler unterscheiden.
+- Aktiver Quellencheck respektiert Cache/Retry-After; Referenzsuche zählt nicht als Nachrichtenquelle.
+- Anbieterschlüssel aus Fehlertexten, Statusdateien und historischen WebUI-Analyseausgaben maskieren.
+- Nasdaq-Halts strukturiert nach Ticker, Datum, Halt und Wiederaufnahme auswerten.
+- Fehlende, ungültige oder zukünftige Zeitstempel nicht als frische Meldungen behandeln.
+- Gewöhnliche Wörter wie OR/NOW nicht als Aktienzuordnung werten. Strukturierte Kennungen oder belastbare Namen verlangen.
+- Wiederholte Signalbegriffe begrenzen; fünf wirksame News-Schwellen in erweiterten Einstellungen und Strategie-Hash aufnehmen.
+- Fehlender/fehlerhafter zukünftiger Earnings-Kalender ist nicht verfügbar; SEC-Vergangenheitszahlen ersetzen ihn nicht.
+- Öffentliche Feedabfragen mit Cache, begrenzter Antwortgröße und prozessübergreifender Sperre bündeln.
+
+KI / WebUI / Kompatibilität:
+- OFF vor Anfrage und Cachewirkung prüfen; nach verspäteter Antwort keine Verwendung mehr.
+- Budget vor HTTP prozessübergreifend reservieren; beschädigter Stand und Nullbudget geben keine Anfragen frei.
+- Second Opinion erhält eine wirksame Gesamtzeitgrenze; begrenzte Zahl laufender Worker.
+- Leere/fehlerhafte Antworten und ungültige Kosten lokal abweisen; Testknopf und Kostenfelder korrigieren.
+- Nachrichten als kompakte Statuskarten mit aufklappbaren Details; Earnings-Verfügbarkeit sichtbar.
+- Tages-/Gesamtergebnis in Geld und Prozent, Kerzenchart, gemeinsame Handelsseite und sämtliche bisherigen Einstellungen erhalten.
+- Python-3.11-f-String korrigieren; Mindestversion tatsächlich mit vollständiger Testsuite prüfen.
+
+Abnahmeprotokoll: NEXUS_9.8.2_Pruefbericht.md.
+Offlineprüfung ist kein Nachweis eines bereits erfolgten Brokerfills oder einer Installation auf dem Pi.

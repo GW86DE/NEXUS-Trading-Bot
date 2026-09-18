@@ -1,0 +1,32 @@
+NEXUS 10.2.2 - LOT-RESIDUAL-VALUATION-FIX (Punkt-Hotfix)
+Stand: 17.09.2026 | Basis: 10.2.1-NEXUS (auf dem Pi installiert) | Diagnose: 1.8.1
+
+ANLASS: 10.2.1 hat den DOGE-Mischverkauf korrekt belegt und verbucht
+(Trade 73 CLOSED, Bestandsbeleg geloest). Die automatische
+EUR-Referenzbewertung scheiterte danach alle 10 Minuten reproduzierbar mit
+"EUR-Beleg passt nicht zur aktuellen abgeschlossenen Handelszeile"
+(Diagnose 11:08 UTC) - der letzte offene RESULT-Beleg hielt die
+OKX-Kaufsperre.
+
+1) URSACHE: Beim Verkauf blieben 0,00847 DOGE als Lot-Staub im Konto
+   (Buchmenge 7334,18847; verkauft 7334,18). Der Verbucher akzeptiert und
+   dokumentiert diesen Rest ausdruecklich im nativen Beleg; die neue
+   EUR-Konsistenzpruefung (10.2.1) verglich Buch- und Verkaufsmenge aber
+   OHNE den dokumentierten Rest.
+2) FIX: Die Pruefung rechnet exakt den im nativen Beleg dokumentierten
+   Rest ein - nur diesen. Ein negativer Rest oder jede darueber
+   hinausgehende Mengenabweichung bleibt ein harter Fehler.
+3) TEST: Neuer End-zu-End-Test mit den exakten Pi-Zahlen inkl. Staub:
+   zusammengesetzte Verbuchung -> Konsistenz -> Speicherung -> vollstaendige
+   Nachrechnung beim Laden ueber ein formatgueltiges Kursbeleg-Dokument
+   (Rates-Validierung real durchlaufen). Suite jetzt 15 Tests.
+
+WARUM EINE NEUE VERSIONSNUMMER STATT "REVISION 2": Der Updater bezieht die
+Datenquelle aus den systemd-Diensten und verlangt Quelle != Ziel; eine
+Neuinstallation DERSELBEN Versionsnummer ueber einen aktiven Stand ist
+bewusst nicht moeglich (der Installer brach am 17.09. korrekt ab:
+"tradingbot-pi5.service arbeitet aus diesem Verzeichnis"). Ein Fix auf
+einen bereits AKTIV installierten Stand bekommt deshalb immer eine neue
+Patch-Nummer; Handeingriffe am versiegelten Baum bleiben ausgeschlossen.
+
+UNVERAENDERT: alles Uebrige aus 10.2.0/10.2.1.

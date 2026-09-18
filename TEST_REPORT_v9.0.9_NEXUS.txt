@@ -1,0 +1,53 @@
+TRADINGBOT NEXUS 9.0.9 - TESTBERICHT
+====================================
+
+Version: 9.0.9-NEXUS
+Datum: 29.08.2026
+Testart: offline, ohne echte Brokerorder
+
+ERGEBNIS
+--------
+- Vollstaendiger Pytest-Lauf: 769 bestanden, 1 uebersprungen.
+- Untertests: 188 bestanden.
+- Neuer 9.0.9-Regressionssatz: bestanden.
+- self_test.py: SELF TEST OK.
+- Python compileall: bestanden.
+- Shell-Syntax aller Start-/Installationsskripte: bestanden.
+- Raspberry-Pi-Preflight (host-neutral): bestanden.
+- volltest.py: bestanden.
+
+Der uebersprungene Test importiert die laufende FastAPI-Anwendung. FastAPI
+ist im isolierten Pruefcontainer nicht installiert. Die Abhaengigkeit ist in
+requirements.txt und requirements-lock.txt fest enthalten und wird vom
+Pi-Installer installiert. Python-/JavaScript-Syntax, WebUI-Quellwachen und
+die reparierte Logbuchlogik wurden offline erfolgreich geprueft.
+
+NEUE SICHERHEITSREGRESSIONEN
+----------------------------
+- Zwei OKX-tradeId-Fills unter derselben ordId werden als eine teilgefuellte
+  Order zusammengefuehrt; Menge, gewichteter Preis und echte fee/feeCcy
+  werden geprueft.
+- Ein OKX-Kontoguthaben oder eine alte lokale Position ohne vollstaendige
+  clOrdId -> ordId -> tradeId-Kette wird nicht als BOT_MANAGED freigegeben.
+- Eine belegte Botmenge und ein zusaetzliches Konto-Asset desselben Coins
+  werden getrennt ausgewiesen.
+- Das Ledger speichert alle realen Fill-IDs und den Ownership-Status.
+- Der OKX-Kern enthaelt nur kontoseitig ausfuehrbare Instrumente und darf
+  ehrlich kleiner als 20 sein.
+- Der UniverseManager uebernimmt den Laufzeitkern ohne statische, nicht
+  handelbare Platzhalter.
+- Das Entscheidungslog verwendet explizite DOM-Knoten und zeigt NO_SIGNAL.
+- Der eToro-Privatstream verarbeitet RequestGuid-/Order-/Status-Hinweise,
+  ohne daraus allein eine Botposition freizugeben.
+- Der Tagesbuchtest ist auch zwischen 00:00 und 01:00 UTC stabil; eine
+  simulierte Ausfuehrung um 00:05 UTC ist als eigene Regression enthalten.
+
+BEWUSST NICHT DURCHGEFUEHRT
+---------------------------
+- Keine eToro-Demo-/Live-Order.
+- Keine OKX-Demo-/Live-Order.
+- Keine Verbindung mit den persoenlichen Brokerzugangsdaten.
+
+Diese drei Punkte muessen nach der Installation kontrolliert im eToro-PAPER-
+und OKX-DEMO-Modus geprueft werden. Bis dahin darf kein LIVE-Modus aktiviert
+werden.

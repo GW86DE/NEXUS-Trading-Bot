@@ -1,0 +1,20 @@
+NEXUS 9.8.1 — Offline-Prüfumfang
+
+Isolierter Volltest: volltest.py mit temporärer, geprüfter Quellkopie und gesperrtem Broker-Netzwerk.
+Gates: Release-Hygiene; Abhängigkeiten/WebUI-Client; Python-Regressionen;
+Selbsttest; compileall; hostneutrales Pi-Preflight; Shellsyntax.
+
+Abschlussstand: 1669 Python-Tests + 216 Untertests bestanden.
+Zusatzregression: zehn frische Datenbanken mit je 16 gleichzeitigen Reservierungen,
+sechs unabhängige Prozesse, begrenzte Sperrwiederholung und unverdeckte I/O-Fehler.
+JavaScript: Syntaxprüfung und 56 Logikprüfungen mit DOM-Testmodell.
+Originaldatenprobe: 52 Trades, SUI-Trade 45 beleggestützt in Kopie ergänzt,
+andere 51 unverändert, idempotent, Originalhash unverändert, SQLite quick_check OK.
+
+Umgebung: Linux x86_64, Python 3.12.14. Kein tatsächliches Broker-Matching,
+kein ARM64/Python-3.13.5-Lauf und keine Safari-/Geräteabnahme.
+Browser-Testseite blockiert (ERR_BLOCKED_BY_CLIENT); keine visuelle Prüfung behauptet.
+
+Einzelheiten, Befunde, Quellen und Abnahmegrenzen: NEXUS_9.8.1_Pruefbericht.md.
+Vollständige Rohprotokolle und Paketprüfung: separates NEXUS_9.8.1_Pruefnachweise.zip.
+Die Erstellung einer Version ist kein Nachweis, dass sie auf dem Pi installiert wurde.

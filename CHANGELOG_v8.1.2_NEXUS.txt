@@ -1,0 +1,286 @@
+TRADINGBOT v8.1.2 NEXUS
+=======================================================================
+Basis: 8.1.1 NEXUS. Verbindungseinstellungen, WireGuard/VPN, Login und
+die Einstellungsuebernahme wurden NICHT angefasst -- sie funktionieren
+und bleiben unveraendert.
+
+Teststand: 337 Tests + 152 Untertests gruen (vorher 299/149).
+           Volltest vollstaendig gruen, alle sechs Abschnitte.
+
+
+=======================================================================
+1. NEWS-APIS -- URSACHE GEFUNDEN UND BEHOBEN
+=======================================================================
+
+DER EIGENTLICHE FEHLER: EINSTELLUNGEN WIRKTEN ERST NACH EINEM NEUSTART
+-----------------------------------------------------------------------
+Keine der drei APIs war defekt. config.py liest die Zugangsdatei EINMAL
+beim Import. Die WebUI schrieb den umgelegten Schalter korrekt in die
+Datei, aber weder WebUI-Prozess noch Trading-Core sahen die Aenderung:
+
+    Datei      enabled.finnhub = true
+    Prozess    Finnhub konfiguriert = False     <- Wert vom Programmstart
+
+Folge: Der Haken schien wirkungslos, und "Jetzt testen" antwortete
+"nicht aktiviert oder Zugang fehlt" -- obwohl Schluessel UND Schalter
+gesetzt waren. Dasselbe galt fuer jeden neu eingetragenen API-Key.
+
+  + NEU: live_settings.py
+    Liest die Quelleneinstellungen bei jedem Zugriff frisch, mit zwei
+    Sekunden Zwischenspeicher und zusaetzlicher Pruefung der Dateizeit.
+    Schalter und Schluessel wirken damit SOFORT, ohne Neustart.
+    Reihenfolge: Umgebungsvariable, dann Datei, dann config.py -- damit
+    bleiben Dienst-Setups und bestehende Tests unveraendert gueltig.
+
+  + Ausdrueckliche Abgrenzung: Nur Nachrichten- und Referenzquellen
+    laufen hier durch. Broker-Zugaenge, Handelsmodus, LIVE-Arming und
+    Risikogrenzen bleiben beim Neustart-Verhalten -- eine Positionsgroesse,
+    die sich zwischen Berechnung und Order aendert, waere ein Risiko.
+
+
+FMP: NACHRICHTEN SIND IM GRATISTARIF NICHT ENTHALTEN
+-----------------------------------------------------------------------
+Am 24.08.2026 mit dem echten Free-Plan-Schluessel nachgemessen:
+
+    /stable/news/stock                  HTTP 402 Payment Required
+    /stable/news/general-latest         HTTP 402 Payment Required
+    /stable/search-symbol               OK
+    /stable/quote                       OK
+    /stable/profile                     OK (Sektor, isActivelyTrading)
+    /stable/historical-price-eod/full   OK (rund 390 Tageskerzen)
+
+Die 250 Anfragen pro Tag sind ein MENGENlimit, kein Freischalten der
+News-Endpunkte. 402 heisst "Tarif deckt das nicht ab", 429 waere "zu
+viele Anfragen". Kein Programmierfehler -- eine Tarifgrenze.
+
+  + NEU: fmp_reference.py
+    FMP wird von der Nachrichten- zur Referenzquelle. Es liefert jetzt
+    genau die Daten, die dem Aktien-Universum gefehlt haben:
+      Symbolsuche      Ticker aufloesen und Identitaet pruefen
+      Quote            Preis, Volumen, Marktkapitalisierung
+      Profil           Sektor, Branche, isActivelyTrading
+      Tageskerzen      echtes Dollar-Volumen ueber 20 Tage
+    isActivelyTrading ersetzt damit auf der Aktienseite die
+    Delisting-Erkennung, fuer die bisher MASSIVE noetig war.
+
+  + Hartes Tagesbudget von 250 Anfragen mit persistenter Zaehlung.
+  + Persistenter Referenzcache: je Symbol hoechstens einmal taeglich.
+    Ohne ihn waeren 100 Aktien mal 32 Universumslaeufe = 3200 Anfragen
+    am Tag noetig. Pro Lauf werden nur die aeltesten Eintraege
+    nachgezogen (Standard 20 Anfragen, konfigurierbar).
+  + Ein 402 wird als ZUSTAND angezeigt ("nicht im Tarif enthalten"),
+    nicht als Stoerung -- und loest keinen 24h-Backoff mehr aus, der
+    die funktionierenden Endpunkte mitgesperrt haette.
+  + Der News-Schalter ist standardmaessig aus (FMP_NEWS_ENABLED).
+    Wird spaeter ein Tarif mit News gebucht, reicht ein Schalter.
+
+
+MASSIVE: DER TEST HAT DIE FALSCHE SACHE GEPRUEFT
+-----------------------------------------------------------------------
+Der Verbindungstest fragte /v3/reference/tickers ab und meldete danach
+"OK" -- auch wenn der tatsaechlich genutzte Nachrichtenendpunkt
+/v2/reference/news im Tarif gar nicht enthalten ist. Der Test hat also
+ein funktionierendes MASSIVE vorgetaeuscht, waehrend im Betrieb keine
+einzige Meldung ankam.
+
+  + Der Test prueft jetzt BEIDE Faehigkeiten getrennt und meldet je
+    Faehigkeit ok/nicht ok samt Grund. Als Nachrichtenquelle gilt
+    MASSIVE nur, wenn die Nachrichten wirklich gehen.
+
+
+FINNHUB
+-----------------------------------------------------------------------
+Im Code war nichts falsch (/company-news mit token-Parameter, wie in der
+Swagger-Doku). Betroffen war Finnhub allein vom Neustart-Fehler oben und
+laeuft mit dem Hot-Reload wieder.
+
+
+=======================================================================
+2. WEBUI
+=======================================================================
+
+NEU: EIGENE UNIVERSUMS-SEITE (/universe)
+-----------------------------------------------------------------------
+  + Getrennt nach Anbieter: OKX Krypto und eToro Aktien in eigenen
+    Tabellen, weil beide unterschiedlichen Regeln folgen.
+  + Je Wert: Symbol, Zustand, Merkmale (KERN / POSITION / FAVORIT /
+    FOCUS mit Platz), Rang und bester Rang, Score, aufgenommen vor,
+    im Zustand seit, KI-Urteil samt Modell und der Aufnahme- bzw.
+    Abgangsgrund.
+  + Kennzahlenkarten: handelbare Werte je Anbieter, fester Kern,
+    offene Positionen.
+  + Filter ueber beide Tabellen: Suche, Zustand, nur Kernwerte, nur
+    Focus Set, nur offene Positionen, nur mit KI-Urteil. Sortierung
+    nach Rang, Score, Aufnahmezeit oder Symbol.
+  + Erklaerungsabschnitt, was die Spalten bedeuten.
+  + "Universum" ist in allen Seiten in der Navigation verlinkt.
+
+
+NEWS-SCHALTER
+-----------------------------------------------------------------------
+  + Yahoo Finance, Google News, Nasdaq Halts und finanzen.net hatten
+    ueberhaupt keine Checkbox -- und wurden bei JEDEM Speichern still
+    aus der Datei geloescht, weil die enabled-Liste komplett ersetzt
+    statt gemergt wurde. Jetzt haben alle neun Quellen einen Schalter,
+    und die Liste wird gemergt.
+  + Hinweis auf der Seite, dass Schalter sofort wirken.
+  + Klartexthinweis zu FMP: Referenzdaten aktiv, Nachrichten nicht im
+    Gratistarif, 250 Anfragen pro Tag.
+  + Nach dem Speichern werden die Zwischenspeicher verworfen, damit die
+    Aenderung sofort greift.
+  + Die Speichermeldung sagt jetzt korrekt, was sofort wirkt und was
+    weiterhin einen Neustart des Trading-Core braucht.
+
+
+=======================================================================
+3. TKINTER-GUI AN v8 ANGEPASST
+=======================================================================
+  + Universums-Seite zeigt das ECHTE dynamische Universum beider
+    Anbieter (Zustand, Merkmale, Rang, Score, Aufnahmezeit, Grund).
+    Vorher stand dort config.STOCK_SYMBOLS/CRYPTO_SYMBOLS -- also der
+    statische Katalog aus v6. Die Anzeige war schlicht falsch.
+  + Broker-Karten zeigen den TATSAECHLICHEN Zustand: aktiv/nicht aktiv,
+    DEMO/LIVE bzw. PAPER/LIVE, Quotewaehrung, Einrichtungshinweis.
+    Vorher stand dort fest "AKTIV" im Code -- unabhaengig von allem.
+  + Neue Seite "WebUI": Adresse, Direktstart im Browser, Zugang
+    einrichten, Uebersicht was die Weboberflaeche kann. Zusaetzlich ein
+    Navigationseintrag.
+  + Einstellungen zeigen jetzt alle neun Nachrichtenquellen mit
+    Schalterzustand, Schluesselzustand und letztem Status, dazu Knoepfe
+    zum Einrichten, Pruefen und Schalten in der WebUI.
+  + Kostentext nennt zusaetzlich die OKX-Gebuehr statt nur eToro.
+
+
+=======================================================================
+4. P0-PUNKTE AUS DEM AENDERUNGSBERICHT
+=======================================================================
+
+P0-01 OKX PRIVATE WEBSOCKET -- ERLEDIGT
+-----------------------------------------------------------------------
+Ursache der 60033/4004-Schleife gefunden: die Subscription-ID lautete
+"nexus8-private". OKX erlaubt im Feld "id" nur alphanumerische Zeichen
+(max. 32) -- der Bindestrich war unzulaessig. Jeder Subscribe wurde mit
+Code 60033 abgelehnt, OKX schloss danach mit 4004, der Bot verband sich
+neu, und das im Minutentakt. Account- und Orderdaten kamen nie an.
+
+  + Subscription-ID ist jetzt "nexus8private" (rein alphanumerisch),
+    per Test gegen das OKX-Format abgesichert.
+  + Getrennte Streamzustaende: OFFLINE, CONNECTED, AUTHENTICATED,
+    SUBSCRIBED, DEGRADED, KONFIGURATIONSFEHLER.
+  + HEALTHY erst nach subscribe-ACK BEIDER Kanaele. Vorher galt der
+    Stream schon nach dem Login als brauchbar -- obwohl das Abo
+    abgelehnt worden war.
+  + fresh() und balances() liefern ohne bestaetigtes Abo keine Daten
+    mehr. Damit kann der REST-Pfad nicht mehr durch Streamdaten
+    verdraengt werden, die es gar nicht gibt.
+  + App-Keepalive: String-"ping" nach 20 Sekunden Inaktivitaet, "pong"
+    quittiert. OKX trennt sonst nach etwa 30 Sekunden selbst.
+  + Reconnect mit Backoff UND Zufallsanteil.
+  + 60033 und verwandte Codes gelten als Konfigurationsfehler: sichtbar
+    im Status, Reconnect auf fuenf Minuten verlangsamt statt Dauerschleife.
+
+P0-05 UNKNOWN-OWNERSHIP OHNE TTL-VERLUST -- ERLEDIGT
+-----------------------------------------------------------------------
+Die Registry loeschte Pending-Metadaten pauschal nach 21.600 Sekunden.
+Damit verfiel auch UNKNOWN_AFTER_SUBMIT nach sechs Stunden -- ein
+spaeterer Fill war danach nicht mehr zuzuordnen.
+
+  + Die TTL gilt nur noch fuer rein vorbereitende, nie gesendete
+    Eintraege (PLANNED).
+  + SUBMITTING, SUBMITTED, PARTIALLY_FILLED, UNKNOWN_AFTER_SUBMIT und
+    LATE_FILL_WATCH bleiben bis zu einer eindeutigen Brokerantwort.
+  + Altbestand ohne Zustandsfeld wird konservativ behandelt: liegt eine
+    Brokerreferenz vor, verfaellt der Eintrag nicht.
+  + Neu: setze_zustand() und nicht_terminale().
+
+P0-06 ECHTER FESTER KRYPTO-KERN -- ERLEDIGT
+-----------------------------------------------------------------------
+BTC/ETH/SOL waren nur als ETABLIERT eingestuft. Das ueberspringt zwar
+die Bewaehrung, schuetzt aber nicht vor Rang und Hysterese -- ein
+Kernwert konnte nach drei schlechten Laeufen verschwinden. Ein fester
+Kern, der sich selbst entfernen kann, ist keiner.
+
+  + Neuer Tier TIER_KERN. Kernwerte werden nie wegen Rang, Hysterese
+    oder Mehrfachbestaetigung entfernt.
+  + Reisst ein Kernwert einen harten Sicherheitsfilter, wird er als
+    CORE_SAFETY_BLOCKED markiert: er bleibt im Universum und im
+    Monitoring, erzeugt aber KEINE neuen Einstiege.
+  + Bestehen die harten Filter wieder, ist er ohne erneute Bewaehrung
+    sofort wieder handelbar.
+  + Damit: 3 feste Kernwerte + bis zu 47 dynamische = 50 Entry-Slots.
+
+P0-07 GUTHABEN UND EXPOSURE KLASSIFIZIEREN -- ERLEDIGT
+-----------------------------------------------------------------------
+Im Protokoll stand alle paar Minuten:
+    OKX-Guthaben ohne Positionsbuch-Eintrag: BTC, XRP, USD, ETH
+Das warf drei voellig verschiedene Sachverhalte in einen Topf: USD ist
+Cash, BTC/ETH koennen manuelle Altbestaende sein, XRP koennte der Rest
+einer offenen Bot-Order sein. Nur der letzte Fall ist gefaehrlich.
+
+  + NEU: exposure_klassifizierung.py mit fuenf Klassen --
+    CASH, BOT_MANAGED, EXTERNAL_HOLDING, RESIDUAL_EXPOSURE,
+    UNKNOWN_EXPOSURE.
+  + USD gilt jetzt ausdruecklich als Cash und nicht mehr als Bestand.
+  + RESIDUAL und UNKNOWN sperren neue Einstiege fail-closed, bis die
+    Herkunft geklaert ist. Verkaeufe, Stops und Schutzorders bleiben
+    erlaubt.
+  + Der Bot verkauft NIEMALS automatisch einen Bestand, den er nicht
+    selbst eroeffnet hat. Fremdbestand wird sichtbar gemacht.
+  + Staubreste unterhalb eines Gegenwerts von 1 sperren nichts.
+  + Statt der Aufzaehlung steht jetzt eine Klassenuebersicht im Log,
+    bei Sperre mit ausdruecklichem Grund und Telegram-Meldung.
+
+P0-08 RELEASE-GATE -- ERLEDIGT
+-----------------------------------------------------------------------
+  + volltest.py laeuft vollstaendig gruen.
+  + self_test.py hatte die Versionsnummer fest verdrahtet und waere bei
+    jedem Versionssprung fehlgeschlagen. Er vergleicht jetzt config
+    gegen VERSION.txt. (Derselbe Fehlertyp wie zuvor in volltest.py.)
+  + Aus dem hochgeladenen 8.1.1-Paket wurden Laufzeit- und
+    Zugangsdateien entfernt, die nicht in ein Release gehoeren.
+
+
+NOCH OFFEN -- BEWUSST NICHT IN DIESEM RELEASE
+-----------------------------------------------------------------------
+Diese drei Punkte betreffen ausschliesslich den LIVE-Geldpfad. Sie sind
+zu gross, um sie ohne eigene Testrunde mitzunehmen -- und im DEMO-
+Betrieb nicht wirksam. Sie bleiben LIVE-Blocker:
+
+  P0-02  Order-Lifecycle als vollstaendige persistente State Machine
+         (PLANNED bis FILLED/REJECTED/CANCELLED) in broker/okx.py und
+         crypto_engine.py. Vorbereitet ist bereits das Zustandsfeld in
+         der Ownership-Registry samt TTL-Schutz.
+  P0-03  eToro- und OKX-LIVE-Arming vereinheitlichen und unmittelbar
+         vor jedem LIVE-Einstieg dynamisch pruefen.
+  P0-04  Watchdog je aktivierter Brokerdomaene, damit eine gesunde
+         Domaene keine tote verdecken kann.
+
+Empfehlung: weiter im DEMO/PAPER-Betrieb bleiben, bis diese drei Punkte
+umgesetzt und abgenommen sind.
+
+
+=======================================================================
+5. NEUE UND GEAENDERTE DATEIEN
+=======================================================================
+  NEU   live_settings.py                Einstellungen ohne Neustart
+  NEU   fmp_reference.py                FMP als Referenz-/Kursquelle
+  NEU   exposure_klassifizierung.py     Guthaben in fuenf Klassen
+  NEU   webui/templates/universe.html   Universums-Seite
+  NEU   webui/static/universe.js        Filter, Sortierung, Tabellen
+  NEU   tests/test_v812_nexus.py        45 neue Regressionstests
+
+  GEAENDERT
+        news_sources.py                 Live-Einstellungen, FMP-Trennung
+        massive_api.py                  Test prueft beide Faehigkeiten
+        universe/stock_selector.py      FMP als Referenzquelle
+        universe/manager.py             fester Kern
+        universe/modelle.py             TIER_KERN, CORE_SAFETY_BLOCKED
+        broker/okx_stream.py            Subscription-ID, ACK, Keepalive
+        order_ownership.py              TTL nur fuer nie gesendete Orders
+        crypto_engine.py                Exposure-Klassifizierung
+        webui/settings_store.py         enabled mergen, Cache verwerfen
+        webui/app.py, state.py          Universums-Route und -Daten
+        webui/templates/settings.html   alle neun Quellenschalter
+        gui_app.py                      Universum, Broker, WebUI, Quellen
+        config.py                       FMP-Tarifgrenzen, Version
+        self_test.py                    Version nicht mehr fest verdrahtet

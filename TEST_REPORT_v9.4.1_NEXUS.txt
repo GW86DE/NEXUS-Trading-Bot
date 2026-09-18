@@ -1,0 +1,43 @@
+================================================================================
+ TradingBot NEXUS 9.4.1 -- Testbericht
+================================================================================
+
+Datum: 2026-09-01
+
+ERGEBNIS
+--------
+PYTEST                              972 bestanden
+UNITTEST-SUBTESTS                   192 bestanden
+SELF TEST                           OK
+COMPILEALL                          OK
+PI PREFLIGHT (host-neutral)         OK
+SHELL-SYNTAX                        OK
+STATIC RELEASE HYGIENE              OK
+VOLLTEST                            OK
+
+NEUE REGRESSIONEN
+-----------------
+- Desktop-Logo besitzt HTML-Fallback und harte CSS-Maximalgroesse 46 x 46 px.
+- Mobile Logo-Regel bleibt bei 38 x 38 px; Tablet-/Mobilnavigation bleibt
+  responsive.
+- Analyse-Seite, Navigation, Karten, Gruppen, Ausgabe und Historie vorhanden.
+- Analyse-Start nur ueber feste lokale Allowlist, ohne shell=True.
+- Leerer Ergebnisdatensatz zeigt einen definierten Leerzustand.
+- Ein einzelner geschlossener Trade erzeugt einen sichtbaren SVG-Punkt.
+- Mehrere Trades erzeugen eine Kurve ohne NaN-/undefined-Koordinaten.
+- Negative und anschliessend positive Nettoverlaeufe werden korrekt skaliert.
+- EUR- und USD-Ergebnisse bleiben getrennte Kurven und werden nicht addiert.
+- Tagesrisiko-Regressionstest verwendet auch um deutsche Mitternacht den
+  konfigurierten Europe/Berlin-Handelstag.
+
+BESTANDSSCHUTZ
+--------------
+Die vollstaendige vorhandene Testsuite fuer eToro-positionId, Ownership,
+DEMO/LIVE-/Kontotrennung, Schutz, Verkauf, OKX-Bestaende, Kaufkoordination und
+Migration bleibt gruen. Kein Sicherheits- oder Geldpfad wurde abgeschwaecht.
+
+ABNAHMEGRENZE
+-------------
+Nicht offline simuliert wurden echte eToro-, OKX-, Telegram- und KI-
+Netzwerkaufrufe sowie die ARM64-Hardware des Raspberry Pi 5. Vor LIVE-Betrieb
+bleibt eine vollstaendige DEMO-Abnahme verpflichtend.

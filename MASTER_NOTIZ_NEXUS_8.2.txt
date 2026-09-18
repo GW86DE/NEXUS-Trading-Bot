@@ -1,0 +1,76 @@
+TRADINGBOT NEXUS – MASTER-NOTIZ
+Stand: 26.08.2026 | Version: 8.2.0-NEXUS
+
+SYSTEM
+======
+- eToro: nur Aktien/ETF.
+- OKX: nur Spot-Krypto; primäre Handelsquote EUR, USDC zusätzlich erlaubt.
+- Beide Broker bleiben nach Migration sicher auf PAPER/DEMO, bis LIVE bewusst
+  separat aktiviert wird.
+- Die WebUI ist die Hauptoberflaeche; Telegram ist Status-, Warn- und
+  Steuerkanal.
+- Bestehende Freigabe- und Risikoregeln der Vorgängerversion bleiben erhalten;
+  NEXUS 8.2 veraendert weder Strategieparameter noch Positionslimits.
+
+KI / LUNA / TERRA
+=================
+- Luna priorisiert und Terra recherchiert bzw. dokumentiert.
+- KI kann keine Order ausloesen, freigeben, ablehnen, vergroessern oder
+  Risikoregeln umgehen.
+- Eine Terra-Zweitmeinung wird erst nach allen festen Kaufpruefungen eingeholt.
+  „Kritisch“ bedeutet Telegram-Warnung und Logbucheintrag, niemals Kaufstopp.
+- KI-Ausfall blockiert keine Kauf-, Verkaufs-, Stop- oder Schutzorder.
+
+WANN DER BOT KAUFT
+==================
+1. Das Instrument muss im handelbaren Universum liegen.
+2. Aktuelle Kurs-, Kerzen-, Spread-, Orderbuch- und Liquiditaetsdaten muessen
+   vorhanden sein.
+3. Technik, Nachrichten-/Ereignisfilter, Kostenhuerde, Cash, Positions- und
+   Risikolimits muessen bestehen.
+4. Menge, Stop und Ziel werden regelbasiert berechnet; erst danach wird eine
+   geschuetzte Broker-Order uebermittelt.
+5. Unklare Brokerantworten werden nicht blind wiederholt.
+
+WANN ER VERKAUFT
+================
+- Stop, Ziel, Schutzorder und feste Ausstiegsregeln werden ohne KI ausgefuehrt.
+- Sicherheits- und Schutzverkaeufe bleiben auch bei pausierten Neukaeufen aktiv.
+
+OKX-DEMO / KONTO-GUTHABEN
+=========================
+- EUR, USD, XRP, USDC, ETH, SOL oder BTC, die im OKX-Demokonto angezeigt
+  werden, sind Konto-Guthaben und keine offenen Bot-Orders.
+- Die WebUI trennt deshalb "OKX · Konto-Guthaben" von "OKX · Bot-Positionen".
+- Externe Demo-Guthaben werden nicht automatisch verkauft und nicht heimlich
+  zu Bot-Positionen gemacht.
+- Als Handelsmasse dienen die konfigurierten Quote-Guthaben (standardmaessig
+  EUR, zusaetzlich USDC). Ein fremder BTC-, ETH- oder SOL-Bestand wird nicht
+  ohne ausdrueckliche Strategieentscheidung in Cash umgewandelt.
+
+NEXUS-8.2-KORREKTUREN
+=====================
+- OKX-Bereitmeldung wird nach normalem Neustart nicht doppelt gesendet.
+- Eine echte Unterbrechung mit anschliessender Wiederherstellung wird weiter
+  klar gemeldet.
+- OKX-EEA/Demo nutzt den richtigen Demo-Header; Orderanfragen haben eine kurze
+  Ablauffrist. `crypto_diagnose.py --voll` zeigt Konto, Guthaben, Gebuehren,
+  offene Standard-/Schutzorders, Fills und Streamstatus read-only.
+- finanzen.net RSS ist entfernt; Standardalternativen: SEC EDGAR, Nasdaq
+  Halts, Yahoo Finance, Google News, GDELT und MASSIVE (mit Key).
+- Telegram verwendet kleine sinnvolle Symbole, zum Beispiel 🟢, 💰, 🛡️, 📊,
+  ℹ️ und 🚨.
+
+WICHTIGE INSTALLATION
+=====================
+cd ~/Georg
+cp -a TradingBot_v8.1.5_NEXUS TradingBot_v8.1.5_NEXUS_Sicherung_$(date +%Y%m%d-%H%M)
+unzip TradingBot_v8.2_NEXUS.zip
+cd TradingBot_v8.2_NEXUS
+./Pi_Installieren.sh
+./.venv/bin/python settings_migration.py --auto
+./.venv/bin/python crypto_diagnose.py --voll
+./Pi_WebUI_Aktivieren.sh
+
+Die komplette Reihenfolge und Rueckfallanleitung steht in
+INSTALLATIONSANLEITUNG_NEXUS_8.2_DE.md.

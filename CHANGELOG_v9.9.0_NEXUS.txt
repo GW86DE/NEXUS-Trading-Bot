@@ -1,0 +1,34 @@
+NEXUS 9.9.0 – 13.09.2026
+Basis: 9.8.9-FMP-AUTO mit den beleggestuetzten FIX3-Korrekturen.
+
+Freqtrade-Modus: feste SampleStrategy-Referenz 2026.8-dev; 200 Startkerzen,
+500 Kerzen im fortlaufenden Fenster, UTC/5m, nur abgeschlossene Kerzen.
+Persistente OKX-Historie mit rueckwaertiger Pagination und inkrementellem Abruf.
+Luecken wie im Referenzconverter: vorheriger Schlusskurs und Volumen null.
+Durabler Kerzencursor pro Konto/Modus/Strategie/Instrument; erneute
+Signalalterspruefung an der Sendekante. Fehlender Paarabruf bleibt nachholbar.
+Exit-Signal vor Stop/ROI; ROI rundet acht Stellen und vergleicht strikt >.
+Neue Orders speichern Erstellungszeit getrennt von Fill- und Buchungszeit.
+Backtest: Zeitstempel, Signal am Folge-Open, erreichbare Gap-/ROI-Preise.
+Wichtig: FOK, OCO, Risiko-, Kosten- und Belegpruefungen bleiben NEXUS-
+Ausfuehrungsregeln. Keine Zusage identischer realer Orders oder Renditen.
+
+PULSAR: begrenzte UTF-8-KI-Auszüge statt vollstaendiger verschachtelter
+FMP-/SEC-Pakete; Originalbelege und Hashes bleiben vollstaendig gespeichert.
+Cache bindet Modell, Instruktion und Quellenstand. Community-Einzelbelege
+sind optional; aggregierte Erwaehnungen werden nicht als Autorenbeleg gewertet.
+Kosten inklusive 5 Prozent Reserve auf die geschaetzten Gesamtkosten und
+maximaler Einstiegspreis liegen innerhalb Kapital-/Risikobudget (Regel1.3).
+Bestaetigte terminale Teilfuellungen schliessen die einmalige Teilorder ab;
+Restmenge wird nicht erneut blind gesendet. Historische offene Positionen
+bleiben erhalten; alte Freigaben ohne Kostenrahmen werden nicht gesendet.
+
+Anzeige: eToro-Trades erhalten konten-/positions-/ordergebundene Referenzkurse,
+geschaetztes offenes Bruttoergebnis und getrennte Broker-/Plan-SL-/TP-Werte.
+Veraltete Kurse werden nur als letzter bekannter Stand gezeigt.
+Ein alter SUI-Fehlversuch bleibt in der Historie, wird aber einem spaeteren
+belegten Erfolg derselben Position zugeordnet. Keine Umschreibung des Fehlers.
+
+FMP STARTER/AUTO/Free, taegliches Universum und vorhandene beleggestuetzte
+OKX-Nachpflege bleiben erhalten. Die sechs eToro-Ergebnisse werden ohne
+neue Gebuehrenbelege nicht als vollstaendig abgerechnet markiert.

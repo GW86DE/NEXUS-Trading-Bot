@@ -1,0 +1,52 @@
+NEXUS 9.8.7 – Handelsbelege, Kursfrische und PULSAR 1.2
+Stand: 11. September 2026
+
+INSTALLIEREN ALS BENUTZER GEORG, NICHT MIT SUDO
+Die Datei NEXUS_9.8.7_Installieren.sh auf den Pi nach ~/Downloads kopieren.
+Sie enthält das vollständige Release. Das ZIP muss nicht zusätzlich entpackt werden.
+
+Nur das Paket prüfen (keine Dienst- oder Handelsaktion):
+  bash ~/Downloads/NEXUS_9.8.7_Installieren.sh --paket-pruefen
+
+Update mit dem vorhandenen gesicherten Aktualisierungsweg:
+  bash ~/Downloads/NEXUS_9.8.7_Installieren.sh
+
+Der Updater ermittelt den bisherigen Ordner aus beiden systemd-Diensten,
+prüft die Zielumgebung, stoppt die alten Writer vor Sicherung/Migration,
+übernimmt aktuelle Zustände einschließlich SQLite/WAL, führt den isolierten
+Volltest aus und stellt die Dienste kontrolliert um. Kein zweiter Core parallel.
+Die bestehende DEMO-/LIVE-Sicherheitsgrenze bleibt erhalten: keine automatische
+LIVE-Übernahme oder Freischaltung. Nicht von Hand über einen laufenden Bot entpacken.
+
+Bei Abbruch: das konkrete Abschlusslog prüfen; keine Zustandsdateien oder
+Warnungen löschen und keine alte Datenbank über inzwischen neue Trades kopieren.
+
+NACH DEM UPDATE
+Core und WebUI müssen aus ~/Georg/TradingBot_v9.8.7_NEXUS laufen.
+Die Oberfläche neu laden; die Kopfzeile muss 9.8.7 anzeigen.
+Börsenschluss, fehlende Kursversorgung und Buchungssperren werden getrennt gezeigt.
+Die OKX-Ergebnisnachpflege prüft höchstens einen fälligen Fall je Leselauf. Sie
+kann Warnungen nur mit tatsächlichen Order-/Fill-/Gebührenbelegen auflösen.
+Alte Gebührenlücken, fehlende historische FX oder nicht abrufbare Orders dürfen
+sichtbar bleiben. Ein bestätigter Schutzauftrag allein ist kein Verkaufsbeleg.
+
+PULSAR: bestehenden Modus und Budgets beibehalten. Beobachten ist keine
+Handelsfreigabe. Neue Kandidaten können sofort recherchiert werden, aber fehlende
+Vergleichstage, Autoren, Finanzbelege oder persönliche Bestätigungen werden nicht
+ersetzt. Rohbeobachtungen werden schonend verdichtet; neue Geschichte entsteht nur
+mit tatsächlich beobachteten Daten. Details: PULSAR_9.8.7_DE.md.
+
+OPTIONALE REIN LOKALE BESTANDSAUFNAHME
+  cd ~/Georg/TradingBot_v9.8.7_NEXUS
+  ./.venv/bin/python NEXUS_9_8_7_Statuspruefung.py > ~/NEXUS_9.8.7_Status.json
+
+Sie liest die lokale Datenbank einschließlich WAL ohne Schreibzugriff und zeigt
+Ergebnis-/Schutzlücken getrennt nach Broker, Konto, Umgebung und Währung. Sie lädt
+keine Zugangsdaten und sendet keine Brokeranfragen. Ein abweichender DB-Pfad muss
+mit --datenbank ausdrücklich angegeben werden. Der Export enthält technische
+Konto-/Orderkennungen, aber keine API-Schlüssel.
+
+Änderungen: CHANGELOG_v9.8.7_NEXUS.txt
+Befundabgleich, Tests und Grenzen: NEXUS_9.8.7_Pruefbericht.md
+Die alten START_HIER-Dateien bleiben historische Unterlagen, nicht die Anleitung
+für dieses Update.

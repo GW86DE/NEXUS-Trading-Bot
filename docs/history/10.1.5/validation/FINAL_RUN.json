@@ -1,0 +1,17 @@
+{
+  "release": "10.1.2-NEXUS",
+  "result": "PASS",
+  "full_wrapper_seconds": 71.8,
+  "pytest_passed": 2765,
+  "subtests_passed": 255,
+  "pytest_skipped": 3,
+  "standalone_delivery_tests_passed_separately": 2,
+  "artifact_checks": 13,
+  "external_network_attempts": 0,
+  "source_snapshot_files": 797,
+  "source_snapshot_sha256": "45c6f785bfb7fd47c8aae5ec2f17526215cdf8128bb88f64862605a85df35d08",
+  "target_pi_installed": false,
+  "real_telegram_delivery": false,
+  "visual_browser_test": "NOT_EXECUTED_BROWSER_DOWNLOAD_FAILED",
+  "real_broker_actions": false
+}

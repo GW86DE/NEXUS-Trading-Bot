@@ -1,0 +1,33 @@
+NEXUS 9.8.1 — 9. September 2026
+
+BTC / OKX:
+- Aktuelle instrumentgebundene OKX-Preisgrenzen vor Käufen und Verkäufen.
+- SELL-Limit mindestens sellLmt, BUY-Limit höchstens buyLmt; tickgenau mit Decimal.
+- Eigene Preis-/Slippagegrenzen bleiben bestehen. Kein unlimitierter Market-Fallback.
+- DEMO/LIVE bleibt über Order, Orderbuch und Preisband konsistent; keine Ausweichumgebung.
+- Preisband und Orderbuch nach Bestandsfreigabe erneut prüfen.
+- Explizite Preisbandablehnung getrennt von unklarer Order; kurze Wiedervorlage nur bei bewiesenem No-Fill.
+- Alte 51137/51138-Wartezeit nur bei exakt passendem, terminal abgelehntem Journaleintrag verkürzen.
+- Schutz nach eindeutiger Ablehnung erneut abgleichen. Unklare Verkäufe sperren Folgeorders.
+
+Zuordnung / Abrechnung:
+- Im Volltest gefundene SQLite-Startkollision behoben: WAL nicht bei jedem Öffnen umschalten, lokale Initialisierung serialisieren, nur vorübergehende Sperren begrenzt wiederholen; keine Orderwiederholung.
+- Historische Teilfills erzeugen keinen erfundenen terminalen Orderstatus.
+- Widersprüchliche Fill-Duplikate, Instrumente, Order- und Client-IDs werden abgewiesen.
+- Physische Fills nicht proportional verkleinern; keine relative 0,1%-Toleranz für größere Fehlbestände.
+- Fremdverkauf nur mit einzelnem vollständigem Orderbeleg und passendem Entry/Bestand; konkurrierende Käufe bleiben Klärfälle.
+- Fremdwährungsverkauf mit echter Verkaufswährung und Erlös speichern, ohne einen Wechselkurs/Gewinn zu erfinden.
+- Historische SUI-Nachpflege mit Vorschau, expliziter Bestätigung, DB-Sicherung, exakter Tradebindung und idempotenten Fill-Claims.
+- Bestandsverschwinden beweist nicht, dass eine Schutzorder ausgelöst hat.
+- eToro TXN: Instrument-ID und Positions-ID getrennt; Schutzabgleich erhält ein typisiertes Aktieninstrument.
+
+WebUI:
+- Tages- und Gesamtergebnis in Geld und Prozent; Tagesbalken oder kumulierte Linie; 30/90/365 Tage.
+- Getrennte Gruppen nach Broker, Konto, DEMO/LIVE und Währung.
+- Bestätigte Nettowerte nach Gebühren; unbekannte Ergebnisse als Teilstand/Diagrammlücke.
+- Prozentbasis: Einstiegskapital der bewerteten abgeschlossenen Trades, keine Kontorendite.
+- Kompakte Karten, aufklappbare Wertetabelle/Erklärung, mobile Layoutregeln und 44-px-Bedienelemente.
+- Native Verkaufsmenge/-währung in Fremdwährungskarten, Kerzenchart und Einstellungsfunktionen beibehalten.
+- Lesender Diagnoseexport jetzt auch mit --symbol BTC.
+
+Keine realen Brokerorders im Entwicklungstest. Kein Anspruch auf Fehlerfreiheit oder garantierte Ausführung.

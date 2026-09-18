@@ -1,0 +1,42 @@
+TRADINGBOT NEXUS 9.0.13 - TESTBERICHT
+=====================================
+Datum: 30.08.2026
+
+ERGEBNIS
+--------
+Pytest:          794 bestanden
+Subtests:        189 bestanden
+self_test.py:    OK
+volltest.py:     OK
+Compileall:      OK
+Shell-Syntax:    OK
+Pi-Preflight:    OK (host-neutral)
+
+ZUSAETZLICHE FALLTESTS
+----------------------
+- Frisches Full-size-Orderbuch und FOK-Kauf mit Preisgrenze
+- Veraltetes oder unvollstaendiges Orderbuch blockiert vor dem POST
+- Schutzorder nutzt deterministische algoClOrdId und explizite Limitpreise
+- LINK und ONDO duerfen dieselbe OKX-tradeId bei verschiedenen Instrumenten haben
+- DOGE-Staubrest blockiert keine neuen Einstiege
+- Ein einzelner REST-Timeout ergibt DEGRADED und keinen falschen Abbruch
+- WebUI uebernimmt den persistierten Schutzstatus
+
+REALE MIGRATION AUF KOPIEN DER BEREITGESTELLTEN DATEIEN
+------------------------------------------------------
+- crypto_positions(4).json: BNB, LINK, XLM und ONDO als verifizierte Positionen gelesen
+- decision_history(7).sqlite: neue Identitaetsspalten und Indizes angelegt
+- ONDO-Trade mit Order 3877327800382468097 / Fill 1 rekonstruiert
+- LINK-Trade mit eigener Order / Fill 1 blieb getrennt erhalten
+- DOGE-Trade-Hinweis bei 0,06235 DOGE als Staubrest geschlossen
+- Offene belegte Trades nach Abgleich: BNB, LINK, XLM, ONDO
+
+NICHT OFFLINE TESTBAR
+--------------------
+- Echte eToro-/OKX-Netzantworten
+- Telegram-Zustellung
+- ARM64-Hardwareverhalten des Raspberry Pi 5
+- Brokerseitige Ausfuehrung einer realen DEMO-Order
+
+Es wurden keine echten Orders gesendet.
+

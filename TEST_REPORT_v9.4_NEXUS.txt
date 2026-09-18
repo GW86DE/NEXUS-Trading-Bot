@@ -1,0 +1,41 @@
+================================================================================
+ TradingBot NEXUS 9.4.0 -- Testbericht
+================================================================================
+
+Datum: 2026-08-31
+
+ERGEBNIS
+--------
+PYTEST                              966 bestanden
+UNITTEST-SUBTESTS                   191 bestanden
+SELF TEST                           OK
+COMPILEALL                          OK
+PI PREFLIGHT (host-neutral)         OK
+SHELL-SYNTAX                        OK
+STATIC RELEASE HYGIENE              OK
+VOLLTEST                            OK
+
+SCHWERPUNKTE DER NEUEN TESTS
+-----------------------------
+- eToro positionId-Feldvarianten werden normalisiert.
+- Eine offene Zeile ohne positionId bricht den Abgleich fail-closed ab.
+- Zwei eToro-Positionen desselben Symbols bleiben getrennte Datensaetze.
+- Beobachtete IDs koennen sich auch nach wiederholtem Sync nicht selbst als
+  Eigentum bestaetigen.
+- Nur eine verifizierte Order-/Ausfuehrungs-/positionId-Kette darf BOT/AUTO
+  herstellen.
+- Fehlgeschlagene Uebernahme stellt den vorherigen Zustand wieder her.
+- Schutz und Verkauf arbeiten auf der exakten positionId.
+- SELL-Fills werden dem exakten Datensatz statt dem Symbol zugeordnet.
+- Zwei parallele Kaufentscheidungen erzeugen genau eine Reservierung.
+- Pro Scannerzyklus wird hoechstens ein eToro-Kauf abgesendet.
+- Logo, Templates und Versionsnummer werden ausgeliefert.
+
+NICHT OFFLINE SIMULIERT
+-----------------------
+- echte eToro-, Telegram- und KI-Netzwerkaufrufe
+- ARM64-Hardware des Raspberry Pi 5
+
+Vor LIVE-Betrieb ist deshalb eine vollstaendige DEMO-Abnahme nach
+INSTALLATIONSANLEITUNG_NEXUS_9.4_DE.md verpflichtend.
+

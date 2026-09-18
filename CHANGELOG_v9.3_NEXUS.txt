@@ -1,0 +1,264 @@
+================================================================================
+ TradingBot NEXUS 9.3.0  --  Aenderungsprotokoll
+ Schwerpunkt: eToro-Zuordnung, Kursdaten, Kapitalbindung, Underdogs
+================================================================================
+
+ANLASS
+------
+NEXUS kaufte am 31.08.2026 29 MSFT bei eToro. Die Aktie lag danach
+nachweislich im Depot. In der Oberflaeche stand sie trotzdem als
+
+    BROKER_EXISTING - "Beim Broker bereits vorhanden; standardmaessig nur
+    beobachten." - NUR BEOBACHTET - Kurs "-" - Buchwert +0,00
+
+Es ist dieselbe Fehlerklasse, die v9.2 auf der Kryptoseite behoben hat, nur
+beim anderen Broker: Eigentum entstand aus weichen Merkmalen.
+
+
+1. DIE URSACHENKETTE
+--------------------
+a) eToro zeigt eine frische Position im Depot, bevor der Lookup-Fill
+   verarbeitet ist. ``sync_with_broker()`` legte sie deshalb zuerst als
+   Fremdbestand an.
+
+b) Die spaetere Hochstufung in ``PositionManager.register_buy()`` verlangte
+   Symbol UND nahezu exakt gleiche Menge:
+
+       and abs(float(old.quantity or 0.0) - fill_qty)
+           <= max(1e-9, fill_qty * 1e-8)
+
+   Der Kommentar darueber behauptete, hier werde "EXAKT ueber
+   orderId/referenceId/positionId" zugeordnet. Der Code verglich Mengen.
+   Eine positionId kam in der Funktion nicht vor.
+
+c) Reparieren liess sich das auch von Hand nicht: der Knopf "Bot uebernehmen"
+   verlangt einen Kurs, und ``closeRate`` ist bei einer frischen Position oft
+   noch 0.
+
+
+2. DIE REGEL, JETZT AUCH FUER eTORO
+-----------------------------------
+    In den Eigentumsnachweis darf NICHTS eingehen, was ein Software-Update,
+    eine Rundung oder ein Anzeigewechsel aendern kann.
+
+Eigentum an einer eToro-Aktie entsteht ausschliesslich aus der brokerseitig
+vergebenen ``positionId`` plus ``orderId``/``referenceId``. Symbol, Menge,
+Einstand und Verwaltungsmodus sind Anzeige- und Plausibilitaetsdaten.
+
+``test_eigentum_haengt_an_keinem_weichen_merkmal`` veraendert Menge, Einstand,
+Symbol, Verwaltung, Notiz, Herkunft, Stop und Waehrung -- das Eigentum darf
+sich nicht bewegen. Die Gegenprobe: nur fehlende IDs nehmen es weg.
+
+
+3. DIE VOLLSTAENDIGE ZUORDNUNGSKETTE (CR-02)
+--------------------------------------------
+    decision_id
+      -> vor dem POST gespeicherte referenceId
+      -> orders:lookup liefert orderId
+      -> positionExecutions liefert eine oder mehrere positionId
+      -> aktueller Depot-Snapshot enthaelt exakt dieselbe positionId
+      -> BOT / AUTO / VERIFIED
+
+Neue Felder an ``PositionRecord``: broker_position_ids, entry_order_ids,
+entry_reference_id, decision_id, ownership_status, reconciliation_status.
+
+Neuer Zwischenzustand ``BOT / PENDING_CONFIRMATION``: ein eigener Kauf im
+Propagationsfenster ist KEIN Fremdbestand. Sobald die positionId im
+autoritativen Depot-Snapshot erscheint, wird derselbe Datensatz hochgestuft
+-- ohne die Menge ein zweites Mal zu addieren und ohne einen zweiten Trade.
+
+``broker/etoro.py::positionen()`` liefert die einzelnen positionIds jetzt als
+strukturierte Menge (``position_ids``). ``broker_id`` bleibt der
+Anzeige-String, ist aber kein Eigentumsbeweis mehr.
+
+Zwei Fehler, die dabei mit auffielen und behoben sind:
+
+* Eine reine RUNDUNGSabweichung der Brokermenge stufte eine bewiesene
+  Botposition auf OBSERVE herab. eToro rundet Mengen.
+* Traf ein Bot-Kauf auf einen Fremdbestand desselben Symbols, wurden beide
+  Mengen addiert (29 eigene + 29 fremde MSFT = 58 im Buch). Ein Kauf mit
+  eigener positionId bekommt jetzt einen eigenen Datensatz.
+
+Der Verkauf schloss schon in 9.2 ueber die konkrete positionId
+(``/api/v1/trading/execution/market-close-orders/positions/{pid}``) und
+bleibt unveraendert.
+
+
+4. KURSDATEN UND SNAPSHOTS (CR-04)
+----------------------------------
+Neue Kursreihenfolge fuer offene Positionen:
+
+    gueltiger closeRate -> Rates-Bid -> Rates-Ask -> lastExecution -> unbekannt
+
+Der Rates-Endpunkt (``/api/v1/market-data/instruments/rates``) lag im Adapter
+bereits vor und kann mehrere Instrumente in einem Aufruf liefern; er wurde
+nur nicht benutzt. Quelle und Alter des Kurses stehen jetzt in der
+Oberflaeche.
+
+Ein FEHLENDES ``pnL`` wird ``None``, nicht ``0.0``. Genau hier entstand das
+"+0,00" im Bild: die Schutzregel aus 9.1 ("None statt 0") gab es zwar, aber
+der Adapter hatte die Information eine Ebene frueher schon vernichtet.
+
+``_pnl()`` ist jetzt ein autoritativer Snapshot mit Generation
+(``snapshot_id``) und kurzer Lebensdauer. Positionen, Cash, Orders und der
+positionId-Abgleich eines Zyklus sehen denselben Brokerstand. Die
+Orderbestaetigung erzwingt bewusst einen frischen Snapshot.
+
+
+5. NEBENLAEUFIGKEIT (CR-03)
+---------------------------
+``etoro_reconciliation.py`` hatte KEINEN Lock -- kein ``threading`` im ganzen
+Modul. Gleichzeitig laeuft ``background_tick()`` alle 5 Sekunden in einem
+Daemon-Thread, waehrend ``verify_broker_truth()`` aus dem Hauptpfad gerufen
+wird. Beide machen ``_load()`` -> aendern -> ``_save()``.
+``atomic_write_json()`` verhindert nur eine halbe Datei, nicht das hier:
+
+    A liest X | B liest X | A speichert A' | B speichert B' (auf Basis X)
+
+Neu: ein reentranter Modul-Lock um jede vollstaendige
+Lese-Aendere-Schreib-Folge. Er wird NIE ueber einen Netzaufruf gehalten --
+sonst wuerde der Worker den Scanner ausbremsen.
+
+Neu ``_mutiere()``: die Aenderung arbeitet auf dem FRISCH gelesenen Satz,
+nicht auf dem Schnappschuss des Aufrufers. Ein aelterer Worker-Snapshot kann
+einen terminalen Zustand damit nicht mehr zurueckdrehen.
+
+
+6. KAPITALBINDUNG (CR-01, kleine Loesung)
+-----------------------------------------
+Beide Scanner arbeiten ihre Kandidaten seriell ab -- es werden nie absichtlich
+zwei Kauforders parallel gesendet. Das allein genuegt aber nicht: ist
+Kandidat A angenommen, die Belastung aber noch nicht verbucht, sah Kandidat B
+dasselbe Geld ein zweites Mal.
+
+* eToro: ``verfuegbares_cash()`` zieht schwebende eigene Kaeufe ab.
+* OKX: neue ``lane_reservierung()`` je Quote-Lane. Eine EUR-Reservierung
+  blockiert kein USDC-Guthaben und umgekehrt.
+* Ein unklarer Ausgang (UNKNOWN_AFTER_SUBMIT) gibt das Geld NIE frei.
+* Ein Teilfill gibt nur den nicht verbrauchten Anteil frei.
+* Die Reservierung ueberlebt einen Neustart.
+
+Bewusst NICHT gebaut: die im Antrag vorgeschlagene neue SQLite-Komponente
+``entry_intent_store.py`` mit elf Zustaenden. Fuer eToro deckt die vorhandene
+Domaenensperre (``assert_domain_available``) den Fall bereits ab, und ein
+Umbau des kompletten Geldpfads beider Broker ist genau die Art Aenderung, die
+den v9.1-Zwischenfall verursacht hat. Die neun Pflicht-Tests aus CR-01 sind
+trotzdem vollstaendig umgesetzt -- sie gelten fuer beide Loesungen.
+
+
+7. AUSFUEHRUNGSSTATUS (CR-05)
+-----------------------------
+Beim WLD-Beispiel war die Entscheidung korrekt freigegeben, die FOK-Order
+wurde aber mit 0/270,94 storniert. Angezeigt wurde gruen "APPROVED" -- das
+sieht aus wie ein erfolgreicher Kauf.
+
+Entscheidung und Ausfuehrung sind jetzt zwei Zustaende:
+
+    decision_status  = APPROVED
+    execution_status = CANCELED_NO_FILL
+    final_status     = NOT_EXECUTED
+
+Strukturiert gespeichert werden ordId, clOrdId, instId, ordType, angeforderte
+und gefuellte Menge, Limitpreis, state, cancelSource, sCode, sMsg und die
+Brokerzeit. Bis 9.2 landete davon nur ein Satz Freitext im Hinweis.
+
+Anzeige: Gruen ausschliesslich bei FILLED. Sonst
+"Kauf erlaubt -- bei OKX nicht ausgefuehrt" mit Menge, Limitpreis und
+konkretem Brokergrund. Es wird weder eine offene Position noch eine
+Schutzorder vorgetaeuscht.
+
+
+8. UNDERDOGS (CR-06)
+--------------------
+Nachgerechnet an v9.2:
+
+    Katalog: 250 | fester Kern: 75 | aktiv: 75
+    Underdogs im Katalog:      25
+    Underdogs im festen Kern:   0
+    Underdogs aktiv handelbar:  0
+
+``UNDERDOGS_AKTIV`` stand auf True, und kein einziger der 25 kuratierten
+Werte konnte gehandelt werden. Ursache war der blinde Schnitt
+``STOCK_CATALOG_SYMBOLS[:75]`` bei der Katalogreihenfolge EU-Kern ->
+US-Kern -> Underdogs; die Underdogs stehen dort ab Position 190.
+
+Der feste Kern wird jetzt kategoriebewusst gebildet. Aufteilung nach Georgs
+Vorgabe -- bewusst vorsichtig:
+
+    STOCK_FIXED_STANDARD_SLOTS = 65
+    STOCK_FIXED_UNDERDOG_SLOTS = 10
+    STOCK_DYNAMIC_SLOTS        = 25
+
+Bleiben Underdog-Plaetze frei, gehen sie an Standardwerte -- der Kern bleibt
+immer vollstaendig. Das ``underdog``-Kennzeichen bleibt auf dem ganzen Weg
+erhalten; ``approved_universe.py`` uebernimmt die Metadaten aus dem
+kanonischen Katalog, statt pauschal ``underdog=False`` zu setzen.
+
+Das strengere Screening bleibt ausdruecklich zwingend: ein Underdog ohne
+bestandenes Screening wird nicht gekauft, und die Marktqualitaet wird fuer
+ihn weiterhin strenger bewertet. Die Universum-Seite weist Underdogs jetzt
+getrennt aus: aktiv, Kernplaetze, im Katalog, aktuell gesperrt.
+
+
+9. TESTLUECKEN AUS CR-07 UND CR-09
+----------------------------------
+Beide Einwaende trafen zu:
+
+* Der Upgrade-Test laeuft jetzt gegen eine ECHTE ``crypto_positions.json``
+  aus 9.0.15 mit BNB, LINK und ONDO -- nicht gegen synthetische Objekte.
+  Ein konstruiertes Objekt beweist nicht, dass eine Datei auf der Platte nach
+  dem Update noch richtig gelesen wird.
+* Der Rasterlauf-Test benutzt jetzt eine simulierte Uhr ueber die
+  5-Minuten-Grenze (Start 12:04:58, Ende 12:05:07) und weist nach, dass die
+  12:05-Kerze NICHT ausfaellt. Die Gegenprobe zeigt: mit einem Vermerk am
+  Ende des Laufs waere der naechste Lauf erst um 12:10:07 faellig gewesen.
+
+
+NICHT UMGESETZT -- BEGRUENDET
+-----------------------------
+* CR-01 in voller Form (entry_intent_store.py) -- siehe Punkt 6.
+* CR-10 (Vereinheitlichung des Statusmodells ueber WebUI, Telegram und
+  Logbuch) als Gesamtrefactoring. Die vier im Antrag ausdruecklich
+  unzulaessigen Darstellungen sind durch CR-02, CR-04 und CR-05 einzeln
+  behoben: APPROVED wird nicht mehr gruen ohne Fill; ein Bot-Kauf erscheint
+  im Propagationsfenster nicht mehr als Fremdbestand; ein fehlender Kurs ist
+  nicht mehr 0,00; eine bewiesene, pausierte OKX-Position gilt seit 9.2 nicht
+  mehr als externer Bestand. Ein Refactoring der uebrigen Anzeigetexte bringt
+  darueber hinaus keinen Sicherheitsgewinn und wuerde nur Angriffsflaeche
+  schaffen.
+
+
+NICHT GEAENDERT (ausdruecklich)
+-------------------------------
+  - Verbindungseinstellungen und der gesamte OKX-Verbindungsaufbau
+  - "Einstellungen uebernehmen"
+  - Anordnung der Kacheln in der WebUI, Logbuch-Seite, Universum-Aufbau
+  - Freqtrade-Modus bleibt Zusatzfunktion; ist er aus, arbeiten die anderen
+    Modi unveraendert
+  - GPT/Terra aendert weiterhin keine Dateien, Filter, Universum, Orders oder
+    Risikogrenzen
+  - Die v9.2-Korrekturen an Ownership, Strategie-Migration und Kerzenraster
+    bleiben unangetastet (CR-07/CR-08/CR-09 als Regressionsschutz)
+
+
+TESTS
+-----
+  946 Tests bestanden, 1 uebersprungen, 177 Subtests bestanden.
+  Neu in 9.3: 53 Tests in fuenf Dateien.
+
+  Keine bestehende Zusicherung wurde abgeschwaecht.
+
+
+DATEIEN
+-------
+  neu       tests/test_v930_etoro_zuordnung.py (14)
+  neu       tests/test_v930_kapitalreservierung.py (12)
+  neu       tests/test_v930_underdogs.py (11)
+  neu       tests/test_v930_ausfuehrungsstatus.py (9)
+  neu       tests/test_v930_upgrade_und_takt.py (7)
+  geaendert position_manager.py, broker/etoro.py, broker/base.py, broker/okx.py
+  geaendert etoro_reconciliation.py, live_trader.py, crypto_engine.py
+  geaendert order_ownership.py, approved_universe.py, universe_overview.py
+  geaendert config.py, volltest.py
+  geaendert webui/static/positions.js, logbook.js, dashboard.js, universe.js
+  Version   config.py, VERSION.txt  9.3.0-NEXUS

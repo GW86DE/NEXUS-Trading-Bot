@@ -1,0 +1,170 @@
+NEXUS 10.7.0 -- Kaufsperren von der Wurzel: Reichweite, Ablauf, Belege
+======================================================================
+Stand: 18.09.2026. Basis 10.6.0.
+
+ANLASS
+------
+Neun Sperrfaelle in zehn Tagen. Am 18.09.2026 standen beide Broker gleichzeitig:
+eToro wegen eines 1,5 Sekunden alten CSCO-Trades ohne Gebuehrenbeleg, OKX
+wegen dreier Bestandsluecken zu Positionen, die laengst sauber verkauft
+waren. Jeder fruehere Fix behandelte eine Stelle. Diese Version behandelt
+die drei Ursachen, die nie angefasst wurden -- nach ausdruecklicher
+Entscheidung von Georg ("Ja, baue es so." / "lockere die Regel und trage
+einen erwartungswert ein.").
+
+Vollstaendige Analyse: NEXUS_Analyse_Kaufsperren_2026-09-18.md.
+
+
+TEIL C -- LOT-REST ERKLAERT DEN ABGANG
+--------------------------------------
+BEFUND. XRP/BTC/ETH wurden per Take-Profit verkauft, die Trades waren mit
+exakten Fills geschlossen und bestaetigt. Die Bestandsluecken aus der Nacht
+blieben PENDING: ``trade_close`` rechnete "verkauft + Fliesskommafehler >=
+Abgang", und 18,3284 (Lot) < 18,3284532 (gebucht). Der Rest lag als eigene
+Ledgerzeile vor. Derselbe Fehler traf schon 10.2.1 Rev 2 und 10.3.0 an
+anderen Stellen. Alle drei Aufloesungswege rechneten identisch.
+
+NEU. ``okx_receipt_math.quantity_explained``: Verkauf PLUS weitergefuehrter
+Rest deckt den Abgang. ``okx_accounting.resolve_balance_gap_on`` ist die
+einzige Aufloesung -- der Verkaufspfad, die manuelle Aussenbuchung und der
+zusammengesetzte Beweis rufen sie. ``repair_explained_gaps`` schliesst im
+Bot-Zyklus bestehende Luecken, deren Trade laengst verkauft ist (Summe der
+Mengen der ganzen Einstiegskette deckt den Abgang). Die drei Luecken vom
+18.09. loesen sich nach dem Update von selbst.
+
+
+TEIL D -- AKTIEN-STOP MIT MINDESTABSTAND UND BEZUG AUF DEN KAUFKURS
+--------------------------------------------------------------------
+BEFUND. CSCO: Signalkurs 109,91, ATR-Stop 109,12 (OFFENSIV, Faktor 1,5 =
+0,72 %), Fill 109,15. Der Stop ging unveraendert mit der Order zu eToro und
+lag 3 Cent unter dem Einstieg; eToro schloss nach 1,5 Sekunden, bevor der
+Bot die Position bestaetigt hatte. AMD am selben Tag: 0,87 %, nach 26
+Minuten ausgestoppt. Krypto hat seit 8.1.4 einen Kostenmindestabstand;
+Aktien hatten keinen. Der Stop war auf den Signalkurs des Scans bezogen,
+nicht auf den Kurs, zu dem gekauft wird.
+
+NEU. ``live_trader.aktien_stop_plan``: Mindestabstand
+``ETORO_MIN_STOP_DISTANCE_PCT`` (1,0 %) VOR der Mengenberechnung, damit die
+Menge aus dem echten Risiko entsteht; unmittelbar vor der Order werden Stop
+und Ziel auf den frischen Briefkurs bezogen (gleiche Abstaende). Kosten,
+Edge, Risiko und Beleg rechnen mit dem Kaufkurs; der Signalkurs bleibt im
+Journal. Liegt der Fill trotzdem zu nah am Stop, wird das sofort gemeldet
+(STOP ZU NAH). PULSAR-Plaene bleiben unveraendert.
+
+
+TEIL E -- DER GEBUEHRENBELEG ENTSTEHT, STATT ZU FEHLEN
+------------------------------------------------------
+BEFUND. eToro liefert die Einstiegsgebuehr in der Orderantwort
+(``totalCosts``, ``openingData.fees``), die Abschlussgebuehr aber nirgends:
+Die Historie meldet fees=0, ein Stop/Take-Profit durch eToro erzeugt keine
+Antwort an den Bot. 27 von 32 eToro-Trades hatten keinen Kostenbeleg. Der
+Cash-Delta-Automat aus 10.3.1 konnte nur "genau ein Verkauf zwischen zwei
+Belegen, sonst nichts" -- bei CSCO lagen Kauf und Verkauf im selben
+Intervall, AMD war gleichzeitig offen.
+
+NEU, drei Stufen (``etoro_settlement_review``):
+  1. Einfacher Weg wie bisher (unveraendert, hat Vorrang).
+  2. Intervallrechnung: Das Cash-Delta zwischen zwei sauberen Belegen ist
+     die Summe aller bekannten Ereignisse (Kaeufe mit belegter Einstiegs-
+     gebuehr, Verkaeufe mit bestaetigter Gebuehr) plus die gesuchte
+     Abschlussgebuehr. Jede Bestandsaenderung laut Beleg muss durch ein
+     Ledger-Ereignis erklaert sein; ein zweiter Verkauf ohne bestaetigte
+     Gebuehr, schwebende Orders oder eine unplausible Differenz brechen ab.
+     Quelle BROKER_CASH_DELTA_INTERVAL_AUTOMATIC, Qualitaet
+     CASH_DELTA_CONFIRMED.
+  3. Erwartungswert (Freigabe Georg): nach 15 Minuten ohne Beleg wird die
+     Abschlussgebuehr als Median der bestaetigten Abrechnungen desselben
+     Kontos eingetragen (mindestens drei). Qualitaet EXPECTED_UNVERIFIED --
+     beziffert, gekennzeichnet, kein Beleg. Der naechste Barbestandsbeleg
+     oder eine Nutzerbestaetigung ersetzt ihn; die Abweichung wird
+     protokolliert. Bei diesem Konto: 12 von 12 belegte Seiten = 1,00 USD.
+
+Risikozustand (``resolve_unknown_result_at``) nimmt beide neuen Belegarten
+an. Diagnose zaehlt Erwartungswerte getrennt (``expected_fee_rows``) und
+meldet sie als INFO ``ETORO_EXPECTED_FEE_MODEL``, nicht als Warnung.
+
+
+TEIL B -- SPERREN FOLGEN IHREM SCHUTZZWECK
+------------------------------------------
+ENTSCHEIDUNG GEORG. Ein unbekanntes Verkaufsergebnis sperrt neue Kaeufe nur
+am Handelstag des Verkaufs. Bis 10.6.0 sperrte es "across days and
+restarts": ein Gebuehrenloch vom 08.09. hielt am 18.09. den Handel an.
+  * ``risk_manager.offene_ergebnisse_heute`` -- beide Broker zaehlen gleich.
+  * ``etoro_risk_period.result_scope_summary``: ``active_unknown`` (sperrend)
+    nur heutige Belege; ``open_unknown`` und ``lifetime_unknown`` fuehren
+    die Buchhaltung weiter.
+  * ``RiskPot.darf_kaufen``: ``lifetime_unknown_pnl_trades`` sperrt nicht mehr.
+
+Ein ungeklaerter Bestand sperrt nur den betroffenen Coin.
+  * ``okx_accounting.GAP_SCOPE``: BROKER_STATE_UNKNOWN, BALANCE_REDUCTION,
+    RESIDUAL_PROOF_MISSING, LEDGER_ANCHOR_MISSING, FX_EVIDENCE_INVALID ->
+    SYMBOL/BELEG; RESULT -> DOMAIN/TAGESRESET; ACCOUNT_UNKNOWN -> DOMAIN/BELEG.
+  * ``status_on_connection`` liefert ``complete`` (Domaene), ``blocked_symbols``,
+    ``expired``; ``require_tradable`` prueft beides je Coin.
+  * Schnappschuss-Waechter: fehlender Bestand sperrt den Coin, nicht die
+    Domaene, und wird NICHT mehr sofort gebucht -- das war ein zweiter Pfad
+    ohne die Bestaetigungsfrist aus 10.6.0 und der eigentliche Ausloeser
+    der drei Luecken vom 18.09. um 02:34 UTC. Gebucht wird im
+    Positionsabgleich nach zwei bestaetigten Messungen.
+  * Kandidatenpfad und Order-Reservierung lehnen genau den gesperrten Coin ab.
+
+
+TEIL A -- EINE SPERRLISTE MIT VIER ANGABEN
+------------------------------------------
+``handelsfreigabe.py`` liest alle Quellen (Risikotopf, Buchhaltung,
+Waechter, Buchungsabgleich) und liefert je Sperre: Grund, Reichweite
+(SYMBOL/DOMAIN), Ablauf (TAGESRESET/BELEG/ZEIT/REPARATUR), Aufloesung.
+Die Liste steht in beiden Runtime-Status (``sperren``), auf der Uebersicht
+je Broker ("Kaufsperren") und im Diagnosebericht. Die Entscheidung faellt
+weiterhin in den Kaufpfaden -- aus denselben zentralen Regeln.
+
+
+ANGEPASSTE ZUSICHERUNGEN (Tests)
+--------------------------------
+27 bestehende Tests schrieben "jede Luecke sperrt die Domaene" oder "UNKNOWN
+sperrt ueber Mitternacht" fest. Sie pruefen jetzt die neue Regel: Coin
+gesperrt, Domaene frei; Sperre endet mit dem Handelstag, Beleg bleibt.
+Die Umstellungen stehen kommentiert in den Tests (test_v988_accounting,
+test_v988_staging_and_guard, test_v1013, test_v1017, test_v1020, test_v954,
+test_v814, test_v1060, test_v1070).
+
+REVISION 2 (18.09.2026): Revision 1 scheiterte auf dem Pi an genau einem
+dieser Tests (test_v988_staging_and_guard, Handle-Hygiene von
+okx_accounting.status mit der alten Regel als Nebenbedingung). Das Modul
+laeuft auf Windows nicht (fcntl/pwd/grp) und war im Modulvergleich unsichtbar.
+Nur der Test wurde angepasst; das Bauskript vergleicht jetzt JE TEST gegen das
+zuletzt ausgelieferte Paket, mit POSIX-Shims, damit lokal dieselben Tests
+laufen wie auf dem Pi.
+
+
+NEBENBEFUNDE, MITGEFIXT
+-----------------------
+* Der Schnappschuss-Waechter buchte einen fehlenden Bestand sofort (siehe
+  Teil B) -- die Frist aus 10.6.0 griff nur im Positionsabgleich.
+* Die Intervallrechnung deckte beim Bau einen eigenen Mangel auf: Eine
+  Position, die laut Beleg verschwindet, aber keine Ledgerzeile hat, muss
+  die Rechnung abbrechen. Zwei bestehende Tests aus 10.3.1 haben das
+  gefunden; die Pruefung ist eingebaut.
+
+
+DATEIEN
+-------
+Neu:      handelsfreigabe.py, tests/test_v1070_lot_rest.py,
+          tests/test_v1070_aktien_stop.py, tests/test_v1070_gebuehrenbeleg.py,
+          tests/test_v1070_handelsfreigabe.py
+Geaendert: okx_receipt_math.py, okx_accounting.py, trade_ledger.py,
+          okx_external_settlement.py, okx_snapshot_guard.py, crypto_engine.py,
+          execution_lifecycle.py, live_trader.py, config.py, risk_manager.py,
+          risk_pots.py, etoro_risk_period.py, etoro_settlement_review.py,
+          etoro_accounting_resolution.py, ledger_result.py,
+          risk_result_recovery.py, NEXUS_10_Diagnose.py,
+          webui/static/dashboard.js, webui/static/trades.js, volltest.py
+
+
+INVARIANTEN UNVERAENDERT
+------------------------
+UNKNOWN bleibt UNKNOWN (Erwartungswert ist gekennzeichnet, nie bestaetigt).
+Kein Verkauf auf Fremdbestand. Kontowechsel, nicht persistierbarer
+Risikozustand und unlesbares Ledger sperren weiter die ganze Domaene. Kein
+TLS-Bypass. PULSAR, X und GPT haben keine Orderbefugnis. CSP script-src
+'self', kein CDN. Keine Klarnamen in Diagnose-Exporten.

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=TradingBot Status
+Comment=Zeigt Dienststatus, Journal und Runtime-Status
+Exec=__BOTDIR__/Pi_Service_Status.sh
+Path=__BOTDIR__
+Icon=utilities-system-monitor
+Terminal=true
+Categories=Utility;Finance;

@@ -1,0 +1,65 @@
+NEXUS 10.1.10 - BROKER-STABILITY-AND-DYNAMIC-INTELLIGENCE
+Stand: 16.09.2026 | Basis: 10.1.9-NEXUS | Diagnose: 1.8.1
+
+KORREKTUREN AUS DER 10.1.9-LAUFZEITABNAHME
+1) Risikokapital: Eigene OKX-Positionen werden zum letzten beobachteten
+   Marktkurs bewertet (crypto_engine._eigene_positionen). Bisher galt der
+   monoton steigende Hoechstkurs; Kapital, Equity-Bremse und Positions-
+   groesse sahen fallende Kurse nicht. Ohne frischen Kurs gilt der belegte
+   Einstiegspreis, nie der Hoechststand.
+2) Equity-Tagesbremse FX-robust: Bei genau EINER finanzierten Cash-/
+   Positionswaehrung (z. B. reines USDC-Konto) fuehrt der Risikozustand
+   zusaetzlich eine native Equity-Reihe (day_start_native_equity,
+   native_drawdown_pct, fx_drawdown_pct). Die Bremse bewertet dann den
+   nativen Handels-Drawdown; reine USDC/EUR-Kursbewegung loest keinen Halt
+   mehr aus, ein echter Handelsverlust dagegen auch dann, wenn FX ihn in
+   EUR maskiert. Grenzwerte unveraendert (MAX_UNREALIZED_DAILY_LOSS_PCT).
+3) Diagnose-Sicherung: WAL-Datenbanken werden in EINEM Backup-Schritt
+   gesichert (kein Neustart der Schrittsicherung durch laufende Bot-
+   Schreibzugriffe mehr); SNAPSHOT_SECONDS 15 -> 60. Behebt die am
+   16.09.2026 beobachteten Exportfehler und OperationalError waehrend der
+   Diagnose-Sammlung.
+4) Entscheidungs-Retention (decision_analytics.prune_history, taeglich via
+   AutoMaintenance): loescht Kandidatenentscheidungen ohne Order-/Event-
+   beleg aelter DECISION_RETENTION_DAYS (90) und Heartbeat-Telemetrie
+   aelter DECISION_HEARTBEAT_RETENTION_DAYS (30). Orders, Fills, Trades,
+   Belege, Ergebnisse: unangetastet (DB erzwingt das per Fremdschluessel).
+5) Ergebnisabgleich sichtbar: Ein NEU registriertes unbekanntes Verkaufs-
+   ergebnis sendet einmalig die Benachrichtigung "ERGEBNISABGLEICH
+   ERFORDERLICH" mit Klaerungsweg (WebUI -> Handel -> Abschlussabrechnung).
+   Die konservative Kaufsperre selbst ist unveraendert.
+
+NEUE FUNKTIONEN
+6) OKX-Waehrungsfreigabe: USD und USDG koennen in den Einstellungen als
+   zusaetzliche Abrechnungswaehrungen freigegeben werden - ausschliesslich
+   manuell mit exakter Bestaetigung "WAEHRUNGEN FREIGEBEN" (OKX-USD-
+   Instrumentumstellung, Parallelphase ab 23.09.2026). Standard bleibt
+   EUR+USDC. Entry-Routing und Kostenvergleich arbeiten jetzt generisch
+   ueber alle freigegebenen Lanes; EUR bleibt bevorzugt, Alternativen nur
+   bei belegtem Kostenvorteil (OKX_USDC_MIN_COST_ADVANTAGE_BPS).
+7) Backtest-WebUI: Neue Seite "Backtest" startet den read-only
+   NEXUS_Universum_Backtest_V6 als abgekoppelten Hintergrundlauf
+   (webui/backtest_jobs.py, Muster der Diagnose: Lock, Log-Streaming,
+   SHA256-gesicherter ZIP-Download, HTML-Bericht, Live-Protokoll).
+8) Dynamische X-Quellen-Registry (market_intelligence/account_registry):
+   Konten, die in bezahlten Stichproben wiederholt relevante Themen mit
+   Primaerquellen-Links veroeffentlichen (>=3 relevante Posts an >=2
+   Tagen), werden automatisch PROPOSED - budgetneutral, nur numerische
+   Konto-IDs, keine Profilabrufe. ACTIVE nur durch Nutzeraktivierung mit
+   Identitaetsvermerk (max. 5, from:<id> im Finanz-Slot); TTL 14/30 Tage,
+   QUARANTAENE/ENTFERNT nur manuell, Tombstones nie erneut vorgeschlagen.
+9) Quellen-Fixes: GDELT eigener Timeout NEWS_SOURCE_GDELT_TIMEOUT_SECONDS
+   =30 (Quelle antwortete real mit HTTP 200 nach ~13,5 s; der globale
+   10-s-Timeout erklaerte sie faelschlich fuer tot). Tradestie ruft die
+   Hauptdomain tradestie.com mit gueltigem Zertifikat ab (api-Subdomain-
+   Zertifikat abgelaufen; TLS-Pruefung unveraendert aktiv).
+10) Oberflaeche: Desktop-Navigation buendelt Universum/Underdogs/
+    Quellen&X/Logbuch in einem "Mehr"-Aufklappmenue; Mobilmenue behaelt
+    alle Seiten. OKX-Guthaben-Logzeile nur noch bei Aenderung (vorher
+    ~90 % des Logs); Kernwert-Sperrwarnung nur beim Zustandswechsel.
+    Risikoanzeige fuellt crypto_exposure aus dem Kapitalbeleg.
+
+UNVERAENDERT
+Freqtrade-Regeln, Order-State-Machine (UNKNOWN bleibt UNKNOWN), Schutz-/
+Spread-/Liquiditaets-/Risikogrenzen, PULSAR/GPT/X ohne Orderbefugnis,
+keine Paritaetsannahmen, kein TLS-Bypass, keine Gebuehren-Erfindung.

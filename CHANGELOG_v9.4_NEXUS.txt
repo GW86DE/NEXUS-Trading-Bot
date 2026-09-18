@@ -1,0 +1,206 @@
+================================================================================
+ TradingBot NEXUS 9.4.0 -- Aenderungsprotokoll
+ Schwerpunkt: belastbare eToro-Zuordnung und koordinierte Kaufentscheidungen
+================================================================================
+
+ANLASS
+------
+In NEXUS 9.3/9.3.1 konnten frisch durch den Bot gekaufte eToro-Positionen
+anschliessend als Fremdbestand beziehungsweise "NUR BEOBACHTET" erscheinen.
+Eine manuelle "Bot uebernehmen"-Aktion konnte danach mit "keine offene
+Position" abgelehnt werden. Betroffen waren unter anderem MSFT und SPGI.
+
+Die bisherige Reparatur war nicht ausreichend: beobachtete IDs und bewiesene
+Eigentums-IDs wurden im selben Feld gespeichert. Dadurch konnte eine ID, die
+NEXUS nur aus dem Depot gelesen hatte, spaeter indirekt zur Bestaetigung des
+eigenen Besitzes beitragen. Ausserdem wurden mehrere eToro-Positionen desselben
+Instruments im Adapter zu einer Symbolzeile zusammengefasst.
+
+
+1. POSITION-ID-DIAGNOSE UND NORMALISIERUNG
+------------------------------------------
+Der eToro-Adapter erkennt die in Antworten vorkommenden Schreibweisen
+``positionId``, ``positionID``, ``PositionId`` und ``PositionID``. Dieselbe
+Normalisierung gilt fuer Order-, Instrument-, Referenz- und Ausfuehrungsdaten.
+
+Beim ersten Portfolioabruf protokolliert NEXUS einmalig:
+
+  - welche ID-Feldnamen in der Antwort vorkamen,
+  - welche Felder als positionId erkannt wurden,
+  - die Snapshot-ID und die Anzahl offener Zeilen.
+
+Es werden dabei weder Token noch komplette Brokerantworten geloggt.
+
+Enthaelt eine offene Depotzeile keine normalisierbare positionId, bricht der
+Abgleich fail-closed ab. Die Position wird nicht geraten, nicht automatisch
+uebernommen und nicht verkauft.
+
+
+2. KEINE ZIRKULAERE SELBSTBESTAETIGUNG
+--------------------------------------
+Eine aus dem Depot beobachtete positionId ist kein Eigentumsbeweis.
+
+PositionRecord trennt deshalb jetzt strikt:
+
+    observed_position_ids = IDs aus dem aktuellen Depot-Snapshot
+    owned_position_ids    = IDs aus der verifizierten Kaufkette
+
+Nur folgende Kette darf ``BOT / AUTO / VERIFIED`` erzeugen:
+
+    decision_id
+      -> vor dem POST persistierte referenceId
+      -> eToro orders:lookup liefert orderId
+      -> positionExecutions liefert positionId
+      -> frischer Depot-Snapshot enthaelt exakt dieselbe positionId
+
+Symbol, Menge, Einstand, Stop/TP, Verwaltungsmodus und eine im Depot gelesene
+ID duerfen diese Kette nie ersetzen. Ein Symboltreffer erzeugt hoechstens
+``PENDING_CONFIRMATION`` und niemals automatische Verkaufsrechte.
+
+Ein bereits als fremd angelegter Datensatz wird bei jedem Depotabgleich neu
+gegen verifizierte Kaufketten geprueft. Damit kann ein zu frueher Snapshot die
+Fehlzuordnung nicht dauerhaft einfrieren.
+
+
+3. EIN DATENSATZ PRO eTORO-positionId
+-------------------------------------
+``broker/etoro.py::positionen()`` gruppiert nicht mehr nach Symbol oder
+instrumentId. Jede offene positionId wird als eigene Brokerposition geliefert
+und in ``position_manager.py`` unter einem eigenen stabilen Schluessel
+gespeichert:
+
+    eToro-Konto-Fingerabdruck + Umgebung + positionId
+
+Zwei getrennte Kaeufe desselben Symbols bleiben damit zwei getrennte
+Positionen mit eigener Menge, eigenem Einstand, eigenem Schutz und eigener
+Eigentumskette. Eine Zusammenfassung darf ausschliesslich in der Anzeige
+erfolgen; Handelsaktionen arbeiten immer mit dem exakten Datensatz.
+
+Der Konto-Fingerabdruck wird aus Broker, Demo/Live und dem konfigurierten
+eToro-Benutzerkontext abgeleitet. Es werden keine Zugangsdaten gespeichert.
+Beweise aus einem anderen Konto oder aus DEMO duerfen keine LIVE-Position
+bestaetigen.
+
+
+4. SICHERE MIGRATION ALTER POSITIONSDATEN
+-----------------------------------------
+Beim Lesen alter Positionsdateien werden bisherige ``broker_position_ids``
+nur als beobachtete IDs migriert. Ein alter BOT/VERIFIED-Status wird nicht als
+neuer Eigentumsbeweis verwendet. Bis zur erneuten Bestaetigung durch die
+Kaufkette bleibt der Datensatz ``PENDING_CONFIRMATION`` beziehungsweise wird
+nur beobachtet.
+
+Eine ausdruecklich vom Benutzer uebernommene Position bleibt als
+``USER_AUTHORIZED`` erhalten. Eine ausdrueckliche Entscheidung "Nur
+beobachten" wird ebenfalls nicht automatisch ueberschrieben.
+
+
+5. "BOT UEBERNEHMEN" MIT ROLLBACK
+---------------------------------
+Die Uebernahme arbeitet nicht mehr nur mit Symbol oder einer neu aufgeloesten
+instrumentId. Der WebUI-Auftrag enthaelt den exakten Datensatzschluessel, die
+beobachtete positionId, die Broker-instrumentId, Snapshot-ID und den
+Kontofingerabdruck.
+
+Vor der Schutzpruefung speichert NEXUS Quelle, Modus, Stop, Ziel und Notiz.
+Erst wenn eToro auf der exakten positionId den gewuenschten Stop UND das
+gewuenschte Ziel bestaetigt, wird atomar auf ``USER_MANAGED / AUTO /
+USER_AUTHORIZED`` umgestellt. Bei Ablehnung, Timeout oder abweichenden Werten
+wird der vorherige Zustand vollstaendig wiederhergestellt.
+
+Die Schutzaktualisierung verwendet den offiziellen positionsbezogenen
+PATCH-Endpunkt. Eine HTTP-202-Antwort ist nur Annahme, nicht Erfolg; NEXUS
+pollt anschliessend frische Depot-Snapshots und sendet dabei keinen zweiten
+PATCH.
+
+
+6. VERKAUF NUR UEBER BEWIESENE IDS
+----------------------------------
+Ein automatischer eToro-Verkauf ist nur moeglich, wenn ``owned_position_ids``
+vorhanden, konto- und umgebungsgebunden sowie im frischen Depot-Snapshot offen
+sind. Die Verkaufssumme darf die Menge dieser exakten IDs nicht ueberschreiten.
+
+Es gibt keinen Symbol-Fallback fuer Verkauf oder Fill-Zuordnung. Eine SELL-
+Ausfuehrung schliesst ausschliesslich den Datensatz mit derselben positionId.
+Ein zweiter Datensatz desselben Symbols bleibt unangetastet.
+
+
+7. KOORDINATION MEHRERER KAUFENTSCHEIDUNGEN
+-------------------------------------------
+Pruefung des Mehrfachsignal-Falls ergab zwei notwendige Sperren:
+
+  a) ``assert_domain_available`` und das Anlegen der Kaufabsicht waren zuvor
+     zwei getrennte Operationen. Zwei Threads konnten beide die freie Domain
+     sehen. Neu reserviert ``reserve_and_start_intent()`` die eToro-Domain und
+     schreibt ``SUBMITTING`` in derselben Lock-geschuetzten Transaktion.
+
+  b) In einem Scannerzyklus wird hoechstens ein eToro-Kauf abgesendet. Weitere
+     freigegebene Signale werden mit ``etoro_buy_coordination`` auf den
+     naechsten Zyklus verschoben. Dann werden Cash, Sektor, Korrelation,
+     Positionslimit und offene Kaufabsichten mit frischem Brokerstand neu
+     bewertet.
+
+Die Sperre wird nie ueber einen Netzaufruf gehalten. Ein unklarer Ausgang
+bleibt reserviert und verhindert einen zweiten Kauf, bis die konkrete Order
+geklaert ist.
+
+
+8. WEBUI UND NEXUS-LOGO
+-----------------------
+Das bereitgestellte NEXUS-Roboterlogo wurde fuer die dunkelblaue WebUI neu
+abgestimmt: Marine-/Stahlblau mit Cyan-/Tuerkisakzenten, transparenter
+Hintergrund und dezenter blauer Schatten. Es steht auf jeder WebUI-Seite
+kompakt neben TradingBot und der Versionsnummer und skaliert auf Mobilgeraeten.
+
+Positionsaktionen tragen jetzt die exakte Datensatz- und Brokeridentitaet.
+Mehrere Positionen desselben Symbols kollidieren weder im DOM noch in der
+Auftragswarteschlange.
+
+
+9. TESTS UND ABNAHMEGRENZE
+--------------------------
+  - 966 Pytest-Tests bestanden
+  - 191 Subtests bestanden
+  - SELF TEST OK
+  - COMPILEALL OK
+  - Raspberry-Pi-Preflight host-neutral OK
+  - Shell-Syntax OK
+  - STATIC RELEASE HYGIENE OK
+  - VOLLTEST OK
+
+Neue Regressionstests pruefen insbesondere:
+
+  - alle bekannten positionId-Schreibweisen,
+  - fail-closed bei fehlender positionId,
+  - zwei Positionen desselben Symbols,
+  - keine Selbstbestaetigung nach wiederholtem Sync,
+  - nachtraegliche Reparatur nur durch eine verifizierte ID-Kette,
+  - vollstaendigen Uebernahme-Rollback,
+  - exakte Schutzaktualisierung und Schutzbestaetigung,
+  - exakten Verkauf und exakte SELL-Fill-Zuordnung,
+  - zwei parallele Kaufentscheidungen: genau eine Reservierung gewinnt,
+  - Versions- und Logoauslieferung.
+
+Offline nicht pruefbar sind echte eToro-/Telegram-/KI-Netzwerkaufrufe und die
+ARM64-Hardware des Zielsystems. Deshalb muss die Abnahme zuerst im eToro-DEMO-
+Konto erfolgen, bevor LIVE wieder aktiviert wird.
+
+
+WICHTIGSTE GEAENDERTE DATEIEN
+-----------------------------
+  broker/base.py
+  broker/etoro.py
+  etoro_reconciliation.py
+  order_execution.py
+  position_manager.py
+  positions_auftraege.py
+  live_trader.py
+  webui/app.py
+  webui/static/positions.js
+  webui/static/app.css
+  webui/static/nexus-logo.png
+  webui/templates/*.html
+  tests/test_v940_etoro_identity.py
+  config.py
+  VERSION.txt
+

@@ -1,0 +1,38 @@
+NEXUS 9.8.6 – PULSAR mit gezielter GPT-Websuche
+
+Die Installationsdatei enthält das vollständige geprüfte ZIP:
+  bash ~/Downloads/NEXUS_9.8.6_Installieren.sh
+
+Als Benutzer georg starten. Das Update übernimmt vorhandene Einstellungen und
+Laufzeitdaten über das vorhandene Updateverfahren. Ziel:
+  ~/Georg/TradingBot_v9.8.6_NEXUS
+Das ZIP nicht über eine laufende Installation entpacken.
+
+Nur Paket und Prüfsummen prüfen, ohne Dienstaktion:
+  bash ~/Downloads/NEXUS_9.8.6_Installieren.sh --paket-pruefen
+
+Nach erfolgreicher Installation WebUI neu laden: Kopfzeile 9.8.6.
+PULSAR, Universum und Underdogs stehen im Hauptmenü und im mobilen Auswahlmenü.
+PULSAR auf Beobachten stellen; GPT-Websuche ist dafür gesondert einschaltbar.
+Vorhandenen GPT-Router/FMP-Zugang und SEC-Kontakt-E-Mail prüfen.
+
+NEU
+- ApeWisdom: bis zu drei Seiten plus stocks/investing; keine doppelten Summen.
+- GPT sucht mit Quellenbelegen für vorausgewählte Kandidaten im Web.
+- SEC-Submissions und Originalmeldungen werden als Ereignisquellen gelesen.
+- Meldungsdatum, Unternehmenszuordnung und Originalzitat werden geprüft.
+- Community bestätigt wird optional; wirtschaftlicher Originalbeleg bleibt Pflicht.
+- Kosten, Quellenabdeckung, Lücken und GPT-Suchstatus stehen auf der PULSAR-Seite.
+
+WICHTIGER FUNKTIONSSTAND
+Der 14-Tage-Historienaufbau, vollständige Finanz-/Marktdaten, Gegenprüfung,
+Core-Risiko-/Schutzprüfung und zwei persönliche Telegram-Bestätigungen bleiben
+erforderlich. Eine Beobachtung oder ein Suchtreffer löst keinen Kauf aus.
+
+Die bisherigen Korrekturen für Zuordnung, Ergebnisdarstellung und Navigation
+sind übernommen. Bereits fehlende Broker-/Gebührenbelege werden durch dieses
+Update nicht erfunden. Offline-Prüfungen ersetzen keine Bestätigung einer
+realen DOGE-Schutzorder auf deinem Demo-Konto.
+
+Details und Quellen: PULSAR_9.8.6_DE.md
+Änderungen: CHANGELOG_v9.8.6_NEXUS.txt

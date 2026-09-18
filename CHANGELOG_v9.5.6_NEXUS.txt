@@ -1,0 +1,140 @@
+TradingBot NEXUS -- Version 9.5.6
+=================================
+
+Zwei Punkte: eine Endlosschleife, die seit Stunden lief, und die
+Hervorhebung der Werte im Logbuch.
+
+
+1. DIE LINK-SCHLEIFE  (der eigentliche Grund fuer diese Version)
+----------------------------------------------------------------
+Befund aus deinem Systemprotokoll vom 03.09.2026, im Minutentakt:
+
+  09:55:03 WARNING broker.okx: OKX-Schutzorder LINK-USDC abgelehnt:
+    OKX lehnt die Order ab (51008): Your available LINK balance is
+    insufficient, and your available margin (in USD) is too low for borrowing.
+  09:56:10  dieselbe Zeile
+  09:57:16  dieselbe Zeile
+  09:58:22  dieselbe Zeile
+  09:59:30  dieselbe Zeile
+
+URSACHE
+
+``reconcile_position_protection`` sucht die vorhandene Schutzorder
+AUSSCHLIESSLICH ueber die eigene algoId beziehungsweise algoClOrdId:
+
+    algos = [row for row in all_algos
+             if (protection_algo_id and row["algoId"] == protection_algo_id)
+             or (protection_client_id and row["algoClOrdId"] == protection_client_id)]
+
+Fuer LINK ist die algoId leer -- genau der Befund aus 9.5.4, bei dem BNB,
+LINK und XLM mit leerer algoId und Status PENDING dastanden. Der Filter
+findet also nichts, die Position gilt als ungeschuetzt, und weiter unten
+sendet NEXUS eine ZWEITE Schutzorder.
+
+OKX lehnt die ab -- weil die bereits liegende Order das LINK-Guthaben
+festhaelt. Nach 60 Sekunden dasselbe von vorn.
+
+NEXUS blockierte sich mit seiner eigenen Schutzorder und sah sie nicht. Der
+Zustand konnte sich nie von selbst aufloesen.
+
+AENDERUNG
+
+Findet der Kennungsfilter nichts, wird jetzt geprueft, ob auf demselben
+Instrument GENAU EINE Schutzorder liegt, deren Menge und deren SL/TP zur
+Position passen. Dann wird ihre algoId uebernommen, statt eine zweite Order
+zu senden.
+
+Das schwaecht keinen Eigentumsbeweis:
+
+  * Die Order liegt im Konto des Bots.
+  * Sie steht auf dem richtigen Instrument.
+  * Menge und SL/TP stimmen auf Lot beziehungsweise Tick genau.
+  * Eine zweite laesst sich ohnehin nicht platzieren.
+
+Was ausdruecklich NICHT uebernommen wird: eine Order mit abweichender Menge,
+eine mit abweichendem Stop oder Take-Profit, und der mehrdeutige Fall mit
+zwei passenden Orders. Dort bleibt es beim bisherigen Verhalten.
+
+Beim Bauen hat mein eigener Test einen Fehler in meinem Patch gefunden:
+``abgedeckt`` wird weiter oben aus der noch leeren Liste gebildet. Ohne
+Neuberechnung waere die Uebernahme wirkungslos geblieben und der Code in
+denselben zweiten POST gelaufen.
+
+
+2. WERTE IM LOGBUCH HERVORGEHOBEN
+---------------------------------
+Coin- und Aktiennamen stehen jetzt fett und in Hellblau -- in der
+Entscheidungstabelle und im Systemprotokoll.
+
+Die Liste kommt vom SERVER, nicht aus einem Muster. Ein Muster fuer
+Grossbuchstaben waere naheliegend und falsch: dann leuchteten INFO, WARNING,
+OKX, USDC, CASH, ACCOUNT_ASSET, BOT_MANAGED und HANDEL mit. Hervorgehoben
+wird nur, was wirklich ein gefuehrtes Instrument ist.
+
+Quellen (alle defensiv; faellt eine aus, fehlen nur ein paar
+Hervorhebungen): Universum beider Broker, feste Kernlisten, offene
+Kryptopositionen und das Handelsbuch. Letzteres ist wichtig, damit auch
+bereits geschlossene Werte wie ZAMA oder BNB in alten Zeilen hervorgehoben
+bleiben. Serverseitig 60 Sekunden zwischengespeichert.
+
+  webui/state.py         bekannte_symbole()
+  trade_ledger.py        gehandelte_symbole()   -- nur lesend, mit Obergrenze
+  webui/app.py           /api/logs/system liefert die Liste mit
+  webui/static/logbook.js  Hervorhebung
+  webui/static/app.css   .sym
+
+Zur Darstellung: bewusst OHNE Hintergrund und ohne Innenabstand. Im
+Monospace-Systemprotokoll wuerde beides die Spaltenausrichtung zerreissen.
+Der Text wird escaped, BEVOR hervorgehoben wird; das Muster ist
+grossschreibungsempfindlich und trifft deshalb nie in &amp; oder &quot;
+hinein.
+
+
+3. EINHEITENFEHLER IN DER RESTMENGENMELDUNG
+-------------------------------------------
+Beim Erklaeren des ZAMA-Verkaufs aufgefallen. Im Logbuch stand:
+
+  Krypto ZAMA: Restmenge 0.01685 USDC liegt unter der Mindestgroesse
+
+Das liest sich wie knapp zwei Cent. Tatsaechlich waren es 0,01685 ZAMA,
+also 0,0009 USDC -- weniger als ein Zehntel Cent. Die Menge (Basiswaehrung)
+war mit der Quotewaehrung beschriftet. Jetzt:
+
+  Krypto ZAMA: Restmenge 0.01685 ZAMA (rund 0.0009 USDC) liegt unter der
+  Mindestgroesse und wird nicht mehr gefuehrt.
+
+
+ZUM ZAMA-VERKAUF SELBST
+-----------------------
+Er war korrekt. Regulaerer Freqtrade-ROI-Ausstieg nach 4,55 Stunden auf der
+1-Prozent-Stufe:
+
+  Einstieg                   0,05377 USDC
+  Kurs bei der Entscheidung  0,05478 USDC   (+1,8784 % brutto)
+  Gebuehren ein + aus        0,3512 % + 0,3500 % = 0,7012 %
+  Netto                      +1,1665 %  -> ueber 1 % -> Verkauf
+
+Ausgefuehrt wurden 1874,3 von 1874,31685 ZAMA zu 0,05451782 USDC. Zwischen
+Entscheidung und Ausfuehrung fiel der Kurs um 0,48 % -- deshalb +0,69 USDC
+(+0,68 %) statt der gerechneten 1,17 %. Der Rest von 0,01685 ZAMA liegt
+unter der Mindestmenge und verfaellt; die Position wurde korrekt geschlossen
+statt mit Staub offen zu bleiben.
+
+
+TESTS
+-----
+1170 Tests, 1 uebersprungen, 186 Subtests -- gruen, aus dem entpackten ZIP
+verifiziert.
+
+  tests/test_v956_schutzorder_uebernahme.py   5
+  tests/test_v956_logbuch_symbole.py          6  (fuehrt die echten
+                                                  JS-Funktionen in node aus)
+
+
+UNVERAENDERT
+------------
+Verbindungseinstellungen, Einstellungsuebernahme, Universums- und
+Logbuchaufbau (nur die Hervorhebung kam dazu), WebUI-Kacheln,
+Freqtrade-Modus als Zusatzfunktion, GPT/Terra-Grenzen. Die Order wird
+weiterhin ausschliesslich durch die festen Regeln, Live-Freigabe und
+Broker-Schutz ausgeloest.

@@ -1,0 +1,1003 @@
+{
+  "zeit": "2026-09-02T07:12:06.112946+00:00",
+  "zyklen": 8651,
+  "verbunden": true,
+  "modus": "DEMO",
+  "handelsbereitschaft": {
+    "domaene": "okx",
+    "trading_ready": true,
+    "kaeufe_erlaubt": true,
+    "grund": "handelsbereit",
+    "restwartezeit_sekunden": 0.0,
+    "freigabe_um": "jetzt",
+    "offen": [],
+    "bedingungen": [
+      {
+        "name": "broker_verbunden",
+        "beschreibung": "Broker authentifiziert und erreichbar",
+        "erfuellt": true,
+        "detail": "",
+        "seit": "2026-09-02T06:20:33.926291+00:00"
+      },
+      {
+        "name": "systemzeit",
+        "beschreibung": "Systemzeit plausibel",
+        "erfuellt": true,
+        "detail": "",
+        "seit": "2026-09-01T17:45:12.308083+00:00"
+      },
+      {
+        "name": "instrumente",
+        "beschreibung": "Instrumentkatalog geladen, Identitaet eindeutig",
+        "erfuellt": true,
+        "detail": "53 Instrumente",
+        "seit": "2026-09-01T17:45:12.308106+00:00"
+      },
+      {
+        "name": "handelsregeln",
+        "beschreibung": "Tick, Lot und Mindestgroesse bekannt",
+        "erfuellt": true,
+        "detail": "",
+        "seit": "2026-09-01T17:45:12.308115+00:00"
+      },
+      {
+        "name": "guthaben",
+        "beschreibung": "Kontostand und freies Guthaben abrufbar",
+        "erfuellt": true,
+        "detail": "handelbar 3575.52",
+        "seit": "2026-09-01T17:45:12.308075+00:00"
+      },
+      {
+        "name": "gebuehren",
+        "beschreibung": "Gebuehrensatz bekannt",
+        "erfuellt": true,
+        "detail": "0.3500 %",
+        "seit": "2026-09-01T17:45:12.372971+00:00"
+      },
+      {
+        "name": "reconciliation",
+        "beschreibung": "Positionen einmal mit dem Konto abgeglichen",
+        "erfuellt": true,
+        "detail": "3 Positionen geprueft",
+        "seit": "2026-09-01T17:45:17.159860+00:00"
+      },
+      {
+        "name": "universum",
+        "beschreibung": "Universumslauf einmal durchgelaufen",
+        "erfuellt": true,
+        "detail": "26 im Pool",
+        "seit": "2026-09-01T17:45:23.449449+00:00"
+      },
+      {
+        "name": "kursdaten",
+        "beschreibung": "Kursdaten aktuell",
+        "erfuellt": true,
+        "detail": "letzter Ticker vor 1 s",
+        "seit": "2026-09-01T17:45:12.595450+00:00"
+      },
+      {
+        "name": "signalkerze",
+        "beschreibung": "Mindestens eine vollstaendige Signalkerze seit dem Start",
+        "erfuellt": true,
+        "detail": "Kerzengroesse 15 min",
+        "seit": "2026-09-01T18:00:13.050081+00:00"
+      },
+      {
+        "name": "keine_unklare_order",
+        "beschreibung": "eToro-Ausfuehrungsabgleich abgeschlossen",
+        "erfuellt": true,
+        "detail": "",
+        "seit": "2026-09-02T03:20:11.725432+00:00"
+      },
+      {
+        "name": "protokoll",
+        "beschreibung": "Entscheidungsprotokoll beschreibbar",
+        "erfuellt": true,
+        "detail": "",
+        "seit": "2026-09-01T17:45:12.308087+00:00"
+      }
+    ]
+  },
+  "guthaben": {
+    "EUR": {
+      "gesamt": 70938.33880542,
+      "frei": 70938.33880542
+    },
+    "XRP": {
+      "gesamt": 50000.0,
+      "frei": 50000.0
+    },
+    "USD": {
+      "gesamt": 5000.0,
+      "frei": 5000.0
+    },
+    "ETH": {
+      "gesamt": 2.03972528,
+      "frei": 0.99634828
+    },
+    "USDC": {
+      "gesamt": 3260.32491951,
+      "frei": 3260.32491951
+    },
+    "SOL": {
+      "gesamt": 14.19086594,
+      "frei": 14.19086594
+    },
+    "BNB": {
+      "gesamt": 0.15443757,
+      "frei": 7.57e-06
+    },
+    "LINK": {
+      "gesamt": 9.08808,
+      "frei": 8e-05
+    },
+    "XLM": {
+      "gesamt": 560.880025,
+      "frei": 560.880025
+    },
+    "DOGE": {
+      "gesamt": 0.06235,
+      "frei": 0.06235
+    },
+    "ONDO": {
+      "gesamt": 0.002515,
+      "frei": 0.002515
+    },
+    "NEAR": {
+      "gesamt": 0.0003295,
+      "frei": 0.0003295
+    },
+    "BTC": {
+      "gesamt": 0.0,
+      "frei": 0.0
+    }
+  },
+  "exposure": {
+    "zeit": "2026-09-02T07:11:35.065947+00:00",
+    "bestaende": [
+      {
+        "waehrung": "EUR",
+        "menge": 70938.33880541685,
+        "klasse": "CASH",
+        "gegenwert_quote": 70938.34,
+        "begruendung": "Guthaben in Cash-/Quotewaehrung",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "XRP",
+        "menge": 50000.0,
+        "klasse": "ACCOUNT_ASSET",
+        "gegenwert_quote": 67490.0,
+        "begruendung": "Frei verfuegbares OKX-Konto-Asset; kein offener Trade",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "USD",
+        "menge": 5000.0,
+        "klasse": "CASH",
+        "gegenwert_quote": 5000.0,
+        "begruendung": "Guthaben in Cash-/Quotewaehrung",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "ETH",
+        "menge": 2.03972528015,
+        "klasse": "ACCOUNT_ASSET",
+        "gegenwert_quote": 4948.17,
+        "begruendung": "Frei verfuegbares OKX-Konto-Asset; kein offener Trade",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "USDC",
+        "menge": 3260.324919512,
+        "klasse": "CASH",
+        "gegenwert_quote": 3260.32,
+        "begruendung": "Guthaben in Cash-/Quotewaehrung",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "SOL",
+        "menge": 14.19086594,
+        "klasse": "ACCOUNT_ASSET",
+        "gegenwert_quote": 1423.63,
+        "begruendung": "Frei verfuegbares OKX-Konto-Asset; kein offener Trade",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "BNB",
+        "menge": 0.15443757,
+        "klasse": "BOT_MANAGED",
+        "gegenwert_quote": 106.24,
+        "begruendung": "Im Positionsbuch gefuehrt",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "LINK",
+        "menge": 9.08808,
+        "klasse": "BOT_MANAGED",
+        "gegenwert_quote": 102.5,
+        "begruendung": "Im Positionsbuch gefuehrt",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "XLM",
+        "menge": 560.880025,
+        "klasse": "BOT_MANAGED",
+        "gegenwert_quote": 98.49,
+        "begruendung": "Im Positionsbuch gefuehrt",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "DOGE",
+        "menge": 0.06235,
+        "klasse": "ACCOUNT_ASSET",
+        "gegenwert_quote": 0.01,
+        "begruendung": "Frei verfuegbares Konto-Asset (Staubrest)",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "ONDO",
+        "menge": 0.002515,
+        "klasse": "ACCOUNT_ASSET",
+        "gegenwert_quote": 0.0,
+        "begruendung": "Frei verfuegbares Konto-Asset (Staubrest)",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "NEAR",
+        "menge": 0.0003295,
+        "klasse": "ACCOUNT_ASSET",
+        "gegenwert_quote": 0.0,
+        "begruendung": "Frei verfuegbares Konto-Asset (Staubrest)",
+        "sperrt_einstiege": false
+      },
+      {
+        "waehrung": "BTC",
+        "menge": 3.48e-09,
+        "klasse": "ACCOUNT_ASSET",
+        "gegenwert_quote": 0.0,
+        "begruendung": "Frei verfuegbares Konto-Asset (Staubrest)",
+        "sperrt_einstiege": false
+      }
+    ],
+    "nach_klasse": {
+      "CASH": [
+        {
+          "waehrung": "EUR",
+          "menge": 70938.33880541685,
+          "klasse": "CASH",
+          "gegenwert_quote": 70938.34,
+          "begruendung": "Guthaben in Cash-/Quotewaehrung",
+          "sperrt_einstiege": false
+        },
+        {
+          "waehrung": "USD",
+          "menge": 5000.0,
+          "klasse": "CASH",
+          "gegenwert_quote": 5000.0,
+          "begruendung": "Guthaben in Cash-/Quotewaehrung",
+          "sperrt_einstiege": false
+        },
+        {
+          "waehrung": "USDC",
+          "menge": 3260.324919512,
+          "klasse": "CASH",
+          "gegenwert_quote": 3260.32,
+          "begruendung": "Guthaben in Cash-/Quotewaehrung",
+          "sperrt_einstiege": false
+        }
+      ],
+      "ACCOUNT_ASSET": [
+        {
+          "waehrung": "XRP",
+          "menge": 50000.0,
+          "klasse": "ACCOUNT_ASSET",
+          "gegenwert_quote": 67490.0,
+          "begruendung": "Frei verfuegbares OKX-Konto-Asset; kein offener Trade",
+          "sperrt_einstiege": false
+        },
+        {
+          "waehrung": "ETH",
+          "menge": 2.03972528015,
+          "klasse": "ACCOUNT_ASSET",
+          "gegenwert_quote": 4948.17,
+          "begruendung": "Frei verfuegbares OKX-Konto-Asset; kein offener Trade",
+          "sperrt_einstiege": false
+        },
+        {
+          "waehrung": "SOL",
+          "menge": 14.19086594,
+          "klasse": "ACCOUNT_ASSET",
+          "gegenwert_quote": 1423.63,
+          "begruendung": "Frei verfuegbares OKX-Konto-Asset; kein offener Trade",
+          "sperrt_einstiege": false
+        },
+        {
+          "waehrung": "DOGE",
+          "menge": 0.06235,
+          "klasse": "ACCOUNT_ASSET",
+          "gegenwert_quote": 0.01,
+          "begruendung": "Frei verfuegbares Konto-Asset (Staubrest)",
+          "sperrt_einstiege": false
+        },
+        {
+          "waehrung": "ONDO",
+          "menge": 0.002515,
+          "klasse": "ACCOUNT_ASSET",
+          "gegenwert_quote": 0.0,
+          "begruendung": "Frei verfuegbares Konto-Asset (Staubrest)",
+          "sperrt_einstiege": false
+        },
+        {
+          "waehrung": "NEAR",
+          "menge": 0.0003295,
+          "klasse": "ACCOUNT_ASSET",
+          "gegenwert_quote": 0.0,
+          "begruendung": "Frei verfuegbares Konto-Asset (Staubrest)",
+          "sperrt_einstiege": false
+        },
+        {
+          "waehrung": "BTC",
+          "menge": 3.48e-09,
+          "klasse": "ACCOUNT_ASSET",
+          "gegenwert_quote": 0.0,
+          "begruendung": "Frei verfuegbares Konto-Asset (Staubrest)",
+          "sperrt_einstiege": false
+        }
+      ],
+      "BOT_MANAGED": [
+        {
+          "waehrung": "BNB",
+          "menge": 0.15443757,
+          "klasse": "BOT_MANAGED",
+          "gegenwert_quote": 106.24,
+          "begruendung": "Im Positionsbuch gefuehrt",
+          "sperrt_einstiege": false
+        },
+        {
+          "waehrung": "LINK",
+          "menge": 9.08808,
+          "klasse": "BOT_MANAGED",
+          "gegenwert_quote": 102.5,
+          "begruendung": "Im Positionsbuch gefuehrt",
+          "sperrt_einstiege": false
+        },
+        {
+          "waehrung": "XLM",
+          "menge": 560.880025,
+          "klasse": "BOT_MANAGED",
+          "gegenwert_quote": 98.49,
+          "begruendung": "Im Positionsbuch gefuehrt",
+          "sperrt_einstiege": false
+        }
+      ]
+    },
+    "cash_waehrungen": [
+      "EUR",
+      "USD",
+      "USDC",
+      "USDG",
+      "USDT"
+    ],
+    "einstiege_gesperrt": false,
+    "sperrgruende": []
+  },
+  "handelbares_kapital": 3575.52,
+  "gebuehrensatz_pct": 0.35,
+  "crypto_strategy": {
+    "schema": 1,
+    "active_mode": "FREQTRADE_SAMPLE",
+    "revision": 5,
+    "updated_at_utc": "2026-08-28T00:10:06.379931+00:00",
+    "source": "webui:George86",
+    "history": [
+      {
+        "revision": 1,
+        "changed_at_utc": "2026-08-27T11:09:23.308397+00:00",
+        "previous": "NEXUS_STANDARD",
+        "mode": "FREQTRADE_SAMPLE",
+        "source": "webui:George86",
+        "reason": "WebUI-Laufzeitwechsel"
+      },
+      {
+        "revision": 2,
+        "changed_at_utc": "2026-08-27T20:23:18.786756+00:00",
+        "previous": "FREQTRADE_SAMPLE",
+        "mode": "CRYPTO_PAUSED",
+        "source": "webui:George86",
+        "reason": "WebUI-Laufzeitwechsel"
+      },
+      {
+        "revision": 3,
+        "changed_at_utc": "2026-08-27T20:23:21.539264+00:00",
+        "previous": "CRYPTO_PAUSED",
+        "mode": "CRYPTO_PAUSED",
+        "source": "webui:George86",
+        "reason": "WebUI-Laufzeitwechsel"
+      },
+      {
+        "revision": 4,
+        "changed_at_utc": "2026-08-27T20:23:23.439361+00:00",
+        "previous": "CRYPTO_PAUSED",
+        "mode": "CRYPTO_PAUSED",
+        "source": "webui:George86",
+        "reason": "WebUI-Laufzeitwechsel"
+      },
+      {
+        "revision": 5,
+        "changed_at_utc": "2026-08-28T00:10:06.379931+00:00",
+        "previous": "CRYPTO_PAUSED",
+        "mode": "FREQTRADE_SAMPLE",
+        "source": "webui:George86",
+        "reason": "WebUI-Laufzeitwechsel"
+      }
+    ],
+    "reason": "WebUI-Laufzeitwechsel"
+  },
+  "positionen": [
+    {
+      "symbol": "BNB",
+      "inst_id": "BNB-USDC",
+      "menge": 0.15443757,
+      "einstieg": 694.6,
+      "stop": 622.5300000000001,
+      "take_profit": 724.4212624184647,
+      "eroeffnet_am": "2026-08-30T01:43:52.500779+00:00",
+      "order_id": "3877276078171697153",
+      "referenz": "N93764847086281095168",
+      "broker_schutz": true,
+      "hoechstkurs": 699.6,
+      "paper": true,
+      "herkunft": "BOT",
+      "verwaltung": "AUTO",
+      "verwaltungsnotiz": "",
+      "management_status": "",
+      "account_fingerprint": "",
+      "strategy_migrated_at": "2026-08-31T12:21:30.241992+00:00",
+      "strategy_migrated_from_version": "NEXUS-FT-SAMPLE-V1",
+      "strategy_migrated_from_hash": "c8c1883383675aafd52da451a1d4cdcf924677be3da53ee66c958f11821f3f37",
+      "strategy_migration_reason": "V1 (9.0.15): identische Handelsbedingungen, geaenderte Ausstiegsreihenfolge und kerzenunabhaengiger Stop/ROI",
+      "strategy_migration_actor": "auto-upgrade",
+      "decision_id": 3764847086281095168,
+      "entry_strategy_mode": "FREQTRADE_SAMPLE",
+      "strategy_name": "Freqtrade SampleStrategy",
+      "strategy_version": "NEXUS-FT-SAMPLE-V2",
+      "strategy_parameter_hash": "a1d6d20d0c890539eef7f91ee97645f803e7341e9e2f778fdc31fa3ecce21581",
+      "strategy_parameters": {
+        "strategy_name": "Freqtrade SampleStrategy",
+        "strategy_version": "NEXUS-FT-SAMPLE-V2",
+        "interface_version": 3,
+        "timeframe": "5m",
+        "process_only_new_candles": true,
+        "startup_candle_count": 30,
+        "can_short": false,
+        "buy_rsi": 30,
+        "sell_rsi": 70,
+        "rsi_period": 14,
+        "rsi_implementation": "TA-Lib-compatible Wilder RSI14",
+        "tema_period": 9,
+        "tema_implementation": "TA-Lib-compatible TEMA9",
+        "bollinger_middle": "SMA20 typical_price",
+        "minimal_roi": {
+          "0": 0.04,
+          "30": 0.02,
+          "60": 0.01
+        },
+        "roi_includes_fees": true,
+        "stoploss": -0.1,
+        "trailing_stop": false,
+        "use_exit_signal": true,
+        "exit_profit_only": false,
+        "ignore_roi_if_entry_signal": false,
+        "exit_order": "stoploss>roi>signal",
+        "stop_needs_candles": false,
+        "roi_needs_candles": false,
+        "sample_entry_order_type": "limit",
+        "sample_exit_order_type": "limit",
+        "sample_stoploss_order_type": "market",
+        "sample_stoploss_on_exchange": false,
+        "sample_order_time_in_force": {
+          "entry": "GTC",
+          "exit": "GTC"
+        },
+        "hyperopt_enabled": false,
+        "source_reference_date": "2026-08-27",
+        "source_reference": "https://github.com/freqtrade/freqtrade/blob/develop/freqtrade/templates/sample_strategy.py",
+        "nexus_actual_entry_order_type": "price-capped-fok",
+        "nexus_actual_exit_order_type": "price-capped-fok",
+        "nexus_execution_wrapper": "spot+safety-gates+full-size-vwap+fok+broker-oco",
+        "parameter_hash_scope": "strategy-semantics-v2",
+        "parameter_hash": "a1d6d20d0c890539eef7f91ee97645f803e7341e9e2f778fdc31fa3ecce21581",
+        "parameter_hash_fields": [
+          "strategy_name",
+          "strategy_version",
+          "interface_version",
+          "timeframe",
+          "process_only_new_candles",
+          "can_short",
+          "buy_rsi",
+          "sell_rsi",
+          "rsi_period",
+          "rsi_implementation",
+          "tema_period",
+          "tema_implementation",
+          "bollinger_middle",
+          "minimal_roi",
+          "roi_includes_fees",
+          "stoploss",
+          "trailing_stop",
+          "use_exit_signal",
+          "exit_profit_only",
+          "ignore_roi_if_entry_signal",
+          "exit_order",
+          "stop_needs_candles",
+          "roi_needs_candles"
+        ]
+      },
+      "trade_quote_ccy": "USDC",
+      "client_order_id": "N93764847086281095168",
+      "order_tag": "NEXUS",
+      "fill_ids": [
+        "59"
+      ],
+      "ownership_verified": true,
+      "entry_fee_by_currency": {
+        "BNB": 0.00054243
+      },
+      "entry_fee_quote": 0.376771878,
+      "protection_algo_id": "",
+      "protection_client_order_id": "",
+      "protection_status": "PENDING",
+      "manual_changed_at": "",
+      "manual_changed_by": "",
+      "exit_state": "IDLE",
+      "exit_retry_after": "",
+      "exit_last_notice_at": "",
+      "exit_last_detail": "",
+      "exit_attempt_id": "",
+      "exit_started_at": "",
+      "exit_client_order_id": "",
+      "exit_order_ids": [],
+      "exit_fill_ids": [],
+      "exit_recovery_checks": 0,
+      "first_missing_at": "",
+      "consecutive_missing_snapshots": 0
+    },
+    {
+      "symbol": "LINK",
+      "inst_id": "LINK-USDC",
+      "menge": 9.08808,
+      "einstieg": 11.429,
+      "stop": 10.26,
+      "take_profit": 11.939283492222781,
+      "eroeffnet_am": "2026-08-30T01:59:19.066125+00:00",
+      "order_id": "3877307136791490561",
+      "referenz": "N91067010638893231360",
+      "broker_schutz": true,
+      "hoechstkurs": 11.602,
+      "paper": true,
+      "herkunft": "BOT",
+      "verwaltung": "AUTO",
+      "verwaltungsnotiz": "",
+      "management_status": "",
+      "account_fingerprint": "",
+      "strategy_migrated_at": "2026-08-31T12:21:30.535015+00:00",
+      "strategy_migrated_from_version": "NEXUS-FT-SAMPLE-V1",
+      "strategy_migrated_from_hash": "c8c1883383675aafd52da451a1d4cdcf924677be3da53ee66c958f11821f3f37",
+      "strategy_migration_reason": "V1 (9.0.15): identische Handelsbedingungen, geaenderte Ausstiegsreihenfolge und kerzenunabhaengiger Stop/ROI",
+      "strategy_migration_actor": "auto-upgrade",
+      "decision_id": 1067010638893231360,
+      "entry_strategy_mode": "FREQTRADE_SAMPLE",
+      "strategy_name": "Freqtrade SampleStrategy",
+      "strategy_version": "NEXUS-FT-SAMPLE-V2",
+      "strategy_parameter_hash": "a1d6d20d0c890539eef7f91ee97645f803e7341e9e2f778fdc31fa3ecce21581",
+      "strategy_parameters": {
+        "strategy_name": "Freqtrade SampleStrategy",
+        "strategy_version": "NEXUS-FT-SAMPLE-V2",
+        "interface_version": 3,
+        "timeframe": "5m",
+        "process_only_new_candles": true,
+        "startup_candle_count": 30,
+        "can_short": false,
+        "buy_rsi": 30,
+        "sell_rsi": 70,
+        "rsi_period": 14,
+        "rsi_implementation": "TA-Lib-compatible Wilder RSI14",
+        "tema_period": 9,
+        "tema_implementation": "TA-Lib-compatible TEMA9",
+        "bollinger_middle": "SMA20 typical_price",
+        "minimal_roi": {
+          "0": 0.04,
+          "30": 0.02,
+          "60": 0.01
+        },
+        "roi_includes_fees": true,
+        "stoploss": -0.1,
+        "trailing_stop": false,
+        "use_exit_signal": true,
+        "exit_profit_only": false,
+        "ignore_roi_if_entry_signal": false,
+        "exit_order": "stoploss>roi>signal",
+        "stop_needs_candles": false,
+        "roi_needs_candles": false,
+        "sample_entry_order_type": "limit",
+        "sample_exit_order_type": "limit",
+        "sample_stoploss_order_type": "market",
+        "sample_stoploss_on_exchange": false,
+        "sample_order_time_in_force": {
+          "entry": "GTC",
+          "exit": "GTC"
+        },
+        "hyperopt_enabled": false,
+        "source_reference_date": "2026-08-27",
+        "source_reference": "https://github.com/freqtrade/freqtrade/blob/develop/freqtrade/templates/sample_strategy.py",
+        "nexus_actual_entry_order_type": "price-capped-fok",
+        "nexus_actual_exit_order_type": "price-capped-fok",
+        "nexus_execution_wrapper": "spot+safety-gates+full-size-vwap+fok+broker-oco",
+        "parameter_hash_scope": "strategy-semantics-v2",
+        "parameter_hash": "a1d6d20d0c890539eef7f91ee97645f803e7341e9e2f778fdc31fa3ecce21581",
+        "parameter_hash_fields": [
+          "strategy_name",
+          "strategy_version",
+          "interface_version",
+          "timeframe",
+          "process_only_new_candles",
+          "can_short",
+          "buy_rsi",
+          "sell_rsi",
+          "rsi_period",
+          "rsi_implementation",
+          "tema_period",
+          "tema_implementation",
+          "bollinger_middle",
+          "minimal_roi",
+          "roi_includes_fees",
+          "stoploss",
+          "trailing_stop",
+          "use_exit_signal",
+          "exit_profit_only",
+          "ignore_roi_if_entry_signal",
+          "exit_order",
+          "stop_needs_candles",
+          "roi_needs_candles"
+        ]
+      },
+      "trade_quote_ccy": "USDC",
+      "client_order_id": "N91067010638893231360",
+      "order_tag": "NEXUS",
+      "fill_ids": [
+        "1"
+      ],
+      "ownership_verified": true,
+      "entry_fee_by_currency": {
+        "LINK": 0.03192
+      },
+      "entry_fee_quote": 0.36481368,
+      "protection_algo_id": "",
+      "protection_client_order_id": "",
+      "protection_status": "PENDING",
+      "manual_changed_at": "",
+      "manual_changed_by": "",
+      "exit_state": "IDLE",
+      "exit_retry_after": "",
+      "exit_last_notice_at": "",
+      "exit_last_detail": "",
+      "exit_attempt_id": "",
+      "exit_started_at": "",
+      "exit_client_order_id": "",
+      "exit_order_ids": [],
+      "exit_fill_ids": [],
+      "exit_recovery_checks": 0,
+      "first_missing_at": "",
+      "consecutive_missing_snapshots": 0
+    },
+    {
+      "symbol": "XLM",
+      "inst_id": "XLM-USDC",
+      "menge": 560.880025,
+      "einstieg": 0.1797,
+      "stop": 0.161253,
+      "take_profit": 0.1876457388861014,
+      "eroeffnet_am": "2026-08-30T01:59:21.501117+00:00",
+      "order_id": "3877307250507460609",
+      "referenz": "N94238565180227619328",
+      "broker_schutz": true,
+      "hoechstkurs": 0.18134,
+      "paper": true,
+      "herkunft": "BOT",
+      "verwaltung": "AUTO",
+      "verwaltungsnotiz": "",
+      "management_status": "",
+      "account_fingerprint": "",
+      "strategy_migrated_at": "2026-08-31T12:21:30.748202+00:00",
+      "strategy_migrated_from_version": "NEXUS-FT-SAMPLE-V1",
+      "strategy_migrated_from_hash": "c8c1883383675aafd52da451a1d4cdcf924677be3da53ee66c958f11821f3f37",
+      "strategy_migration_reason": "V1 (9.0.15): identische Handelsbedingungen, geaenderte Ausstiegsreihenfolge und kerzenunabhaengiger Stop/ROI",
+      "strategy_migration_actor": "auto-upgrade",
+      "decision_id": 4238565180227619328,
+      "entry_strategy_mode": "FREQTRADE_SAMPLE",
+      "strategy_name": "Freqtrade SampleStrategy",
+      "strategy_version": "NEXUS-FT-SAMPLE-V2",
+      "strategy_parameter_hash": "a1d6d20d0c890539eef7f91ee97645f803e7341e9e2f778fdc31fa3ecce21581",
+      "strategy_parameters": {
+        "strategy_name": "Freqtrade SampleStrategy",
+        "strategy_version": "NEXUS-FT-SAMPLE-V2",
+        "interface_version": 3,
+        "timeframe": "5m",
+        "process_only_new_candles": true,
+        "startup_candle_count": 30,
+        "can_short": false,
+        "buy_rsi": 30,
+        "sell_rsi": 70,
+        "rsi_period": 14,
+        "rsi_implementation": "TA-Lib-compatible Wilder RSI14",
+        "tema_period": 9,
+        "tema_implementation": "TA-Lib-compatible TEMA9",
+        "bollinger_middle": "SMA20 typical_price",
+        "minimal_roi": {
+          "0": 0.04,
+          "30": 0.02,
+          "60": 0.01
+        },
+        "roi_includes_fees": true,
+        "stoploss": -0.1,
+        "trailing_stop": false,
+        "use_exit_signal": true,
+        "exit_profit_only": false,
+        "ignore_roi_if_entry_signal": false,
+        "exit_order": "stoploss>roi>signal",
+        "stop_needs_candles": false,
+        "roi_needs_candles": false,
+        "sample_entry_order_type": "limit",
+        "sample_exit_order_type": "limit",
+        "sample_stoploss_order_type": "market",
+        "sample_stoploss_on_exchange": false,
+        "sample_order_time_in_force": {
+          "entry": "GTC",
+          "exit": "GTC"
+        },
+        "hyperopt_enabled": false,
+        "source_reference_date": "2026-08-27",
+        "source_reference": "https://github.com/freqtrade/freqtrade/blob/develop/freqtrade/templates/sample_strategy.py",
+        "nexus_actual_entry_order_type": "price-capped-fok",
+        "nexus_actual_exit_order_type": "price-capped-fok",
+        "nexus_execution_wrapper": "spot+safety-gates+full-size-vwap+fok+broker-oco",
+        "parameter_hash_scope": "strategy-semantics-v2",
+        "parameter_hash": "a1d6d20d0c890539eef7f91ee97645f803e7341e9e2f778fdc31fa3ecce21581",
+        "parameter_hash_fields": [
+          "strategy_name",
+          "strategy_version",
+          "interface_version",
+          "timeframe",
+          "process_only_new_candles",
+          "can_short",
+          "buy_rsi",
+          "sell_rsi",
+          "rsi_period",
+          "rsi_implementation",
+          "tema_period",
+          "tema_implementation",
+          "bollinger_middle",
+          "minimal_roi",
+          "roi_includes_fees",
+          "stoploss",
+          "trailing_stop",
+          "use_exit_signal",
+          "exit_profit_only",
+          "ignore_roi_if_entry_signal",
+          "exit_order",
+          "stop_needs_candles",
+          "roi_needs_candles"
+        ]
+      },
+      "trade_quote_ccy": "USDC",
+      "client_order_id": "N94238565180227619328",
+      "order_tag": "NEXUS",
+      "fill_ids": [
+        "7"
+      ],
+      "ownership_verified": true,
+      "entry_fee_by_currency": {
+        "XLM": 1.969975
+      },
+      "entry_fee_quote": 0.3540045075,
+      "protection_algo_id": "",
+      "protection_client_order_id": "",
+      "protection_status": "PENDING",
+      "manual_changed_at": "",
+      "manual_changed_by": "",
+      "exit_state": "IDLE",
+      "exit_retry_after": "",
+      "exit_last_notice_at": "",
+      "exit_last_detail": "",
+      "exit_attempt_id": "",
+      "exit_started_at": "",
+      "exit_client_order_id": "",
+      "exit_order_ids": [],
+      "exit_fill_ids": [],
+      "exit_recovery_checks": 0,
+      "first_missing_at": "",
+      "consecutive_missing_snapshots": 0
+    }
+  ],
+  "konto_asset_hinweise": [],
+  "universum": {
+    "broker": "okx",
+    "gesamt": 26,
+    "kern": 20,
+    "dynamisch": 6,
+    "kern_limit": 20,
+    "dynamisch_limit": 30,
+    "aktiv": 26,
+    "aktiv_limit": 50,
+    "focus_limit": 12,
+    "zustaende": {
+      "AKTIV": 26
+    },
+    "handelbar": 26,
+    "gepinnt": 3,
+    "beobachtung": 0,
+    "autonome_aufnahme": true,
+    "beobachtung_stunden": 24.0,
+    "max_aenderungen_pro_lauf": 0,
+    "focus_set": [
+      "LINK",
+      "BNB",
+      "XLM",
+      "BTC",
+      "DOGE",
+      "SOL",
+      "XRP",
+      "ETH",
+      "NEAR",
+      "AAVE",
+      "HYPE",
+      "SUI"
+    ]
+  },
+  "risiko": {
+    "broker": "okx",
+    "kontowert": 3575.52,
+    "tages_pnl": 0.0,
+    "tagesverlust_grenze": 89.39,
+    "offene_positionen": 3,
+    "max_offene_positionen": 6,
+    "trades_heute": 0,
+    "max_trades": 12,
+    "handel_gestoppt": false,
+    "equity_bremse": false,
+    "abkuehlung_aktiv": false,
+    "risiko_pro_trade_pct": 0.003,
+    "max_position_pct": 0.05,
+    "darf_kaufen": true,
+    "grund": ""
+  },
+  "takt": {},
+  "letzter_universumslauf": {
+    "zeit": "2026-09-02T07:08:56.011638+00:00",
+    "diff": {
+      "broker": "okx",
+      "zeit": "2026-09-02T07:08:55.989937+00:00",
+      "aufgenommen": [],
+      "entfernt": [],
+      "beobachtung_gestartet": [],
+      "freigegeben": [],
+      "abgang_angekuendigt": [],
+      "unveraendert": 26,
+      "gepinnt": [
+        "LINK",
+        "XLM",
+        "BNB"
+      ],
+      "gruende": {}
+    },
+    "pool": 26,
+    "katalog": 53,
+    "dauer": 11.91,
+    "diagnose": {
+      "broker": "okx",
+      "katalog_gesamt": 53,
+      "public_catalog_gesamt": 1387,
+      "account_catalog_gesamt": 53,
+      "public_only_gesamt": 1339,
+      "trade_lanes": {
+        "USDC": {
+          "free": 3260.32491951,
+          "funded": true
+        },
+        "EUR": {
+          "free": 70938.33880542,
+          "funded": true
+        },
+        "USD": {
+          "free": 5000.0,
+          "funded": true
+        }
+      },
+      "volume_policy": "RANK_ONLY",
+      "pool": 26,
+      "abgelehnt_gesamt": 27,
+      "bewertet": 26,
+      "hard_eligible_bases": 27,
+      "core_actual": 20,
+      "core_target": 20,
+      "gruppen": [
+        {
+          "gruppe": "sonstiges",
+          "anzahl": 15,
+          "beispiel": "BNB-USDC: sekundaeres Quote-Paar; liquideres Paar gewaehlt"
+        },
+        {
+          "gruppe": "keine erlaubte Abrechnungswaehrung",
+          "anzahl": 6,
+          "beispiel": "2Z-USDT: Marktquote USDT ist keine Bot-Cashwaehrung; tradeQuoteCcyList=USDT, erlaubt sind USDC, EUR, USD"
+        },
+        {
+          "gruppe": "Spanne zu weit",
+          "anzahl": 2,
+          "beispiel": "ALLO-EUR: Spanne 1.36 % ueber Grenze 1.20 %"
+        },
+        {
+          "gruppe": "nicht in Kern/Dynamik",
+          "anzahl": 2,
+          "beispiel": "ZAMA-EUR: nicht im kontoseitig handelbaren Kern oder in DYNAMIC_30"
+        },
+        {
+          "gruppe": "Stablecoin",
+          "anzahl": 1,
+          "beispiel": "USDC-EUR: Stablecoin"
+        },
+        {
+          "gruppe": "kein Ticker",
+          "anzahl": 1,
+          "beispiel": "ZECT-EUR: kein Ticker verfuegbar"
+        }
+      ],
+      "groesster_filter": "sonstiges"
+    }
+  },
+  "letzter_fehler": "",
+  "running": true,
+  "online": true,
+  "last_heartbeat": "2026-09-02T07:12:06.151585+00:00",
+  "last_cycle": {
+    "zeit": "2026-09-02T07:12:05.985755+00:00",
+    "arbeiten": []
+  },
+  "connection_state": "VERBUNDEN",
+  "last_broker_contact": "2026-09-02T07:12:00.982887+00:00",
+  "last_connection_error": "",
+  "health_interval_seconds": 30.0,
+  "position_stream": {
+    "running": true,
+    "connected": true,
+    "authenticated": true,
+    "last_message": "2026-09-02T07:12:05.862471+00:00",
+    "last_error": "",
+    "reconnects": 0,
+    "mode": "demo",
+    "endpoint": "wss://wseeapap.okx.com:8443/ws/v5/private",
+    "zustand": "SUBSCRIBED",
+    "kanaele": [
+      "account",
+      "orders"
+    ],
+    "healthy": true,
+    "konfigurationsfehler": "",
+    "last_account": "2026-09-02T07:12:05.862518+00:00",
+    "last_order": null
+  },
+  "connection_components": {
+    "overall": "ONLINE",
+    "rest_state": "ONLINE",
+    "rest_failures": 0,
+    "rest_detail": "REST authentifiziert",
+    "last_rest_success": "2026-09-02T07:11:40.203287+00:00",
+    "ws_connected": true,
+    "ws_authenticated": true,
+    "ws_last_message": "2026-09-02T07:12:05.862471+00:00",
+    "account_last_update": null,
+    "orders_last_update": null,
+    "pong_last_update": null
+  }
+}

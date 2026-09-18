@@ -1,0 +1,97 @@
+{
+  "release": "10.6.0-NEXUS",
+  "build": "10.6.0-RISK-LEVELS-BALANCE-RESTORE",
+  "contains": ["10.4.0-NEXUS Revision 2", "10.5.0-NEXUS Revision 2"],
+  "package_revision": 1,
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "approval": "Georg 18.09.2026: drei waehlbare Einsatzstufen je Broker (OKX und eToro) mit kurzer Beschreibung, umstellbar ohne Bot-Neustart; OKX-Fehler sauber beheben; Volltest vor Auslieferung der Installationsdatei",
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "node": "v18.4.0 (PyPI nodejs-bin) fuer die Frontendsuite"
+  },
+  "checks": {
+    "static_hygiene_full": {
+      "method": "volltest._static_hygiene() komplett, nicht nur _release_checklist",
+      "issues": 0
+    },
+    "node_frontend_suite_local": {
+      "tests": 29,
+      "passed": 29,
+      "failed": 0,
+      "new_in_10_6_0": "risk levels (10.6.0) show the effective numbers per broker and never invent a chosen level"
+    },
+    "new_suite_einsatzstufen": {
+      "module": "tests/test_v1060_einsatzstufen.py",
+      "tests": 23,
+      "passed": 23,
+      "belegt": [
+        "Ohne gewaehlte Stufe ergibt die Rechnung exakt den echten ETH-Kauf vom 18.09.2026 (649,86 EUR Lane-Cash, Stop 10 %, 19,50 EUR)",
+        "Stufenwechsel wirkt am selben Topfobjekt ohne Neustart (x2 bei mittel, x4 bei erhoeht)",
+        "Anzeige und Kaufpfad nennen dieselben Zahlen",
+        "Beschaedigte und entfernte Stufendatei fallen auf die kleinste Stufe zurueck",
+        "OKX-Wahl laesst eToro unberuehrt",
+        "Ausdruecklich uebergebene TopfGrenzen folgen der Stufe nicht (Rueckwaertskompatibilitaet)",
+        "Hoechste Stufe nur mit der Phrase EINSATZ ERHOEHEN"
+      ]
+    },
+    "new_suite_bestandsrueckkehr": {
+      "module": "tests/test_v1060_bestandsrueckkehr.py",
+      "tests": 18,
+      "passed": 18,
+      "belegt": [
+        "Der echte Ablauf vom 18.09.2026: zwei Messungen im Abstand von neun Sekunden buchen nichts und sperren nichts",
+        "Eine einzelne Fehlmessung bucht nichts, meldet den Verdacht aber sofort als unbestaetigt",
+        "Zwei Messungen mit Mindestabstand buchen wie bisher",
+        "Kaputter Zeitstempel bestaetigt nicht",
+        "Zwei bestaetigte Wiedersichten geben die Position frei und loesen die Bestandsluecke",
+        "Kein Schnappschuss, Teilbestand, fremde Kontodomaene und ausgestiegene Zeilen geben nichts frei",
+        "Der Broker-Schutz wird nach der Freigabe erneut erfragt, nicht geglaubt",
+        "Entsperren (120 s) dauert laenger als sperren (30 s)"
+      ]
+    },
+    "full_isolated_run": {
+      "date": "2026-09-18",
+      "method": "224 Module je in eigenem Prozess, Netzwerkwaechter aktiv, Node auf PATH",
+      "modules": 224,
+      "modules_green": 184,
+      "passed": 3160,
+      "failed": 62,
+      "errors": 7,
+      "skipped": 9,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": 13,
+      "note": "Zwei Befunde dieses Laufs waren echt und wurden behoben: test_v814_positionsbuch erwartet die etablierte Formulierung 'wird erneut geprueft' schon bei der ersten Fehlmessung (Meldetext angepasst, nicht der Test), und test_v980_webui zaehlt die Bedienflaechen der Einstellungsseite (13 -> 14 durch den neuen Abschnitt). Alle uebrigen roten Module sind die dokumentierten Windows-Artefakte (fcntl, flock, Symlinks, systemd, Installerpfade)."
+    },
+    "full_isolated_run_nach_korrektur": {
+      "date": "2026-09-18",
+      "method": "224 Module je in eigenem Prozess, Netzwerkwaechter aktiv, Node auf PATH",
+      "modules": 224,
+      "modules_green": 185,
+      "passed": 3162,
+      "failed": 60,
+      "errors": 7,
+      "skipped": 9,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": 13,
+      "red_modules_without_network_event": 26,
+      "diff_to_previous_run": {"neu_rot": [], "neu_gruen": ["test_v814_positionsbuch"]},
+      "note": "13 socket-only + 26 Windows-Artefakte = 39 rote Module, exakt der Stand von 10.5.0 Revision 2 (fullrun 1050c). Keine neue Fehlstelle. Die 13 socket-only-Module sind ohne Waechter einzeln gruen und auf dem Pi (AF_UNIX) unauffaellig."
+    },
+    "network_guard": {
+      "method": "PULSAR-Worker-Module plus die beiden neuen 10.6.0-Suiten unter dem Waechter des Volltests",
+      "http_or_dns_events": 0
+    },
+    "visual_check_windows_browser": {
+      "method": "Einstellungsseite offline mit API-Attrappe gerendert (echtes settings.js ueber Node)",
+      "result": "Abschnitt 'Einsatz je Trade' zeigt je Broker die wirksamen Zahlen, die Bezugsgroesse und drei beschriebene Stufen; hoechste Stufe als Gefahrenknopf; keine NaN/undefined"
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (Pi-Update, Pflicht vor Dienststart)",
+    "Abnahme: Einstellungen -> 'Einsatz je Trade' zeigt je Broker die wirksamen Werte",
+    "Abnahme: Stufe waehlen, naechste Kaufpruefung nennt sie in der Begruendung -- ohne Neustart",
+    "Abnahme: XRP, BTC und ETH loesen sich nach zwei bestaetigten Messungen selbst aus der Bestandsluecke; OKX-Kaeufe wieder frei",
+    "Uebernommen aus 10.5.0: DNS-Aufloesung von api.stocktwits.com im Heimnetz, erste Messzeilen, Diagnosebericht mit echter ZIP"
+  ]
+}

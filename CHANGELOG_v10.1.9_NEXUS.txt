@@ -1,0 +1,18 @@
+NEXUS 10.1.9 – OKX-Risikokapital und Diagnosebelege
+Stand: 15.09.2026
+
+Basis: NEXUS 10.1.8 und Diagnosebericht/AUSWERTUNG vom 15.09.2026.
+
+- OKX-Risikokapital bewertet alle bereits freigegebenen Entry-Waehrungen (aktuell EUR/USDC) in einer gemeinsamen primaeren Risikowaehrung.
+- Keine angenommene USD-/USDC-/EUR-Paritaet: Nebenwaehrungen brauchen einen frischen beobachteten Spot-Kreuzkurs. Fehlt dieser, bleiben neue Kaeufe gesperrt.
+- Positive Guthaben in nicht freigegebenen Waehrungen werden sichtbar, aber nicht automatisch handelbar.
+- Eigene Krypto-Positionen tragen ihre belegte Markt-/Abrechnungswaehrung in die Risikobewertung; native Werte werden nicht roh addiert.
+- Trading-Readiness unterscheidet gueltigen Kontosnapshot von tatsaechlich vorhandenem freigegebenem Handelskapital.
+- OKX-Kontovorpruefung zeigt Account-Modus und Fundingstatus, ohne Konto- oder Waehrungseinstellungen zu veraendern.
+- Runtime-Status und Diagnose exportieren positive Guthabenwaehrungen, Risikowaehrung, handelbares Kapital und Kapitalbeleg.
+- PULSAR schreibt neben dem vollstaendigen Top-5-Cache eine begrenzte revisionsgebundene Diagnoseprojektion ohne News-/Post-Rohtexte.
+- Diagnose kann dadurch PULSAR-Karten und FMP->GPT-Eingabebelege auch dann pruefen, wenn der volle Cache die Zellengrenze ueberschreitet.
+- Bewusst zeilenbegrenzte Datenbankexporte werden als begrenzter Export/Untergrenze und nicht als Datenbankfehler klassifiziert.
+- Diagnosewerkzeug: 1.8.0; zusaetzlicher versionsgebundener Starter fuer NEXUS 10.1.9.
+- Kein Freqtrade-Signal, keine PULSAR-Handelsregel, kein Risiko-Limit und keine Order-State-Machine wurde gelockert.
+- Ungeklaerte eToro-Abschlusskosten, private Stream-UNMATCHED-Ereignisse und externe Providerfehler bleiben unbekannt/offen statt geschaetzt.

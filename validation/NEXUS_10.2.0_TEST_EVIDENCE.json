@@ -1,0 +1,76 @@
+{
+  "release": "10.2.0-NEXUS",
+  "build": "10.2.0-STRATEGY-EXPANSION-AND-RESILIENCE",
+  "based_on": "10.1.10-NEXUS (Revision 2)",
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "installed_test_dependencies": ["pandas 3.0.5", "numpy 2.5.3", "requests", "joblib", "pytest", "fastapi", "httpx", "scikit-learn"],
+    "note": "POSIX-gebundene Module (fcntl: 8 Testdateien) und plattformabhaengige Faelle (Symlink-Privileg, SQLite-Dateisperren, MAX_PATH) laufen im Pi-Volltest."
+  },
+  "checks": {
+    "ast_syntax": {"errors": 0},
+    "utf8_bom_scan": {"files_with_bom": 0},
+    "release_checklist_automated": {"findings": 0, "checks": ["bom_scan", "no_stale_versioned_diagnosis_entry", "riskstate_fields_classified", "settings_fields_in_contract_test"]},
+    "targeted_regressions_10_2_0": {
+      "passed": 37,
+      "failed": 0,
+      "suites": {
+        "tests/test_v1020_zusatzstrategien.py": 16,
+        "tests/test_v1020_exit_in_progress.py": 6,
+        "tests/test_v1020_multilane_equity.py": 10,
+        "tests/test_v1020_fee_snapshot.py": 5
+      },
+      "highlights": [
+        "Signal-Identitaet Bot == Backtest V6 (Funktionen aus dem paketierten Skript extrahiert)",
+        "DOGE-Fall 17.09.2026 reproduziert: EXIT_IN_PROGRESS statt Domaenensperre; Zweifel sperrt weiter",
+        "Mehrlagen-Bremse: FX haelt nicht, Handelsverlust haelt, Lane-Set-Wechsel ohne Phantom-Drawdown",
+        "Einzellane-Pfad bit-identisch zu 10.1.10; Alt-Checkpoints bleiben gueltig"
+      ]
+    },
+    "broad_local_pytest": {
+      "passed_tests": 285,
+      "passed_subtests": 518,
+      "skipped": 4,
+      "environment_failures_windows_only": {
+        "count": 11,
+        "classes": ["fcntl fehlt (POSIX)", "WinError 1314 Symlink-Privileg", "WinError 32 SQLite-Dateisperre", "WinError 267 MAX_PATH CreateProcess"],
+        "verification": "Pfadklassen am kurzen Pfad reproduziert; keine Fachfehler"
+      }
+    },
+    "backtest_v6_selftest": {
+      "result": "gruen (Bericht + ZIP), Lookahead aller 6 neuen Strategien BESTANDEN",
+      "strategy_info_panels": 13
+    },
+    "browser_review": {
+      "pages": ["/settings (OKX 6 Modi + eToro 4 Modi)", "/backtest (Strategien einfach erklaert)"],
+      "result": "gerendert und bedient (statische Vorschau, kein Server auf Windows)"
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (laeuft im Pi-Update, Pflicht vor Dienststart; inkl. der 8 POSIX-Suiten)",
+    "self_test / compileall / pi_preflight / shell_syntax (Bestandteil des Updateablaufs)",
+    "30-Minuten-Diagnose 1.8.1 als Laufzeitabnahme",
+    "Erster Zusatzstrategie-Einstieg im Demo-Modus als Verhaltensabnahme"
+  ],
+  "no_external_actions": {
+    "broker_orders": 0,
+    "test_orders": 0,
+    "paid_gpt_calls": 0,
+    "paid_x_calls": 0,
+    "telegram_messages": 0
+  },
+  "created_utc": "2026-09-17T00:00:00+00:00",
+  "package_revision": 2,
+  "pi_fullrun_round_1": {
+    "date": "2026-09-17",
+    "host": "Raspberry Pi 5 / aarch64 / Python 3.13.5",
+    "result": "3192 passed, 2 failed, 3 skipped, 292 subtests passed; Update vertragsgemaess abgebrochen, 10.1.10 blieb lauffaehig; Staging-Selbstarchivierung arbeitete real (ALT_FEHLGESCHLAGEN_20260917T013941)",
+    "failure_classes": [
+      "test_v980_webui pinnt zusaetzlich die Anzahl der Settings-Panels (12->13 durch eToro-Strategieblock)",
+      "Staging-Selbstarchivierung kollidierte mit dem v9.8.8-Beweismittel-Vertrag (unerwartete Dateien muessen AM ORT bleiben)"
+    ],
+    "fixes": "in Revision 2 enthalten: Panelzaehler/Aktionsvertrag fortgeschrieben; Archivierung nur bei sauberem Staging ohne unerwartete Dateien, Pollution und Pruefzweifel lassen alles unangetastet"
+  }
+}

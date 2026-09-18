@@ -1,0 +1,41 @@
+NEXUS 9.7.6 - SUI / OKX-Ausfuehrungsumgebung
+08.09.2026
+
+Basis: Original TradingBot_v9.7.5_NEXUS.zip, SHA256
+be296d064073935bb9c2bb66051a7a4d9e0ec38e3b4a71693d4e5e5d3e9e86fe
+
+- OKX-Demo-Kennung auch fuer oeffentliche /market/-Daten. Preis-/Buchdaten
+  und Orders verwenden dieselbe Umgebung. Kein Live-Fallback bei Demoausfall.
+- Oeffentlicher Referenzkatalog/Serveruhr unveraendert; keine Signatur/Keys
+  an oeffentliche Marktdatenaufrufe.
+- Broker-/Clientumgebungswiderspruch und ungueltige Buchwerte blockieren.
+- Tickrundung darf die harte Verkaufsuntergrenze nicht unterschreiten.
+- Vergebene Verkaufs-clOrdId (51016) zuerst recherchieren; unbekannt bleibt
+  UNCLEAR. Kein zweiter Verkauf und keine neue Schutzorder aus diesem Fehler.
+- Fehler nach Orderannahme und widerspruechliche Status-/Fillidentitaet bleiben
+  im Abgleich. Bekannte ordId/clOrdId gehen nicht in einen normalen Retry verloren.
+- Orderbelege enthalten abgeschickten Orderkoerper, Buchzeit, Buchlevels und
+  angeforderte Markt-/Handelsumgebung. Keine Authentifizierungsheader im Beleg.
+- Trade-Anzeige waehlt die gespeicherte Umgebung; Kurscache trennt LIVE/DEMO.
+  Keine aktuelle Kursannahme bei unbekannter/widerspruechlicher Umgebung.
+- Read-only SUI-Diagnoseexport mit aktuellen Dienstpfaden, Hashes und lokalen
+  SUI-Order-/Ledgerdaten; keine Brokeranfragen oder Credential-Dateien.
+- Dokumentierte Installer-FIX1-Regeln in frischer Ausgabe uebernommen:
+  kein bot_zustand-Seed, Runtime-/Manifestkollision vor Dienstaktionen sperren.
+- Installer-Versionsanzeige und WebUI-Pruefung aus VERSION.txt abgeleitet.
+
+Die Signalstrategie, FOK, Slippagekonfiguration, eToro-Handelscode und
+finanzielle Zustandsdaten werden nicht pauschal geaendert oder zurueckgesetzt.
+Der spezielle alte FIX1-Reparaturhelfer fuer einen gescheiterten 9.7.5-Zielordner
+ist nicht enthalten: 9.7.6 arbeitet mit einem frischen separaten Zielordner.
+
+42 neue Tests. Keine vorhandenen Tests entfernt oder als xfail markiert.
+Ein alter Waehrungstest lieferte auf SELL-Order 2 weiterhin BUY-Order 1.
+Sein Fake liefert jetzt getrennte Order-/Fill-IDs; alle bisherigen Assertions
+bleiben erhalten und werden um Identitaets-/Ausfuehrungspruefungen ergaenzt.
+Ein vorhandener Trade-Anzeigetest benennt jetzt ausdruecklich seine Demo-
+Umgebung. Neue Gegenproben verweigern fehlende/widerspruechliche Umgebungen.
+
+Offline-Korrektur und reproduzierbarer Codebefund. Kein hier ausgefuehrter
+SUI-Verkauf, kein vollstaendiger historischer Demo-Orderbuchbeleg und keine
+ARM64-/Broker-Dauerabnahme. Eine FOK-Ausfuehrung bleibt liquiditaetsabhaengig.

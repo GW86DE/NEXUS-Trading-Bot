@@ -1,0 +1,49 @@
+NEXUS 8.3.0 - Aenderungen gegenueber 8.2.2
+================================================
+
+SICHERHEIT / FEHLERKORREKTUR
+- Den Aktienabbruch "entry_allowed() got an unexpected keyword argument
+  'asset_type'" an der Ursache behoben. Aktien bleiben eToro, Krypto bleibt
+  OKX Spot.
+- Technische Pflichtpruefungsfehler werden fail-closed als SYSTEM_ERROR mit
+  decision_id, Symbol, Broker, Gate und bereinigter Fehlermeldung gespeichert.
+- Vor dem Broker-Submit muss die Kaufentscheidung erfolgreich persistiert sein.
+  UNKNOWN_AFTER_SUBMIT verhindert blindes Wiederholen einer unklaren Order.
+
+STRUKTURIERTE ENTSCHEIDUNGSDATEN
+- Neuer DecisionSnapshot mit numerischen Markt-, Technik-, Konto-, Risiko-,
+  Kosten- und Orderplanwerten. Fehlende Werte bleiben NULL/None.
+- Gates tragen PASS, BLOCKED, NOT_EVALUATED oder SYSTEM_ERROR.
+- Verwendete abgeschlossene Kerzen und Zeitpunkte, enter_tag, News-/KI-Quellen,
+  Cash, Equity, Tages-P&L, Menge, Stop, Ziel und Kosten sind strukturiert, soweit
+  im jeweiligen Pfad tatsaechlich gemessen.
+- SQLite, decision_journal.jsonl und decision_sources.jsonl verwenden dieselbe
+  vor dem ersten Gate erzeugte decision_id.
+
+ORDER- UND TRADE-LEDGER
+- Separate Orderzeilen fuer ENTRY und PROTECTIVE mit Broker-ID, Rolle, Status,
+  Soll-/Fill-/Restmenge, Preisen, Gebuehren und Zeiten.
+- Teil-Fill plus Stornierung bleibt sichtbar; eine Schutzorder ueberschreibt
+  den Status der Einstiegsorder nicht.
+- Neue Bot-Trades werden mit decision_id und enter_tag geschrieben. Historische
+  NULL-Verknuepfungen bleiben als LEGACY_UNLINKED erkennbar und werden nicht
+  nachtraeglich geraten. Externe/manuelle Bestaende bleiben getrennt.
+- exit_reason sowie reale Fill-, Kosten-, Slippage-, MFE-/MAE-Daten koennen
+  ausgewertet werden, sofern sie tatsaechlich vorliegen. Keine fiktive Rendite.
+
+HUMAN GATE / BEDIENUNG
+- Die von Georg gewuenschte Freigabe bei Terra "kritisch" ist als sichtbare,
+  abschaltbare Einstellung wiederhergestellt und standardmaessig aktiv.
+- /kaufen loest keine Order aus. Die Freigabe wird zeitlich begrenzt gespeichert;
+  beim naechsten Scan werden Kurs, Cash, Position, Risiko, Menge, Stop und Ziel
+  erneut geprueft. Stops, Schutzorders und Verkaeufe warten nie darauf.
+- WebUI-Text beschreibt den Ablauf jetzt korrekt.
+
+INSTALLATION / BESTEHENDE FUNKTIONEN
+- Installer prueft die neuen Pflichtdateien und Tests vor der Serviceumstellung.
+- Bestehender Schutz gegen alte/falsche Servicepfade, fehlende WebUI-Unit und
+  falsche Desktop-Pfade bleibt erhalten.
+- Finanzen.net bleibt entfernt. Favoriten bleiben nur Priorisierung und umgehen
+  keine Auswahlregel. OKX EEA Demo/LIVE und Bereitschaftsdrossel bleiben erhalten.
+- Keine GPL-Quellen von Freqtrade kopiert; nur das Architekturprinzip eines
+  getrennten Order-Ledgers wurde eigenstaendig umgesetzt.

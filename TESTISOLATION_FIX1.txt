@@ -1,0 +1,37 @@
+NEXUS 9.7.4 – TESTISOLATION FIX1
+
+Gezielte Korrektur des Installer-/Offline-Pruefwegs nach der Zustandsmigration.
+Version und Handelscode bleiben 9.7.4-NEXUS; keine erneute Migration.
+
+Der Volltest wird aus einer privaten Kopie der manifestierten Release-Dateien
+mit derselben Python-Umgebung gestartet. Die Originaldateien werden anhand
+SHA-256 vor der Kopie und nach dem Lauf kontrolliert. Unbekannte Quell- und
+Testdateien sind Fehler, keine still ausgelassenen Pruefobjekte.
+
+Lokale Einstellungen, Schluessel, Datenbanken, Historien und HOME-Verzeichnisse
+werden nicht als Testeingaben uebernommen. Geerbte API-/Profilvariablen,
+Proxies und pytest-Plugins werden nicht automatisch aktiviert. Die sieben
+bisherigen Pruefgruppen und alle vorhandenen Regressionstests bleiben erhalten.
+
+Im installierten Ordner:
+TRADINGBOT_ALLOW_LOCAL_STATE=1 ./.venv/bin/python volltest.py
+
+Diese Variable erlaubt ausschliesslich, lokale Dateien neben dem Quellstand
+zu behalten. Sie umgeht keine Pruefung. Der Installer setzt sie bereits.
+Ohne diese Variable bleibt die Pruefung eines auszuliefernden Archivs streng.
+
+Zusaetzliche HTTP- und Python-Socket-/DNS-Sperren wirken nur im Testprozess.
+Ein versehentlich versuchter Netzaufruf macht die Gesamtpruefung rot. Der
+In-Process-TestClient bleibt echt. Kein Betriebssystem-Sandboxversprechen:
+native Fremdbibliotheken und absichtlich feindlicher Code sind nicht das
+Pruefziel dieses Schutzes.
+
+Ein direkter pytest-Lauf im konfigurierten Ordner wird vor Botimports mit
+Hinweis auf volltest.py abgebrochen. Produktions-Konfigurationslader werden
+nicht veraendert. Diese Regressionstests ersetzen weder eine Bewertung der
+individuellen Einstellungen noch Broker-/ARM64-/systemd-Abnahmen.
+
+Nutzerdateien werden nicht geloescht, umgeschrieben oder in die Release-Datei-
+pruefung geschmuggelt. Ein historischer Text in einer lokalen Vorschlagsdatei
+ist keine verbotene Referenz im ausgelieferten Quellcode. Der gleiche Text in
+einer manifestierten Quell-/Testdatei faellt weiterhin durch die Hygienepruefung.

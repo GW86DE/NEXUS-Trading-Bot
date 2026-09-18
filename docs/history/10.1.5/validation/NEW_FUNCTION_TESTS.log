@@ -1,0 +1,10 @@
+{'release_files': 788, 'local_files_excluded': 0}
+...........................................                              [100%]
+=============================== warnings summary ===============================
+tests/test_v1012_diagnosis_webui.py::test_authentication_csrf_modes_and_zip_download
+  /workspace/scratch/33592271b955/implementation_10_1_2/testenv/lib/python3.12/site-packages/starlette/testclient.py:51: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+43 passed, 1 warning in 1.22s
+Network tripwire: no external network attempts

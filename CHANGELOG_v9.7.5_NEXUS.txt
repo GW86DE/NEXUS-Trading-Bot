@@ -1,0 +1,88 @@
+NEXUS 9.7.5 – lokale OKX-Zuordnung, Verkaufswiederholung und gesichertes Upgrade
+Stand 08.09.2026
+Basis: ausgelieferte 9.7.4 + vollständiger Testisolation FIX1.
+
+ORDER-/POSITIONSKORREKTUREN
+- clear_pending und setze_zustand verwenden den tatsächlich gespeicherten,
+  konto-/umgebungsgebundenen Schlüssel. Mehrdeutige Symboltreffer werden nicht
+  pauschal entfernt. eToro-Referenzaliase bleiben unterstützt.
+- Orderupdates folgen ordId bzw. exakten Client-/Referenzankern. decision_id und
+  entry_order_id sind keine Gleichheit zweier Orders. Updates eines EXIT schreiben
+  weder Kauf- noch frühere Verkaufsorders um. Bekannte Identitäten können nicht
+  das Konto, die Umgebung, das Instrument oder die ENTRY/EXIT-Rolle wechseln.
+- Gespeichertes FILLED wird durch eine spätere Storno-/Submit-Beobachtung nicht
+  zurückgestuft. Registry-Mutationen laden nach Fehlern ihren gültigen Diskstand.
+- Ein Entry-Replay erhält vorhandene Position, Retry, Fehlversuchszähler,
+  Hochwasserstand, Stop-/Schutz- und manuelle Steuerung. Kein Wiedereröffnen einer
+  geschlossenen Lineage. Ein Teilrest wird nicht durch die ursprüngliche Kaufmenge
+  ersetzt. Ledgerfehler werden nicht als erfolgreiche Buchung quittiert.
+- Echte zusätzliche Einstiegsfills vor einem Exit werden vollständig aus dem
+  Filljournal gerechnet. Bruttoausführung, Basisgebühr, Nettobestand, VWAP und
+  Gebührenwährung bleiben getrennt. Neue Einstiegsfills nach Exit bleiben im
+  kontrollierten Abgleich statt einer isolierten Finanzwertmutation.
+- Wiederholungsfrist bleibt erhalten. Nach bestätigtem terminalem No-Fill erhält
+  der nächste erlaubte Versuch eine eigene Client-/Attempt-ID. Ungeklärte
+  Übermittlung/Abrechnung blockiert auch den manuellen zweiten Verkaufsauftrag.
+- Kein erfundener Verkaufskurs bei fehlendem Ausführungspreis. Überbestand als
+  Verkaufsmenge wird nicht still gekürzt gebucht. Unvollständige oder noch offene
+  Orderbelege gelten nicht als endgültige Nichtausführung.
+- Der ältere terminale Entry-Recovery-Pfad markiert No-Fill ebenfalls nur mit
+  vollständigem terminalem Negativbeleg; ein Ledgerfehler ist kein No-Fill-Beweis.
+- decision_orders zählt bei OKX die Bruttoausführung für Orderrest; Nettobestand
+  bleibt zusätzlich nachvollziehbar. Eine Basisgebühr ist keine offene Ordermenge.
+- Eigene Verkaufsorders werden mit EXIT-Rolle und ihrem tatsächlichen Ergebnis
+  aufgezeichnet. execution_evidence/execution_quote bleiben für Diagnose erhalten.
+- Quote-Currency aus der belegten Position wird vor Instrument-Suffix verwendet;
+  eine Unified-USD-Abrechnung wird nicht als andere Währung beschriftet.
+
+VORHANDENER DATENZUSTAND
+- repair_okx_state.py plant standardmäßig nur lesend. Anwenden ausschließlich
+  nach bestätigtem Stop aller Writer mit privaten SQLite-/Registry-Sicherungen.
+- Exakte Ledger-/Rohfill-Kette kann beschädigte ENTRY-Aliase korrigieren, einen
+  bereits verbuchten Pending-Kauf abschließen und Order-Brutto/Rest korrigieren.
+- Keine Kontozuschreibung ungebundener Altbestände, keine erfundenen Exitstatus,
+  kein Löschen der Historie; ursprüngliche Einträge stehen im Reparaturbeleg.
+- Trade-Finanzzeilen und vorhandene Positionssteuerung werden nicht geändert.
+
+WEBUI / STATUS
+- Mehrzeilige Logeinträge behalten den Broker ihres Logheaders; ein neuer
+  Systemheader beendet den Brokerkontext. Keine Ticker-basierte Brokervermutung.
+- Verkaufstatus, Fehlversuche und frühester Wiederholungszeitpunkt stehen direkt
+  am OKX-Instrument, auch mobil. Lesbare Mindestbreite der Brokerzelle; breite
+  Tabellen scrollen intern. eToro/OKX-, Konto-, Demo/Live- und Währungstrennung bleibt.
+- Schutzmeldung unterscheidet bestätigt/ungeklärt/fehlend. Ein erfolgloser Abgleich
+  wird nicht als bestätigter Schutz bezeichnet.
+- Pi_Service_Status.sh verwendet UTF-8; fehlende OKX-Statusdatei ist neutral
+  beschrieben, statt einen Startfehler daraus abzuleiten.
+
+EIN-BEFEHL-UPGRADE
+- Nexus_Update.sh / nexus_update.py: Quelle aus beiden systemd-Diensten; kein
+  automatisches Suchen nach der höchsten Versionsnummer. Eigene .venv, reale
+  Runtime-Pins/Imports, TestClient, pip check, gesamte isolierte Suite und Preflight.
+- Vorabtests vor Stop, danach Sicherung, strikte Staging-Migration, belegte
+  Datenreparatur, erneuter Volltest nach Migration, Dienst-/Starterumstellung.
+- WebUI und Demo-Core werden gestartet, jeder aktive Broker braucht frischen
+  Heartbeat/Verbindung. Kein stilles LIVE-Arming; LIVE/unklare Quelle wird abgelehnt.
+- Vor Dienststart kontrollierte Rücknahme; danach bei Fehler KEIN Rückspielen
+  alter Handelsdaten. Neueste Daten bleiben, Dienste werden sicher angehalten.
+- Selbstenthaltender Starter enthält die identische ZIP; prüfsummen-/manifest-
+  gebundene Extraktion ohne Überschreiben, Quellenvergleich und Phasenjournal.
+
+TESTVERTRAG
+- Alle bisherigen Testdateien bleiben erhalten, kein Entfernen/xfail von Fällen.
+- Drei vorhandene Testdateien angepasst: zwei statische Geldpfad-Prüfungen prüfen
+  den sicheren terminal=False-Default und den gesamten relevanten Codeblock;
+  FakeBroker in test_v70_crypto_engine kennzeichnet bestätigten Fill explizit
+  terminal=True. Die fachlichen Assertions bleiben aktiv.
+- Neue tatsächliche Persistenz-, Replay-, Domain-, No-Fill-, Migrations-, Installer-
+  und Archivgrenzfälle zusätzlich. Fixture-Broker ersetzen nur den externen
+  Transport; sie sind kein Ersatzmodul im Release.
+
+NICHT BEHAUPTET
+- Keine Garantie einer Börsenausführung. Der konkrete OKX-FOK-Stornogrund kann ohne
+  vollständige ursprüngliche Order-/Orderbuchantworten nicht tiefer erklärt werden.
+- Kein vollständiger Ersatz aller NEXUS-Risikospeicher durch Freqtrade-Trade/Order.
+- Keine Strategie-/Slippage-Lockerung, kein neues Handelssystem, keine Neuentwicklung
+  von eToro. Keine Ferninstallation oder echten Broker-POSTs im Buildtest.
+- Automatischer Installer wurde mit simuliertem systemd geprüft, nicht auf echter
+  ARM64-Hardware. Echte Zielabhängigkeiten werden deshalb vor Ort zwingend geprüft.

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=TradingBot starten
+Comment=Startet den TradingBot ueber den geprueften Service-Starter
+Exec=__BOTDIR__/Pi_Service_Starten.sh
+Path=__BOTDIR__
+Icon=media-playback-start
+Terminal=true
+Categories=Utility;Finance;

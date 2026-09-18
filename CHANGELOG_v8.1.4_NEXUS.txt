@@ -1,0 +1,402 @@
+TRADINGBOT v8.1.4 NEXUS — AENDERUNGSBERICHT
+================================================================================
+Stand: 25.08.2026        Basis: v8.1.3
+
+Anlass: die Analyse des Handelstags vom 25.08.2026. Vier Kaeufe, drei
+Verkaeufe, keine einzige Telegram-Nachricht -- und ein Fremdbestand von
+0,94 BTC, den der Bot mitverkauft hat.
+
+Unveraendert geblieben — auf ausdrueckliche Ansage:
+  * Verbindungseinstellungen (eToro, OKX, Telegram-Zugang, WireGuard, Web-Login)
+  * Einstellungsuebernahme aus der Vorgaengerversion
+  * Universumsseite und Logbuchseite der WebUI
+
+
+A. DER GELDPFAD
+================================================================================
+
+A1  DER BOT VERKAUFT NIE MEHR, ALS ER GEKAUFT HAT
+--------------------------------------------------------------------------------
+Bis 8.1.3 stand in crypto_engine.pruefe_positionen():
+
+    if abs(bestand.quantity - position.menge) / position.menge > 0.02:
+        position.menge = bestand.quantity
+
+broker.positionen() liefert bei OKX Spot GUTHABEN, keine Positionen -- das
+steht so im Docstring des Adapters. Wich der Kontostand ab, uebernahm der Bot
+also den gesamten Bestand der Waehrung als seine Position. Am 25.08. verkaufte
+er dadurch 0,94141 BTC (rund 65.000 EUR Gegenwert), obwohl seine Position
+0,06305312 BTC war.
+
+Ab 8.1.4 wird nach RICHTUNG unterschieden:
+
+    Kontostand kleiner   -> Buch nach unten korrigieren (immer sicher), melden
+    Kontostand groesser  -> der Ueberhang gehoert dem Bot NICHT. Das Buch
+                            bleibt; der Ueberhang wird gemeldet und sperrt
+                            neue Einstiege
+    Kontostand null      -> Trade im Ledger abschliessen, melden, entfernen
+
+Zusaetzlich fuehrt jede Position jetzt "herkunft" (BOT / BROKER_BESTAND) und
+"verwaltung" (AUTO / BEOBACHTEN) -- dieselbe Unterscheidung, die die
+Aktienseite seit v6 kennt. Verkauft wird nur, was BOT und AUTO ist. Und die
+Verkaufsmenge ist hart gedeckelt: min(Buchmenge, Kontostand).
+
+A2  EIN TEILVERKAUF LAESST DEN REST NICHT FALLEN
+--------------------------------------------------------------------------------
+_schliesse() entfernte die Position immer vollstaendig -- auch wenn nur 10 %
+ausgefuehrt wurden. Am 25.08. blieben nach einem Verkauf von 1,66715 aus
+15,85775 SOL genau 14,19060 SOL ohne Stop, ohne Ziel und ohne Buchfuehrung im
+Konto liegen.
+
+Jetzt:
+  * ausgefuehrte Menge < Buchmenge -> Position auf den Rest reduzieren
+  * Broker-Schutzorder fuer die Restmenge NEU setzen
+  * erst unterhalb der Mindestordergroesse faellt der Rest aus dem Buch,
+    mit ausdruecklicher Meldung
+
+A3  AUSGELOESTE BROKER-SCHUTZORDER WIRD ERKANNT
+--------------------------------------------------------------------------------
+Ist das Guthaben weg, wird der Trade jetzt sauber im Ledger und im Risikotopf
+abgeschlossen und gemeldet -- statt die Position still aus dem Buch zu nehmen.
+
+A4  POSITIONSGROESSE AUF DAS EIGENE KAPITAL
+--------------------------------------------------------------------------------
+Der Risikotopf rechnete mit total_equity_usd(), also dem GESAMTVERMOEGEN des
+Kontos. Am 25.08. waren das rund 174.000, waehrend nur 4.600 EUR frei waren --
+die geplante Order betrug 189 % des verfuegbaren Guthabens. Genau daher kamen
+die 16 Meldungen "Cash-Reserve reicht nicht", die dieses Release ausgeloest
+haben: Nicht die Reserve war zu streng, die Bemessungsgrundlage war falsch.
+
+Jetzt:  freies Guthaben in der Quotewaehrung
+      + Marktwert der Positionen mit herkunft=BOT
+
+Damit verschwindet auch die Einheitenmischung: gerechnet wird in EUR bzw.
+USDC, nicht in USD.
+
+A5  GEBUEHREN MESSEN STATT ANNEHMEN
+--------------------------------------------------------------------------------
+Gemessen am 25.08. auf dem echten Konto: 0,3500 % je Seite, beide Richtungen.
+Der Bot rechnete mit 0,10 % -- das ist der Tarif MIT eroeffnetem
+Derivate-Konto (X-Perps). Ohne eines gilt 0,35 % ("Normaler Nutzer,
+0-100.000 EUR").
+
+  * OKX_TAKER_FEE_PCT Vorgabe jetzt 0,0035
+  * beim Verbinden wird /api/v5/account/trade-fee abgefragt; der gemessene
+    Satz gilt. Faellt die Abfrage aus, der konservativere Wert
+  * die Gebuehrenrechnung nutzt ueberall diesen Satz
+
+Folge: Die Kostenhuerde steigt von 0,90 % auf rund 1,65 %. Der Kauf vom 25.08.
+haette damit nicht stattgefunden. Es wird deutlich seltener gekauft -- das ist
+der Sinn der Aenderung.
+
+A6  DER STOP DARF NIE ENGER SEIN ALS DIE KOSTEN
+--------------------------------------------------------------------------------
+Im Profil OFFENSIV lag der Stop 0,57-0,64 % unter dem Einstieg, die
+Roundtrip-Kosten betragen 0,70 %. Zwei Positionen wurden nach 63 Sekunden
+ausgestoppt; ein Stop-Out war rechnerisch ein sicherer Verlust.
+
+    Mindestabstand = Roundtrip-Kosten x CRYPTO_STOP_KOSTEN_FAKTOR (1,5)
+    Stopabstand    = max(ATR-Abstand, Mindestabstand)
+
+Das Profil bleibt, verhaelt sich aber nicht mehr selbstschaedigend. Faellt das
+Chance-Risiko-Verhaeltnis dadurch unter die Grenze, findet kein Kauf statt --
+mit dieser Begruendung im Protokoll.
+
+A7  ORDERGROESSE GEGEN DIE ORDERBUCHTIEFE
+--------------------------------------------------------------------------------
+Am 25.08. bestellte der Bot 46,9 SOL und bekam 0,50 -- OKX stornierte den Rest
+ueber die eigene 5-%-Regel. Jetzt wird vor dem Absenden geprueft, wieviel sich
+kaufen laesst, ohne den besten Briefkurs um mehr als 0,5 % zu verlassen; nur
+ein Viertel der sichtbaren Tiefe wird beansprucht.
+
+A8  ANLAUFSPERRE: TRADING_READY PLUS MINDESTWARTEZEIT
+--------------------------------------------------------------------------------
+Am 25.08. kaufte der Bot 2,5 Sekunden nach dem Start. Eine Anlaufsperre gab es
+in KEINER Version -- die vorhandenen startup_grace-Werte betreffen nur den
+systemd-Watchdog. Der Gedanke stand als P0 im Backlog (HB-007), gebaut wurde
+er nie.
+
+Neu: trading_ready.py mit zwei Bedingungen, beide muessen erfuellt sein.
+
+  1. TRADING_READY je Brokerdomaene -- zwoelf Voraussetzungen, darunter
+     "Positions-Reconciliation einmal abgeschlossen", "Universumslauf einmal
+     gelaufen", "eine vollstaendige Signalkerze seit dem Start" und
+     "Gebuehrensatz bekannt".
+  2. STARTUP_TRADING_GRACE_MINUTES (Vorgabe 15), auch wenn 1 frueher gruen
+     wird.
+
+DIE SPERRE GILT NUR FUER NEUE KAEUFE. Verkaeufe, Stops, Ziele, das Setzen und
+Nachziehen der Schutzorders, die Reconciliation und der Universumslauf laufen
+sofort. Eine bestehende Position darf nach einem Neustart keine Sekunde
+ungeschuetzt sein.
+
+Nebeneffekt, der zaehlt: Weil die Reconciliation Pflichtbedingung ist, haette
+der Vorfall vom 25.08. so gar nicht entstehen koennen.
+
+
+B. TELEGRAM
+================================================================================
+
+B1  DER KANAL WAR KAPUTT
+--------------------------------------------------------------------------------
+nexus_start._melder() enthielt:
+
+    from notifier import Notifier
+
+Diese Klasse gibt es in notifier.py nicht -- dort stehen nur Funktionen. Der
+ImportError wurde zu einer INFO-Zeile verschluckt, die Funktion gab None
+zurueck. Damit hatte die GESAMTE Kryptomaschine keinen Meldekanal: kein Kauf,
+kein Verkauf, keine Cash-Reduktion, keine Sperre erreichte den Nutzer. Der
+Aktienkern meldete weiter, weil er notify_trade direkt aufruft -- deshalb fiel
+es lange nicht auf.
+
+Ab 8.1.4 liefert _melder() IMMER eine aufrufbare Funktion. Ein
+Regressionstest wacht darueber.
+
+B2  VIER MELDUNGSKLASSEN (meldungen.py)
+--------------------------------------------------------------------------------
+    KRITISCH   sofort, nie gedrosselt -- hier muss jemand eingreifen
+    HANDEL     sofort -- Kauf, Verkauf, Teilausfuehrung
+    INFO       gedrosselt und gesammelt
+    STILL      nur Protokoll
+
+B3  HANDELSMELDUNGEN, EINHEITLICH FUER BEIDE BROKER
+--------------------------------------------------------------------------------
+    KAUF · OKX · SOL
+    15.85775 zu 99.9544 USDC = 1.585,03 USDC
+    Gebuehr 5,5500 USDC (0.35 %) · Stop 99.38 · Ziel 101.09
+    Grund: Ruecksetzer im Aufwaertstrend, RSI 31->37
+    Order 47.53513 geplant, 15.85775 ausgefuehrt — Rest storniert
+
+    VERKAUF · OKX · SOL · Stop-Loss erreicht
+    1.66715 von 15.85775 ausgefuehrt — 14.1906 bleiben gefuehrt und geschuetzt
+    zu 99.1898 USDC · Gebuehr 0,5800 USDC
+    Ergebnis -1,85 USDC nach Gebuehren · Haltedauer 1 min
+
+Die Mengen stehen exakt -- nicht mehr auf sechs Stellen gerundet.
+
+B4  /status KENNT JETZT OKX (okx_status.py)
+--------------------------------------------------------------------------------
+Der Status las bis 8.1.3 nur runtime_status.json, also die Datei des
+eToro-Prozesses. Ueber OKX stand dort kein Wort. Jetzt: Modus, Verbindung,
+Handelsbereitschaft mit Restwartezeit, handelbares Kapital, Gebuehrensatz,
+Guthaben je Waehrung, offene Positionen mit Einstand und Stop, Tagesergebnis,
+Universum. Ein fehlender oder veralteter Heartbeat wird als solcher benannt.
+
+B5  NEUE BEFEHLE
+--------------------------------------------------------------------------------
+    /wartend            Kauforders, die auf Freigabe warten
+    /kaufen SYMBOL      KI-Warnung aufheben (kauft NICHT sofort)
+    /verwerfen SYMBOL   wartende Kauforder ablehnen
+
+
+C. WEBUI
+================================================================================
+  * Versionsnummer kommt aus config.VERSION_NEXUS -- die neun hartkodierten
+    Stellen sind weg
+  * Dashboard-Raster auf auto-fit; die Kacheln reissen nicht mehr aus
+  * drei neue Karten: OKX Guthaben, OKX Positionen, Handelsbereitschaft
+  * Entscheidungsliste in ORTSZEIT (bis 8.1.3 roher UTC-Text -- 13:25 stand
+    dort als 11:25) und mit 15 statt 6 Zeilen
+  * Einstellungen: Knopf "KI-Zugang testen" plus /api/ai/test
+  * Einstellungen: Abschnitt "GPT Second Opinion", sofort wirksam
+  * Universumsseite und Logbuchseite unveraendert
+
+
+D. UNIVERSUMSDIAGNOSE
+================================================================================
+Am 25.08. bestanden 2 von 581 Instrumenten die harten Filter -- welcher Filter
+die 579 verworfen hat, stand nirgends. Jetzt zaehlt jeder Universumslauf:
+
+    581 Instrumente → 2 im Pool → 2 bewertet
+      andere Quotewaehrung              412
+      Tagesumsatz zu klein              118
+      Spanne zu weit                     31
+
+An KEINER Schwelle wurde gedreht. Erst messen, dann reden.
+
+
+E. GPT SECOND OPINION VOR KAUFORDERS
+================================================================================
+Nach Georgs Vorgabe: zusaetzliche Einschaetzung ja, automatische Kauf-Freigabe
+nein.
+
+WO      Ganz am Ende, wenn Technik, Nachrichten, Risiko, Kosten, Cash und
+        Orderbuchtiefe bestanden sind. Ein abgelehnter Kandidat erreicht die
+        KI nie.
+
+WAS     Einstufung unauffaellig / vorsichtig / kritisch, kurze Begruendung,
+        Chancen, Risiken, Widersprueche, Nachrichtenlage.
+
+WIRKUNG unauffaellig, vorsichtig -> Kauf laeuft, Begruendung steht in Logbuch
+        und Meldung
+        kritisch -> die Order wartet auf eine Telegram-Freigabe
+
+Der KI-Beitrag steht immer mit GEWICHT 0,0 und Richtung NEUTRAL im Protokoll.
+Nur so ist ausgeschlossen, dass eine Einschaetzung das Stimmungsbild der
+Entscheidung verschiebt -- die Strategie bleibt reproduzierbar.
+
+WARTENDE ORDER
+  * verfaellt nach AI_PENDING_EXPIRY_MINUTES (15)
+  * vor dem Absenden wird die Grundlage erneut geprueft: Kursdrift (max.
+    0,3 %), Guthaben, Risikotopf, bereits gehaltener Bestand, Kurs unter Stop.
+    Jede Abweichung fuehrt zum Verfall MIT Begruendung
+  * ueberlebt einen Neustart nicht stillschweigend
+  * blockiert nichts: Verkaeufe, Stops und andere Symbole laufen weiter
+  * hoechstens eine je Symbol
+
+BEI AUSFALL DER KI
+  Der Kauf laeuft, mit Vermerk und eigener Meldung. Wuerde ein Ausfall den
+  Kauf verhindern, waere die KI faktisch doch ein Freigabetor. Verkauf, Stop
+  und Schutzorder fragen die KI NIE.
+
+SCHALTER (WebUI, sofort wirksam)
+  aus | nur bei LIVE | immer (auch Demo), Zeitlimit, Tagesbudget,
+  Wiederholsperre, Verfallszeit, zulaessige Kursabweichung.
+  Vorgabe: aus.
+
+
+NEUE UND GEAENDERTE DATEIEN
+================================================================================
+Neu     trading_ready.py         TRADING_READY und Anlaufsperre
+        meldungen.py             Meldeschicht mit vier Klassen
+        okx_status.py            OKX-Abschnitt fuer Status und Dashboard
+        second_opinion.py        GPT-Zweitmeinung und wartende Orders
+        universe_diagnose.py     Filterzaehlung des Universumslaufs
+        tests/test_v814_positionsbuch.py
+        tests/test_v814_anlaufsperre.py
+        tests/test_v814_meldungen.py
+        tests/test_v814_second_opinion.py
+        tests/test_v814_webui_und_diagnose.py
+        tests/test_v814_nachpruefung.py
+
+Geaendert
+        cost_engine.py           gemessener Gebuehrensatz durchgereicht
+        exposure_klassifizierung.py  Sperre faellt nicht mehr offen aus
+        trading_ready.py         pruefe() ohne Nebenwirkung
+        crypto_engine.py         A1-A8, Second Opinion, Meldungen, Status
+        broker/okx.py            handelbares_kapital, gebuehrensatz, trade_fee
+        risk_pots.py             Positionsgroesse aus handelbarem Kapital
+        nexus_start.py           _melder repariert
+        berichte.py              OKX im Status, neue Befehle
+        ai_router.py             Aufgabe second_opinion
+        config.py                Gebuehrensatz, Stopfaktor, Orderbuch,
+                                 Anlaufsperre, Second Opinion, Version 8.1.4
+        live_settings.py         Second Opinion sofort wirksam
+        webui/app.py             Version aus config, /api/ai/test
+        webui/state.py           OKX-Detail, Diagnose, 15 Zeilen
+        webui/settings_store.py  Second-Opinion-Einstellungen
+        webui/templates/*.html   Versionsplatzhalter, KI-Test, Second Opinion
+        webui/static/*.js/css    Raster, Ortszeit, OKX-Karten, KI-Test
+        settings_migration.py    second_opinion_settings.json
+        volltest.py              neue Pflichtdateien und Laufzeitdateien
+
+
+NACHPRUEFUNG — WAS DIE UNABHAENGIGE DURCHSICHT NOCH GEFUNDEN HAT
+================================================================================
+Nach der Umsetzung wurde der Geldpfad noch einmal unabhaengig gegengelesen.
+Fuenfzehn Punkte, mehrere davon ernst. Alle behoben, alle mit einem eigenen
+Regressionstest (tests/test_v814_nachpruefung.py).
+
+ERNST 1 — Ein fehlgeschlagener Verkauf liess die Position ungeschuetzt.
+    schliesse_position() storniert bei OKX ZUERST die Schutzorder und sendet
+    danach den Verkauf. Schlug der Verkauf fehl (Broker lehnt ab, keine
+    Ausfuehrung, unklarer Zustand), blieb broker_schutz auf True -- die
+    einzige Wiederherstellung "if not position.broker_schutz" griff deshalb
+    nie. Die Position lag ab da dauerhaft ohne Broker-Schutz im Konto, und die
+    Oberflaeche zeigte "geschuetzt".
+    Behoben: Alle drei Fehlerpfade setzen den Schutz als verloren; der
+    naechste Takt setzt ihn neu.
+
+ERNST 2 — Ein fehlgeschlagener Verkauf war voellig stumm.
+    Nur der unklare Transportzustand meldete. Ein von OKX dauerhaft
+    abgelehnter Stop-Loss wiederholte sich still in jedem Takt.
+    Behoben: beide Faelle melden jetzt als KRITISCH, mit Handlungshinweis.
+
+ERNST 3 — Ein einzelner Nullstand loeschte die Position endgueltig.
+    Fehlte eine Waehrung einmal in der Guthabenantwort (Stream-Snapshot,
+    Transfer ins Funding-Konto), wurde sofort ein Ergebnis in den Risikotopf
+    gebucht -- mit einem Preis aus dem Ticker, nicht dem Ausfuehrungskurs --
+    und die Position entfernt. In 8.1.3 war derselbe Ausloeser folgenlos.
+    Behoben: erst nach zwei Zyklen in Folge. Eine pausierte oder fremde
+    Position wird gar nicht abgerechnet.
+
+4 — Der gemessene Gebuehrensatz erreichte die Kostenhuerde nicht.
+    estimate_roundtrip() las ausschliesslich config.OKX_TAKER_FEE_PCT. Das
+    Messen war damit wirkungslos, sobald OKX einen anderen Satz meldet.
+    Behoben: fee_pct wird durchgereicht -- Kostenhuerde, Cash-Anpassung und
+    Gebuehrenbuchung nutzen denselben gemessenen Wert.
+
+5 — Die Cash-Anpassung rechnete mit 0,001 als Rueckfallwert, also genau dem
+    als falsch erkannten Satz. Behoben.
+
+6 — handelbares_kapital() addierte EUR und USDC ohne Umrechnung -- dieselbe
+    Einheitenmischung in kleinerem Massstab. Behoben: nur die eingestellte
+    Handelswaehrung. kontowaehrung() meldet nicht mehr "USD".
+
+7 — Die Fremdbestandssperre fiel offen aus. War der Ticker nicht abrufbar,
+    galt ein Ueberhang von 0,94 BTC als Staubrest und sperrte nichts.
+    Behoben: ohne Kurs kein Staub -- der Ueberhang gilt als ungeklaert.
+
+8 — Die Telegram-Freigabe war nicht an die freigegebene Menge gebunden.
+    Bei mehr Cash oder mehr Orderbuchtiefe waere unter derselben Freigabe
+    eine groessere Order rausgegangen, als der Nutzer gesehen hat.
+    Behoben: Menge und Stop werden mitgeprueft.
+
+9 — Kursabweichung und Verfallszeit hatten keine Obergrenze. Eine
+    versehentliche 100 haette die Kurspruefung stillgelegt. Behoben:
+    hoechstens 5 % Drift, hoechstens 240 Minuten.
+
+10 — Zwei der zwoelf TRADING_READY-Bedingungen massen nichts. "kursdaten" war
+    ab dem ersten Zyklus wahr, "signalkerze" war nur der Anlauftimer in
+    anderen Worten. Behoben: Tickeralter gegen CRYPTO_TICKER_MAX_AGE_SECONDS,
+    Kerzengroesse gegen die tatsaechlich verstrichene Zeit.
+
+11 — status() hatte eine Nebenwirkung: es rief darf_kaufen() auf und
+    verbrauchte damit die Freigabemeldung. Behoben: pruefe() ist die
+    nebenwirkungsfreie Auskunft, darf_kaufen() meldet.
+
+12 — NaN lief durch die Fallunterscheidung hindurch ("nan <= 0" ist False).
+    Behoben: _ist_positiv() prueft auf endliche, positive Zahlen.
+
+13 — Ein Beitrag mit Gewicht 0,4 stand unter der Datenquelle "Second
+    Opinion" -- die zugesicherte Invariante galt damit nicht woertlich.
+    Behoben: Gewicht 0,0, NEUTRAL. Der Kauf entfaellt ueber den
+    Rueckgabewert, nicht ueber ein Gewicht.
+
+14 — storniere_offene_orders() fragte nur nach OCO. Eine als "conditional"
+    angelegte Schutzorder (nur Stop oder nur Ziel) wurde weder storniert noch
+    als vorhanden erkannt: doppelter Schutz und blockiertes Guthaben.
+    Behoben: beide Algo-Arten.
+
+15 — Eine fehlgeschlagene Stornierung war stumm. Bleibt Guthaben eingefroren,
+    wird der folgende Verkauf stillschweigend zur Teilausfuehrung -- genau das
+    SOL-Muster vom 25.08. Behoben: der Fehlschlag wird gemeldet.
+
+
+PRUEFSTAND
+================================================================================
+    515 Tests bestanden, 1 uebersprungen (Tk fehlt in der Testumgebung),
+    161 Subtests
+    volltest.py vollstaendig gruen
+
+Die neuen Tests halten die Faelle vom 25.08.2026 mit den echten Zahlen fest:
+Fremdbestand 0,94141 BTC, Teilverkauf 1,66715 aus 15,85775 SOL, Kauf 2,5
+Sekunden nach dem Start, Melder gleich None.
+
+Grenze, ehrlich benannt: echte eToro-, OKX-, Telegram- und KI-Netzaufrufe
+sowie ARM64-Hardware werden offline nicht simuliert.
+
+
+WAS BEWUSST OFFEN BLEIBT
+================================================================================
+  * Aktien-Orderpfad an den Universumszustand haengen. Die Kernsperre wirkt
+    weiterhin nur bei Krypto -- eine Verhaltensaenderung im Aktienhandel
+    braucht eine eigene Abnahme.
+  * Etappe B und C der Strategy Evolution Engine. Erst braucht es Wochen
+    sauberer Trade-Daten.
+  * Aenderungen an den Universumsschwellen. Erst messen (Teil D), dann reden.
+  * MFE/MAE werden nur fuer Krypto gefuehrt; fuer eToro bleiben die Felder
+    leer statt falsch.
+  * P0-02 Orderlebenszyklus als Zustandsautomat, P0-03 Vereinheitlichung der
+    Scharfschaltung, P0-04 Watchdog je Brokerdomaene.

@@ -1,0 +1,34 @@
+NEXUS 9.8.8 FIX3 — 12. September 2026
+
+P0: Originalbeleggestuetzte Nachpflege der sieben identifizierten historischen
+OKX-DEMO-Faelle. Vier Ledgerluecken, sieben offene EUR-Risikobelege.
+Originalwaehrungen bleiben erhalten. Separate, nachvollziehbare EUR-Bewertung
+je Kauf-/Verkaufsfill: USDC mit letzter gehandelter abgeschlossener LIVE-
+Referenzminute vor Ausfuehrung (hoechstens 5 Minuten alt), USD mit ausdruecklich
+als Tagesreferenz gekennzeichnetem EZB-Kurs. Keine behauptete FX-Ausfuehrung.
+Ein SUI-USDC-Kauf wird seinem belegten manuellen SUI-EUR-Verkauf zugeordnet.
+Restmengen, Kostenbasis, Original-Fillzeit, Risikobuchung und Wiederholung werden
+zusammen geprueft. Veraenderte Nachweise sperren. Keine pauschale Entsperrung.
+
+Der persoenliche Installer enthaelt die Originalbelege vom 12. September,
+18:03 und 18:34. Er verwendet den aktuellen Zustand des eingerichteten
+Core-Dienstes, mit Sicherung und Reparatur im gestoppten Staging. Keine alte
+Diagnose-Datenbank wird installiert. Eigenes Ziel: TradingBot_v9.8.8_NEXUS_FIX3.
+
+PULSAR: Gemeinsame Vorpruefung und weitere GPT-Pruefphasen standardmaessig
+90 Sekunden; keine Erhoehung der Budgets/Anzahl Suchwerkzeugaufrufe. Fehlerpause
+der gemeinsamen Vorpruefung 15 Minuten, persistent. Verbrauchsbelege werden
+auch bei ungueltigem Inhalt oder verspaeteter Antwort abgerechnet; Analyse nach
+Zeitablauf wird verworfen. Ohne bestaetigten Verbrauch bleibt die Reservierung.
+Nachweislich ungesendete Anfragen geben ihre eigene Reservierung frei. Fruehere
+Reservierungen ohne Verbrauchsbeleg werden nicht pauschal auf null gesetzt.
+Heartbeat getrennt vom Recherchewarten, Modus-/Belegfrische weiterhin geprueft.
+
+Universum: Automatische Mitgliedschaftsaenderungen hoechstens einmal pro
+Kalendertag in der konfigurierten lokalen Zeitzone (Georg: Europe/Berlin),
+auch nach Neustart. Untertaegige Messungen und Sicherheitssperren bleiben aktiv.
+
+Grenzen: Die sieben belegten historischen Faelle sind gezielt importierbar.
+Andere unbekannte historische Faelle und Vorfaelle brauchen weiter eigene
+Belege; dieses Update loescht keinen PENDING-Vorfall. Nicht Bestandteil sind
+die uebrigen offenen PULSAR-Regel-/ATR-/Teilfuellungs-Befunde.

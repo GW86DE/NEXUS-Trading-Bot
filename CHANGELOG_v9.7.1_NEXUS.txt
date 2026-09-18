@@ -1,0 +1,42 @@
+NEXUS 9.7.1 – gezielter Installations-/Regressions-Korrekturstand
+Basis: ausgelieferte 9.7.0-NEXUS, nicht neu aus 9.5.8 rekonstruiert.
+
+PRODUKTION
+- Einheitliche Ergebnisqualität für Ledger-Kennzahlen und WebUI.
+- Nichtleere Stichproben liefern definierte Kennzahlfelder mit None statt
+  fehlender Keys, wenn bestätigte Nettowerte fehlen.
+- Haltedauer und Slippage sind unabhängig von unbekannten Gebühren auswertbar.
+- Geldbeträge verschiedener Währungen werden im Ledger nicht mehr addiert.
+- Beim Teilverkauf bleibt eine unbekannte Einstiegsgebühr auch im Rest unbekannt;
+  sie wird nicht versehentlich zu bestätigten 0 Gebühren.
+- WebUI zeigt Gebühren offen / Netto unbekannt bzw. vorläufig direkt an der
+  geschlossenen Zeile und kennzeichnet die bestätigten Summen. Die tatsächliche
+  Währung ersetzt den irreführenden Zusatz "je Trade" neben einer Gesamtsumme.
+- eToro-Aliasprüfung verlangt zusätzliche Brokeranker (Zeitpunkt oder eindeutige
+  Close-Order), prüft bekannte Gebühren, Umgebung und alle passenden Kandidaten.
+  Ein belegter Teilverkaufs-Replay wird vor einem offenen Restbestand erkannt.
+  Ein abweichender echter Ausführungsbeleg bleibt ein Konflikt.
+- Kumulative Alt-Checkpoints ohne vorherigen Orderwert führen nicht zu einem
+  erfundenen Differenzpreis: sie verlangen einen Abgleich.
+- VERSION.txt und config.py sind konsistent 9.7.1-NEXUS.
+
+TESTVERTRAG (OFFEN DOKUMENTIERT)
+- Die alten Kennzahl-/Kurventests modellieren jetzt explizite Gebühren von 0,
+  statt weggelassene Gebühren als 0 vorauszusetzen. Produktionsdefault bleibt None.
+- Der History-Teilclose-Test prüft vollständige Mengen und Bruttoergebnisse sowie
+  unbekannte Nettowerte bei fehlenden Gebühren; keine Gebühren werden erfunden.
+- Der kumulative Token-Test prüft nun auch den gespeicherten Gesamtwert und die
+  kumulativen Gebühren; broker_detail muss weiterhin unverändert erhalten bleiben.
+- Der alte Test "Alias muss werfen" prüft jetzt die beabsichtigte idempotente
+  Wiedererkennung und unveränderte Geldwerte. Widerspruchstests bleiben erhalten
+  und werden erweitert.
+- 24 neue Grenzfalltests: Unknown/0, Teilrest, Legacy-Schätzwerte, Währungen,
+  ungültige Zahlen, kumulative Replays, Schreibfehler und Exit-Alias-Konflikte.
+- Kein vorhandener Test wird deaktiviert oder als xfail umdeklariert.
+
+GRENZEN
+Dies ist kein Nachweis einer vollständigen zentralen Order-/Fill-Architektur.
+Keine Änderung an Broker-POSTs, Strategie, Slippage-Limits oder Live-Arming.
+Keine produktiven Nutzerzustände im Paket. Echte Brokerorders und ein Pi-
+systemd-Dauertest wurden nicht ausgeführt. Volltest in der Buildumgebung hat
+8 Importfehler wegen fehlendem yfinance; Details stehen im echten Prüfprotokoll.

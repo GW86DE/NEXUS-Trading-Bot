@@ -1,0 +1,38 @@
+TradingBot NEXUS 9.0.3 – Testprotokoll
+======================================
+
+Status: BESTANDEN
+Datum: 27.08.2026
+
+ERGEBNIS IM ARBEITSBAUM
+- 725 Pytest-Tests bestanden.
+- 186 parametrische Untertests bestanden.
+- Python-Compile-Prüfung bestanden.
+- JavaScript-Syntaxprüfung für common.js, dashboard.js und trades.js bestanden.
+- Eine getrennt aus dem ZIP entpackte Paketkopie bestand erneut den Volltest:
+  725 Pytest-Tests, 186 Untertests, Selbsttest, Compile-Prüfung, statische
+  Release-Hygiene, host-neutraler Pi-Preflight und Shell-Syntax.
+
+NEUE REGRESSIONEN
+- eToro-FILLED erzeugt ohne bestätigte aktuelle positionId keinen offenen Trade.
+- Aktuelle exakte eToro-positionId aktiviert die Wiederherstellung genau einmal.
+- Bereits geschlossene eToro-positionId wird nicht als Kauf erneut eingespielt.
+- OKX-Fill-Historie wird paginiert und über stabile tradeIds dedupliziert.
+- Bestätigte offene Trades und „Klärung nötig“ werden getrennt ausgewertet.
+- Responsive Navigation ist für Handy, Tablet und Desktop vorhanden.
+- UTC-/Ortszeit-Überlappung setzt Tagesrisikowerte nicht versehentlich zurück.
+
+BESTEHENDE REGRESSIONEN
+- eToro-404-Reconciliation, Teil-Fills und Order-Ownership.
+- OKX-Geldpfad, EUR/USD/USDC, 20+30-Universum und Anlaufsperre.
+- Telegram-Queue-Claim, 25-Sekunden-Deduplizierung und Ereignis-IDs.
+- Freqtrade-SampleStrategy-Modus und positionsgebundene Strategie.
+- Trade-Seite, Kerzengrafik, Entscheidungshistorie und Datenbankexport.
+
+SICHERHEITSGRENZEN
+- Keine echten eToro- oder OKX-Orders.
+- Keine echten Telegram-, GPT- oder News-Anfragen.
+- Brokerantworten, Neustarts, Historienseiten und Kontostände wurden offline
+  simuliert.
+- Reale Brokerlatenz und Raspberry-Pi-Hardware müssen zusätzlich im DEMO-/PAPER-
+  Betrieb beobachtet werden.

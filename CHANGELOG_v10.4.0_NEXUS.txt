@@ -1,0 +1,118 @@
+NEXUS 10.4.0 - CHART-SCAN-EXISTENCE (18.09.2026)
+
+Basis: 10.3.1-NEXUS Revision 2 (auf dem Pi installiert; Abnahme per Diagnose
+17.09. 19:26 UTC: Trades 79 und 80 automatisch abgerechnet, keine Kaufsperre).
+Alle fuenf offenen Punkte der 10.4-Liste (Georg, 17.09.2026) in einer Version.
+
+1. PULSAR Existenzrisiko-Block (Hype-Spur, pulsar/evidence.py)
+   - Ein Hype-Kandidat wird NUR dann hart blockiert, wenn die Aktie waehrend
+     des Trades aufhoeren koennte zu existieren: Insolvenzantrag, Chapter
+     7/11/15, Insolvenzverfahren, Going-Concern-Warnung, Delisting,
+     Handelsaussetzung, Betrugsermittlung (SEC/DOJ/Accounting Fraud) sowie
+     FMP-Profil isActivelyTrading = false. Quellen: FMP-News der letzten 90
+     Tage, SEC-Originaldokumente, FMP-Profil. Der Alarm zeigt die Belege.
+   - AUSDRUECKLICH KEIN Block fuer eine schwache Bilanz (negativer Gewinn,
+     negativer Free Cashflow, negatives Eigenkapital, hohe Schulden): das ist
+     Teil des Squeeze-Musters (GME 2021, AMC). Die Bilanz erscheint nur als
+     Information im Telegram-Alarm ("Bilanz (nur Information): ...").
+   - Luna-Anweisung (pulsar/analysis.py) geschaerft: REJECT ist PFLICHT bei
+     Existenzrisiko, eine schwache Bilanz ist KEIN REJECT-Grund.
+     Regelversionen: evidence PULSAR-2.1-HYPE-LANE-EXISTENCE, analysis
+     pulsar-cited-reviews-v9-existence-risk (alte Messungen werden nicht
+     rueckwirkend umgedeutet; stable_candidate zaehlt nur die neue Version).
+   - Diagnose 17.09.: AMC (Chapter 11 seit Sommer 2026) waere mit 10.3.0 ohne
+     diese Pruefung durchgegangen -- ein Stop-Loss greift bei Aussetzung/
+     Delisting nicht, das Risiko waere die ganze Position statt 0,25 %.
+
+2. Hype-Spur Kursbestaetigung per FMP-Starter-Quote
+   - Der ohnehin je Karte abgerufene /quote (price, previousClose, volume,
+     timestamp) bestaetigt den Ausbruch am selben Tag: hoechstens 15 Minuten
+     alt, >= +5 % zum Vortagesschluss, bisheriges Tagesvolumen >= 1,0 x
+     eines Durchschnittstages (20 Vergleichstage). Ein frischer, aber nicht
+     bestaetigter Quote wird NICHT durch die Tageskerze von gestern ersetzt
+     (die genaueste Aussage ueber HEUTE gilt). Ohne frischen Quote
+     (alt/unvollstaendig) gilt weiterhin die letzte abgeschlossene Tageskerze
+     (+5 %, 3 x Volumen). Die nie befuellte Intraday-Reihe bleibt als
+     zweiter Weg erhalten. Der Free-Rueckfall (fmp_service._policy) bleibt.
+   - PULSAR-Worker: Quote als Kartenquelle (kind "quote"), Profil-Kompakt um
+     isActivelyTrading ergaenzt.
+
+3. PULSAR-DB-Lock (pulsar/control.py)
+   - Wurzel (Diagnose 17.09.): bei JEDEM Zugriff lief ein executescript
+     (CREATE TABLE IF NOT EXISTS ...) mit eigener Schreibsperre ausserhalb
+     der Transaktion; das kollidierte mit der lesenden Diagnose-Sicherung
+     ("database is locked", control.py:59) und kostete eine Entscheidung.
+   - Jetzt: Schema-Setup einmal je Prozess und Datenbankpfad
+     (_ensure_schema, prozessweite Sperre); danach nur noch eine
+     Leseabfrage (sqlite_master), die eine ersetzte Datei erkennt. Die
+     eigentliche Transaktion (BEGIN IMMEDIATE, busy_timeout 5 s) ist
+     unveraendert. Kein Datenformat geaendert.
+
+4. Logbuch-Scan-Uebersicht (scan_uebersicht.py, live_trader.py, WebUI)
+   - Wurzel: Das Entscheidungsjournal zeichnet bewusst nur Kaufwuensche auf
+     (freigegeben/blockiert); HOLD und SELL ohne Position erzeugen keinen
+     Eintrag. Am 17.09. sah das Logbuch fuer eToro deshalb nur GOOGL/NVDA,
+     obwohl 22 Aktien alle 6 Minuten geprueft wurden.
+   - Jetzt: Je Broker und Scannerzyklus EINE Zeile ("etoro: 22 Instrumente
+     geprueft -- 2 Kaufwunsch blockiert: 2 Boerse geschlossen / Kurs veraltet
+     (GOOGL, NVDA) -- 20 ohne Signal") in scan_uebersicht.json (letzte 48
+     Zyklen je Broker, atomar geschrieben) und im Log als "SCAN ...". Das
+     Logbuch zeigt die Uebersicht ueber der Entscheidungstabelle (WebUI
+     /api/logs/scan-uebersicht, nur mit Sitzung). Gates werden in lesbare
+     Gruppen zusammengefasst (Boerse/Kurs, Anlaufphase, Risikomanager,
+     Kapital/Reserve, Kostenpruefung, Netto-Edge, Marktqualitaet, Sektor-/
+     Korrelationslimit, Earnings-Fenster, ...). Ein Fehler in der Uebersicht
+     beruehrt den Handelspfad nie. Die Diagnose sichert die Datei mit.
+
+5. Kerzenansicht mit Apache ECharts (lokal, OKX UND eToro)
+   - webui/static/echarts.min.js 5.5.1 (Apache-2.0, 1.030.855 Bytes, SHA256
+     e84270bd...73a3cf, echarts.LICENSE.txt liegt bei). Kein CDN, CSP
+     script-src 'self' unveraendert. Vorbild FreqUI: Zoom (Mausrad/Pinch),
+     Verschieben (Ziehen), Schieberegler, Fadenkreuz mit O/H/L/C/Volumen,
+     Volumen-Teilfenster, Marker KAUF/VERKAUF, Linien Stop-Loss/Broker-TP/
+     aktives ROI/aktuell; Farben aus den NEXUS-CSS-Tokens.
+   - Zeitrahmen waehlbar: OKX 5m/15m/1h/4h/1d (OKX-Historie, bis 500 Kerzen
+     rueckwaerts paginiert, Vorlauf 40 / Nachlauf 20 Kerzen); eToro 15m/1h/1d.
+     Ohne Wahl: kleinste Kerze, die den Trade in <= 150 Punkten zeigt.
+   - eToro-Kerzen (etoro_chart_store.py, etoro_chart_candles.sqlite): Die
+     WebUI hat keine Brokerverbindung; der Handelskern sichert die ohnehin
+     geladenen 60-Tage-Stundenkerzen bei jedem Scan (inkrementell, nur neue
+     Zeilen -- schont die SD-Karte) und laedt 15-Minuten- und Tageskerzen
+     nur fuer Instrumente mit offener Position oder Trade der letzten 7 Tage,
+     hoechstens alle 15 Minuten und 4 Abrufe je Zyklus (innerhalb des
+     eToro-Lesebudgets 54/min). Nur abgeschlossene Kerzen, keine Fuellung.
+     Bis 10.3.1 hiess es "Kerzen sind nur fuer OKX verfuegbar".
+   - Achsenklemmung: Preisskala aus dem 1./99. Perzentil der Kerzenkoerper
+     (+8 % Rand); Docht-Ausreisser (DOGE 17.09.: 0,0847 bei Koerpern um 0,080)
+     stauchen die Ansicht nicht mehr, werden gezaehlt ("2 Docht-Ausreisser
+     ausserhalb der Skala") und im Fadenkreuz mit echten Werten gezeigt.
+     Schutzlinien bleiben immer im Bild; die Skala folgt dem Zoomausschnitt.
+   - Stille Aktualisierung (alle 20 s) laesst Zoom und Ausschnitt stehen;
+     ohne ECharts (Node-Test) bleibt die bisherige SVG-Darstellung.
+
+REVISION 2 (18.09.2026, nach Pi-Runde 1, 10.4.0 nie installiert): (a)
+live_trader.py: stummer "except Exception: pass" um die Scan-Zaehlung durch
+logger.debug ersetzt (Volltest-Hygiene "stummer Exception-Pfad"); (b)
+tests/frontend_v100.test.js Subtest 26: let-Bindungen (ausgewaehlt,
+tradeDaten) per run() statt als Kontext-Eigenschaft gelesen/gesetzt. Kein
+Produktverhalten geaendert. Bauskript fuehrt jetzt die komplette statische
+Hygiene und die Node-Suite lokal aus.
+
+VERSIONEN: VERSION.txt 10.4.0-NEXUS, RELEASE_BUILD 10.4.0-CHART-SCAN-EXISTENCE,
+Diagnose 1.8.2 (NEXUS_10_4_0_Diagnose.py / NEXUS_10.4.0_Diagnose_Starten.sh;
+sichert scan_uebersicht.json mit), config.VERSION_NEXUS.
+
+NICHT geaendert: Orderpfade, Risikomanager, Gates, eToro-Cash-Delta-Automatik
+(10.3.1), OKX-Freigabe (10.3.0), Datenformate bestehender Dateien. PULSAR/X/
+GPT haben weiterhin keine Orderbefugnis; UNKNOWN bleibt UNKNOWN.
+
+Tests: tests/test_v1040_scan_chart_existence.py (33: Existenzrisiko-Arten,
+90-Tage-Grenze, Profil, schwache Bilanz = kein Block, SEC-Dokument, Luna-
+Anweisung, Telegram-Text; Quote frisch/duenn/alt/fremd; Schema einmal +
+Wiederaufbau, Leser blockiert Schreiber nicht (WAL); Scan-Zyklus, 48-Grenze,
+defekte Datei, API mit Sitzung, Logbuch-Seite; eToro-Kerzenspeicher
+inkrementell, Ruhezeit/Budget, Chart eToro/OKX, Achsenklemmung, Paginierung,
+API-Zeitrahmen, ECharts lokal/CSP). Node: tests/frontend_v100.test.js um den
+Kerzenansichts-Test erweitert (SVG-Rueckfall, ?bar=, Zeitrahmenleiste,
+Achsennotiz, Fehlerfall). Fortgeschrieben: test_v985 (rules_version dynamisch),
+test_v1019/test_v976 (Versionspins).

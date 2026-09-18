@@ -1,0 +1,11 @@
+{
+  "source": "/workspace/scratch/fb9c1be0b49d/implementation/TradingBot_v10.1.0_NEXUS",
+  "snapshot": "/workspace/scratch/fb9c1be0b49d/implementation/test_runs/v101-release_366d9047/source",
+  "returncode": 0,
+  "network_events": false,
+  "command": [
+    "/workspace/scratch/fb9c1be0b49d/implementation/venv/bin/python",
+    "/workspace/scratch/fb9c1be0b49d/implementation/test_runs/v101-release_366d9047/source/offline_test_bootstrap/run_checks.py"
+  ],
+  "manifest_files": 741
+}

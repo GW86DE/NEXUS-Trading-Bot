@@ -1,0 +1,26 @@
+NEXUS 9.7.3 – kritische Regressionskorrektur auf Basis 9.7.2
+Stand: 07.09.2026
+
+KORRIGIERT
+- Ungebundene/UNKNOWN eToro-Buchungslücken sperren fail-closed jede eToro-Kontodomäne, bis ein belastbarer Kontobeleg sie zuordnet oder der Ledgerbeweis sie auflöst. "Unklar" ist nicht länger "anderes Konto".
+- Nachgemeldete neue Entry-Fills dürfen nach einem vollständigen oder teilweisen Exit keine bereits geschlossenen Zeilen und keinen offenen Rest isoliert in Menge/VWAP verändern. Bekannte Replays bleiben idempotent; neue Belege gehen in LedgerZuordnungUnklar/Reconciliation statt eine halbe Neuberechnung zu erzeugen.
+- trade_open sucht offene Lineages deterministisch (ausgestiegen_am IS NULL, ORDER BY trade_id DESC).
+- Fill-Tracker: 0-Byte-Datei gilt wieder als noch nicht initialisiert; Recovery benutzt decision_analytics.db_pfad(), öffnet SQLite read-only mit Timeout und setzt bei 0 durable Fills nicht initialized=True.
+- Ein fehlgeschlagener Fill-Tracker/Ledger-Recovery startet den Aktienworker nicht endlos neu: die Domäne wird sichtbar ACCOUNTING_RECOVERY_REQUIRED pausiert und es wird keine eToro-Order gesendet.
+- Aktien-Neustartstaffel ist wieder 45 s beim ersten Fehler, danach maximal 90 s.
+- Die im Prüfbericht fehlenden 9.5.8-Verträge wurden als neue 9.7.3-Regressionsfälle ergänzt. Sie werden nicht als identische Originaltests ausgegeben.
+
+ERHALTEN
+- 9.7.2 WebUI-Brokertrennung: eToro/OKX, beobachtete/konfigurierte Umgebung, Konto- und Währungskontext.
+- Belegbasierte Auflösung von eToro-Buchungslücken, Legacy-Audit ohne erfundene Kontozuschreibung.
+- OKX FOK-Tiefenprüfung, Guthabenfreigabe, 51603-Härtung, symbolgenaue Sperren und Exit-Eskalation aus 9.5.8/9.7.x.
+- Unbekannte Gebühren bleiben unbekannt; bestätigte Nettoergebnisse verschiedener Kontodomänen/Währungen werden nicht vermischt.
+
+FREQTRADE-LEITLINIE
+- Orders/Fills sind dauerhafte Belege; abgeleitete Tradewerte dürfen nicht teilweise nachträglich mutiert werden.
+- 9.7.3 blockiert deshalb neue verspätete Entry-Fills nach Exit, bis eine vollständige Recalc-Architektur vorhanden ist. Das ist absichtlich konservativer als eine inkonsistente Teilprojektion.
+
+PRÜFGRENZEN
+- Keine Echtgeld-/Broker-POSTs in der Buildumgebung.
+- Kein systemd-Langzeittest auf dem Raspberry Pi in der Buildumgebung.
+- Pi-Volltest vor Dienstumstellung bleibt Pflicht.

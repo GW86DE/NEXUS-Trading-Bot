@@ -1,0 +1,55 @@
+TradingBot NEXUS 9.0.1
+======================
+
+UMFANG
+- Patch auf Basis von NEXUS 9.0.0. Der bestehende Aktienhandel, die drei
+  NEXUS-Risikoprofile und der isolierte Freqtrade-SampleStrategy-Modus wurden
+  nicht fachlich verändert.
+
+KRYPTO-UNIVERSUM 20 + 30
+- Der feste OKX-Kern enthält exakt 20 Basiswerte: BTC, ETH, SOL, XRP, ADA,
+  DOGE, TRX, LINK, AVAX, LTC, DOT, ATOM, XLM, UNI, AAVE, BCH, HBAR, ICP, ETC
+  und SUI.
+- Die Kernmitgliedschaft ist fest und nicht durch Rang oder Monatsrotation
+  entfernbar. Fehlt ein aktuell erlaubtes Live-Spotpaar oder scheitert ein
+  Sicherheitsfilter, bleibt der Wert sichtbar, aber für neue Käufe gesperrt.
+- Weitere 30 Basiswerte werden beim ersten vollständigen OKX-Snapshot sofort
+  deterministisch befüllt und danach monatlich anhand des 30-Tage-Medians
+  einer täglichen normalisierten OKX-24h-Quote-Volumenmessung bewertet.
+- Reicht die monatliche Abdeckung nicht, bleibt die letzte belegte Liste
+  erhalten und wird als STALE ausgewiesen.
+- Pro Basiswert wird das liquideste vergleichbare EUR-/USDC-Spotpaar gewählt.
+  Eine USDC/EUR-Umrechnung wird nur aus einem tatsächlich beobachteten
+  USDC-EUR-Ticker gebildet; es gibt keine erfundene 1:1-Parität.
+- Die Kryptofilter für die Aufnahme in die BEOBACHTUNG wurden auf 250.000
+  Quote-Tagesvolumen und höchstens 1,2 % Spread gelockert. Der echte
+  Einstieg bleibt an maximal 0,6 % Spread sowie alle bisherigen Daten-,
+  Kosten-, Risiko-, Orderbuch-, Positions- und Anlaufsperren gebunden.
+- Neue dynamische Werte beginnen in BEOBACHTUNG. Fehlende Kerzen oder
+  unvollständige Startdaten können keinen Kauf auslösen.
+- Mitgliedschaft und Monatsrangfolge sind rein datenbasiert. GPT oder News
+  entscheiden weder über Aufnahme noch Rang.
+
+DEUTSCHE TRADE-ANALYSE IN DER WEBUI
+- Neue Navigation und Seite „Trades“ für PC, Tablet und Smartphone.
+- Kennzahlen für offene/geschlossene Trades, Trefferquote, Gebühren und
+  realisiertes Nettoergebnis ohne erfundene Nullwerte.
+- Tabellen zeigen Kauf, Verkauf, Menge, Ausstiegsgrund, Demo/Live sowie den
+  beim Einstieg gespeicherten Strategie-Modus.
+- Kumulierte Nettoergebnisgrafik aus bewertbaren geschlossenen Trades.
+- Rein lesende OKX-Kerzengrafik über den öffentlichen history-candles-Endpunkt.
+  Es werden ausschließlich abgeschlossene Kerzen angezeigt.
+- Tatsächliche Ledger-Kauf- und -Verkaufszeitpunkte sind deutlich markiert;
+  bekannte Stop-Loss- und Take-Profit-Linien werden bei offenen Positionen
+  zusätzlich dargestellt.
+- Für eToro bleibt die Tabellenanalyse vollständig sichtbar. Eine nicht
+  vorhandene historische eToro-Kerzenquelle wird offen benannt und nicht
+  durch fremde oder erfundene Kurse ersetzt.
+
+PERSISTENZ UND UPDATE
+- crypto_dynamic_30.json und crypto_dynamic_30_history.json werden bei einem
+  Versionsupdate sicher übernommen.
+- Alte CORE_VOLUME_20-Dateien bleiben aus Rückwärtskompatibilität erhalten,
+  steuern in 9.0.1 aber nicht mehr die feste Kernmitgliedschaft.
+- VERSION.txt, Selbsttest und Release-Vollständigkeitsprüfung wurden auf
+  9.0.1 erweitert.

@@ -1,0 +1,26 @@
+NEXUS 9.8.2 — Offline-Abnahme
+
+Volltest ausschließlich über volltest.py mit hashgeprüfter temporärer Quellkopie,
+bereinigter Umgebung und HTTP-/Socket-Netzwerkguard.
+Abnahmekriterium je Lauf: 1728 bestandene Python-Tests + 222 Untertests,
+alle sieben Gates erfolgreich; keine Netzwerkguard-Verletzung.
+
+Laufumgebungen: Linux x86_64, tatsächliches Python 3.11.16 und Python 3.12.14.
+Ein vollständiger Lauf prüft den aus dem Lieferarchiv entpackten Stand.
+Sieben Gates: Release-Hygiene, Testabhängigkeiten/WebUI-TestClient, Regressionen,
+Selbsttest, compileall, hostneutrales Pi-Preflight, Shellsyntax.
+
+Zusätzlich: 56 JS-Ergebnisprüfungen, bestehende UI-/Kerzen-/Tastaturprüfungen,
+Syntaxprüfung der Release-JavaScripts. DOM-Modelle, keine visuellen Gerätetests.
+Originaldatenprobe: 52 Trades, nur SUI-Trade 45 in Kopie nachgepflegt,
+andere 51 unverändert, idempotent, Originalhash unverändert, quick_check OK.
+Öffentlicher Fed-RSS: HTTP 200 XML. Nasdaq-Livefeed: Timeout, Parser nur mit Testdaten.
+
+Nicht ausgeführt: echte Brokerorders, Pi/ARM64/Python 3.13.5,
+Safari-/Touch-/visuelle PC-Abnahme. Lokale Browserseite wurde blockiert.
+Keine pauschale Fehlerfreiheit und keine garantierten Fills behauptet.
+
+Rohprotokolle, Paketprüfung, Hashes und Quellvergleich:
+NEXUS_9.8.2_Pruefnachweise.zip.
+Bewertung aller Befunde und verbleibender Grenzen:
+NEXUS_9.8.2_Pruefbericht.md.

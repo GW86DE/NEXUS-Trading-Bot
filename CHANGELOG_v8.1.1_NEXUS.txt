@@ -1,0 +1,46 @@
+TRADINGBOT 8.1.1 NEXUS – CHANGELOG
+================================
+
+INSTALLATION / PI
+- 8.0-Release- und Testfehler korrigiert.
+- 8.1.1-Hotfix: Der Installer erzeugt die lokale WebUI-Netzdatei erst nach dem Release-Test.
+- Wiederholte Installation akzeptiert bereits vorhandene lokale WebUI-/Laufzeitdaten, während der ZIP-Test strikt bleibt.
+- Pi_WebUI_Aktivieren.sh stellt eine nach Teilabbruch fehlende WebUI-Systemd-Unit automatisch wieder her.
+- Installer prüft alle 8.1.1-Pflichtdateien vor apt/pip.
+- WebUI-Netzadresse wird sicher erkannt; private LAN-, WireGuard- und Loopback-Adressen erlaubt.
+- Vorhandenes WireGuard wird niemals verändert.
+- Alte manuelle nexus-webui.service wird konfliktfrei abgelöst.
+- Separater, rebootfester WebUI-Aktivierungsweg ergänzt.
+
+WEBUI
+- Entscheidungsspeicher, Anzahl, Spiegeldatei und Protokollumfang sichtbar.
+- Letzte Kaufentscheidungen/Ablehnungen samt Grund auf dem Dashboard.
+- Explizite read-only Verbindungstests für eToro Demo/LIVE und OKX Demo/LIVE.
+- Sichere Demo/LIVE-Moduswahl je Broker; Moduswechsel disarmt LIVE.
+- Risikoprofile konservativ/ausgewogen/offensiv sichtbar und änderbar.
+- OFFENSIV nur mit zweiter Bestätigung.
+- Datenübernahme aus erkannten alten Projektordnern.
+- Pi-Temperatur, Uptime, CPU, RAM, Speicher und Hardwarewarnungen.
+- US-Marktstatus mit konkreten Öffnungs-/Schlusszeiten und nächster Öffnung.
+
+BROKER / RUNTIME
+- OKX-Runtime-Statusfehler im Taktplan behoben.
+- OKX besitzt jetzt denselben gedrosselten, authentifizierten Healthcheck wie eToro.
+- OKX Health läuft regelmäßig; Ausfall/Wiederherstellung wird gemeldet.
+- eToro und OKX bleiben bei Ausfällen strikt unabhängig.
+- Stablecoin-/Fiat-Selbstpaare wie EUR-EUR werden hart verworfen.
+
+TELEGRAM
+- Bestehende persistente Queue, Pacing, 429/retry_after und Stall-Erkennung erhalten.
+- NotificationMode ON/SILENT/OFF; kritische Sicherheitsmeldungen bleiben hörbar.
+- /menu mit Inline-Refresh, /version, /stats, /performance, /locks und /telegram.
+- RESUME/START/STOPP/SHUTDOWN benötigen sessiongebundene Einmal-Bestätigung.
+- Telegram update_id wird persistent dedupliziert; Commands werden auditiert.
+- Sende- und Command-Gesundheit getrennt sichtbar.
+- Täglicher 18-Uhr-Bericht plus lesbare Entscheidungsdatei mit Gründen/Quellen.
+
+MIGRATION / ENTSCHEIDUNGEN
+- Leere, vom Dashboard initialisierte Decision-DB verhindert die Übernahme nicht mehr.
+- Alte Quelle bleibt unverändert.
+- Migration setzt beide Broker auf Demo/Paper und entfernt alle LIVE-Freigaben.
+- KI bleibt reine Aufmerksamkeit/Priorisierung und darf Freigaben nicht blockieren.

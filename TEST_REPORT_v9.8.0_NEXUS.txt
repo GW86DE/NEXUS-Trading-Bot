@@ -1,0 +1,79 @@
+NEXUS 9.8.0 — ausgeführte Prüfung und Grenzen
+Stand: 8. September 2026
+
+Quellstand vor den abschließenden zusätzlichen Grenztests:
+VOLLTEST OK, sieben von sieben Gates erfolgreich.
+1561 Pytest-Tests bestanden, 212 Subtests bestanden, eine Deprecation-Warnung.
+Gates: Releasehygiene, Testabhängigkeiten/echter FastAPI-TestClient,
+Geldpfad/Regressionen, Selbsttest, Compileall, hostneutraler Pi-Preflight,
+Shellsyntax. Laufzeit dieses Laufs: 49,4 Sekunden.
+Log: release-source-volltest.log im Nachweispaket.
+
+Danach zusätzlich aufgenommen:
+- Der lesende Snapshot legt weder eine Datenbank an noch verändert er ein
+  vorhandenes altes Schema. Dieser zusätzliche Fall wird ebenfalls geprüft.
+- Eine einzelne Primärorder darf keine Menge über ihrer reservierten
+  Bruttomenge oder mehrere voneinander verschiedene Primärorder-IDs übernehmen.
+- Beide Fälle müssen ihre gesamte Belegtransaktion unverändert zurückrollen.
+Der gesamte enthaltene Stand wird nach dem Packen erneut aus der verifizierten
+ZIP geprüft. Der verbindliche Endlauf einschließlich dieser Zusatztests steht
+in PAKETPRUEFUNG_9.8.0.txt und release-archive-volltest.log im Nachweispaket.
+
+Geprüfte neue Ausführungsfälle:
+- SUI: 124,771765 netto im Bestand; erster IOC-Verkauf 40; zweiter 84,77;
+  nur 124,77 verkaufte Einheiten, 0,001765 Rest im Ledger, Schutz des Restes,
+  bestätigte Risikoergebnisse gleich Summe der Ledgerabschlüsse.
+- 8 gleichzeitige Reservierungsversuche erlauben genau eine aktive Order.
+- Timeout nach Brokerannahme, fehlender Lookup, Wiederanlauf: kein zweiter POST.
+- Abbruch vor HTTP, Speicherung vor POST nicht möglich, Speicherung der
+  angenommenen Antwort nicht möglich: keine gefährliche Wiederholung.
+- Unbekannte Order verjährt nicht; belegte Nullfüllung ist gesondert retryfähig.
+- Teilfüllung plus terminaler Reststorno ist kein Vollverkauf.
+- Wiederholte/abweichende Fill-IDs, Preis-, Konto-, Instrument- und Umgebungsbelege.
+- Fehlende Gebühren, Drittwährung, explizite Nullgebühr, Rabatt und Basisgebühr.
+- Zwei eToro-Close-Fills werden erst nach beiden Ledgerabschlüssen als gebucht
+  markiert. Terminaler eToro-Teilkauf wartet nicht auf einen stornierten Rest.
+- Ergebnisreplay nach Neustart/Tageswechsel, unbekannter Ergebnisbeleg,
+  spätere einmalige Bestätigung ohne Aufblähen des neuen Tagesgewinns.
+- SQLite-Zustandskopie enthält Aufträge, Fills und Ereignisse unverändert.
+- Nur lesender SUI-Export enthält das neue Journal, keine fremden Instrumente.
+- Bisherige Regressionssuite einschließlich Kaufkaskade, Schutz, KO44/
+  eToro-Zuordnung, Kontotrennung, Update-/Wiederanlaufgrenzen bleibt aktiv.
+
+Geprüfte WebUI-Funktionen:
+- Alle 51 bestehenden Einstellungsfelder und wichtigen Laufzeitaktionen erhalten.
+- Authentifizierte Seiten, eindeutige HTML-IDs, lokale Assets, vier Handelsreiter.
+- /positions-Weiterleitung, geschützter /api/executions-GET, Brokerfilter,
+  keine Ausgabe roher Orderpayloads; CSRF-Grenze bei manuellen POST-Aufträgen.
+- Alte offene Positionen bleiben sichtbar, frische Abschlüsse alter Käufe
+  erscheinen nach Verkaufsdatum in der Historie.
+- Node: Syntaxprüfung aller acht JavaScript-Dateien.
+- JavaScript-Ausführung mit deterministischen DOM-Doubles: Reiter/Tastatur,
+  Pagination, HTML-Escaping, Kerzenberechnung bei 320/390/768/1024/1440 Pixeln,
+  verspätete Chartantworten, sichtbare API-Fehler, sechs Dashboard-Freigabegates.
+- Keine Screenshots, kein Browserlayouttest und keine echten Apple-Gerätetests.
+  DOM-Doubles belegen Funktionsverhalten, nicht die optische Darstellung.
+
+Testumgebung:
+Linux x86_64, Python 3.12.13. Eigene Umgebung mit realen Release-/Testpaketen;
+kein Ersetzen fehlender Importe durch Attrappen. Vollständige Paketliste im
+Nachweispaket. Testverkehr wird durch die vorhandene HTTP-/Socket-Isolation
+blockiert. Die Tests arbeiten auf verifizierten getrennten Kopien und separatem
+Laufzeitzustand. Es wurde kein Nutzerkonto angebunden und kein echter Auftrag
+oder Telegram-Text gesendet.
+
+Vorläufe:
+Die roten Zwischenläufe sind keine bestandenen Prüfungen. Sie deckten echte
+Anpassungsfehler und veraltete Erwartungen an FOK, Retryzeiten und entfernte
+UI-Elemente auf. Diese wurden korrigiert und mit geänderten fachlichen
+Anforderungen geprüft; keine Sicherheitstests wurden dafür deaktiviert.
+Der schon in der Basis bekannte Telegram-Paralleltest ist bei isolierter
+Ausführung reihenfolgeabhängig; in den vollständigen Suiten besteht er.
+Telegram-Produktionscode wurde hier nicht verändert.
+
+Grenzen:
+Pi 5/ARM64/Python 3.13.5, tatsächliche Broker-Demoausführung und aktuelle
+Nutzerdaten liegen außerhalb dieser Umgebung. Der Preflight ist ausdrücklich
+hostneutral. Testresultate ersetzen weder die Dienstkontrolle auf dem Pi noch
+einen passenden echten Brokerfill. Historische fehlende Gebühren oder
+Orderbuchdaten werden nicht erfunden; ungeklärte Altbelege bleiben erkennbar.

@@ -1,0 +1,31 @@
+{
+  "version": "10.1.0-NEXUS",
+  "run": "v101-release_366d9047",
+  "pytest_passed": 2584,
+  "subtests_passed": 251,
+  "warnings": 7,
+  "groups_by_testfile": {
+    "Datenquellen, PULSAR und GPT": 262,
+    "Weitere bestehende Regressionen/Systemmodule": 1021,
+    "OKX, Kerzen, Strategien und Universum": 376,
+    "eToro-spezifische Pfade": 126,
+    "Risiko, Persistenz, Migration und Installation": 260,
+    "Order-Lifecycle, Buchung und Reconciliation": 395,
+    "WebUI, Status und Diagnose": 144
+  },
+  "new_testfiles": {
+    "test_v101_candle_observation": 31,
+    "test_v101_etoro_protection_evidence": 23,
+    "test_v101_evidence_packet": 27,
+    "test_v101_fmp_context": 24,
+    "test_v101_halt_diagnostics": 6,
+    "test_v101_massive": 37,
+    "test_v101_migration": 26,
+    "test_v101_risk_basis_review": 15,
+    "test_v101_webui_explanations": 24
+  },
+  "new_tests": 213,
+  "diagnostic_tests": 59,
+  "installer_tests": 15,
+  "network_events": false
+}

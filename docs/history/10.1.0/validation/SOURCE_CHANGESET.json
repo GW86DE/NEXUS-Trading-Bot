@@ -1,0 +1,354 @@
+{
+  "baseline": "10.0.0-NEXUS",
+  "version": "10.1.0-NEXUS",
+  "tested_run": "v101-release_366d9047",
+  "verified_program_files": 623,
+  "program_files_equal_tested_snapshot": true,
+  "changes": [
+    {
+      "file": "NEXUS_10_Diagnose.py",
+      "old_sha256": null,
+      "new_sha256": "15804c4bf13f3ab8ebcfb94080531cebf7f7436775f04368fafc15e7cd790826"
+    },
+    {
+      "file": "NEXUS_Diagnose_Starten.sh",
+      "old_sha256": null,
+      "new_sha256": "47c6b1577b342ba077827a3198b4de5350c85d804e27f95977f6d5ca080595f1"
+    },
+    {
+      "file": "Pi_Installieren.sh",
+      "old_sha256": "661bc597b9bf66970e8c33b4f53b367a5d37a8e17078038421a903b4661ac6b9",
+      "new_sha256": "5077186ddc9294f63b87dcb4945be89e8711babb84d3d6c9db42d0b867868e34"
+    },
+    {
+      "file": "RELEASE_BUILD.txt",
+      "old_sha256": "557fa3d09c19f7d3e30c68bfa970a6d354f522a23e1a0aca10e63e15dab328ad",
+      "new_sha256": "389c40bc1523fa78827ea80388b3bcbe4cfa39b923a910ed4309e6feb9b389bb"
+    },
+    {
+      "file": "VERSION.txt",
+      "old_sha256": "34ffc16d48a95fde2f3907c6452cb8d270ae153db9c797e1ee4b5e9d561bdc7b",
+      "new_sha256": "6d56bbfebab94e3d51b7b0753304921b73d1cb14e56f3da5b84527acae535416"
+    },
+    {
+      "file": "broker/etoro.py",
+      "old_sha256": "e425c290599db63949dc749396a60a4add464a46413a841cf9d9eaa837c1e3e2",
+      "new_sha256": "3256bc63e4ebba2df2995b721a00205961af05e23a6e691d767df197f6fe5914"
+    },
+    {
+      "file": "broker/okx.py",
+      "old_sha256": "79f04af8ae62741296e6bc12778f58454a05e9e0059869c19da61d1cf2e94f98",
+      "new_sha256": "8521bcaf5efe295a44cac8fc0a4c1e97b99e26e6593b462b134b5b95d1c91489"
+    },
+    {
+      "file": "candle_observation.py",
+      "old_sha256": null,
+      "new_sha256": "2c22c0e34b6d40ea11aae76b860780c51625cadc1e9989e59a6855ae442f669e"
+    },
+    {
+      "file": "config.py",
+      "old_sha256": "139bce67e8854f8db07b775dce03f4eb8556ea8ee25af2174fc119c38b102eda",
+      "new_sha256": "ac470df1a521dc085d2f27872a7bfc62f5020b42a71b25d471c36005fb937f89"
+    },
+    {
+      "file": "crypto_engine.py",
+      "old_sha256": "4cffe1543de38d697c2fd6a9f28261c0466e02a83c2d1da5bb086d308fcd2d4a",
+      "new_sha256": "b104dcba872321c3e7588bcf614d8efebc81f6eb1e16e59431341bae258b3e50"
+    },
+    {
+      "file": "crypto_strategy_mode.py",
+      "old_sha256": "9db32970204714b8e6870664f04196d62ce9b31e5cd5b1b511a0e26abcd3e69a",
+      "new_sha256": "d2034066b3e853521d9cea04ad75e0a56c253597a053dc377a1e95e371ce6b49"
+    },
+    {
+      "file": "decision_explanation.py",
+      "old_sha256": null,
+      "new_sha256": "303977b74a0879808035e2602caaba0f21e3a16fcf92fb0507496aa5907d2ff0"
+    },
+    {
+      "file": "etoro_protection_evidence.py",
+      "old_sha256": null,
+      "new_sha256": "85f5a760e95b5e5a1b0e547a64f7836993f24d1ab73a497af1785500884c9f52"
+    },
+    {
+      "file": "etoro_protection_journal.py",
+      "old_sha256": null,
+      "new_sha256": "eda2b4b48613d360d29cd92aeb43d57fcba03ec5e4f4389f587ebfcda5301e04"
+    },
+    {
+      "file": "fmp_data.py",
+      "old_sha256": "38c9fe2348bf19d6314b650e8e1f0c506fbc8c624d9142005dc0c758af9e4d56",
+      "new_sha256": "9d32531e7bf2ca0fa8a60746ffddc1257e7e17c58479b848aceecdb9196dcecb"
+    },
+    {
+      "file": "fmp_reference.py",
+      "old_sha256": "914d2d38f001c15ade8f6c8896a71e79c98c32849c1ab042d7b16f785c384b60",
+      "new_sha256": "8546fe7fb0726ee37167ffe65177f2baae4af689698911a16b9931fb6ab89de9"
+    },
+    {
+      "file": "freqtrade_candles.py",
+      "old_sha256": "02bff42576282241216ab4a9f86d91c9223a2de3c008a5a4a4f38b4a82282385",
+      "new_sha256": "e5c1ad52bf1ce8fffe79577030e5c6ab604f7f50d7b7ecd91127be37e80a7d8e"
+    },
+    {
+      "file": "live_trader.py",
+      "old_sha256": "44f48b6f67884df7bc7200c6da14acf7705f6d503210421e55c7e2db293e0497",
+      "new_sha256": "46c977bbea38a93dced00a1334c4dde17af8a3e0db537375129e3388c8dfba3b"
+    },
+    {
+      "file": "massive_api.py",
+      "old_sha256": "84e7532adf13463bfed8d7e73de18c0b2bc07c6837e970d5cc351548a369f81a",
+      "new_sha256": "0f72345603e5c3cb264c0f87e204b6d5baa2fdd9edc73b0e8e1b792772bbabc9"
+    },
+    {
+      "file": "massive_service.py",
+      "old_sha256": null,
+      "new_sha256": "54c786250478b94f81fca93f046dd01598f4eeb029b2b3e99f8405c0c86499a9"
+    },
+    {
+      "file": "nasdaq_halt_feed.py",
+      "old_sha256": "5b5c1f844c076f55317f39003e9451a92519a479ed09b29caa9e490e6f136b23",
+      "new_sha256": "bad439dbe514f3d8c400d5874df2425226cf1776fbaca65084fbd7caee78b1bc"
+    },
+    {
+      "file": "news_sources.py",
+      "old_sha256": "df2cb1025a762df0de1768f509d94a646cefa0fadf5bb4e513ccc4b00109aece",
+      "new_sha256": "095c8e184769024d5ccbe2551ceed81118b9b454e6628856147bc72a31e1a851"
+    },
+    {
+      "file": "nexus_setup.py",
+      "old_sha256": "e02323e5183daa23a8d377e86d4b698c905854c8d327f916599f4c52bfbf99ba",
+      "new_sha256": "dba42021a91d0a23512f4db84d58986ebf2a8348b6e19af6280188f88142a7ee"
+    },
+    {
+      "file": "nexus_start.py",
+      "old_sha256": "e073daee19c43c545d6734242628c721cbe816bb75775a64f7fdc1a52a4f7338",
+      "new_sha256": "963fe58fc54308912bb4af31bed4c32264ebb82e3a442da4fd09375fb214f1ca"
+    },
+    {
+      "file": "pulsar/ai_packet.py",
+      "old_sha256": "dc58c04a7027c330d20bb0fb09d71660d93fd471c8803bba29014658c72172a4",
+      "new_sha256": "040039c973ed975a2a73cd55cc8fca8e42a0065d92edf427f95a20bbaf678262"
+    },
+    {
+      "file": "pulsar/analysis.py",
+      "old_sha256": "036e2f9290b490f8dd8f5f2fa4ad42408ba221da431fa13d5c6c926fa0b7248b",
+      "new_sha256": "b27e20327af732ef86f3a306352db16b48be09162e5586969a38ebf1e98ac285"
+    },
+    {
+      "file": "pulsar/financials.py",
+      "old_sha256": "c6b52debea38698aef41e63c08de2146851f27cad94bc0d5af63c9a1ecfc6c16",
+      "new_sha256": "9306de053d32d8e8d9950deba3502b8f94d0b961c871ad84aa5f4ab3eb0a9d6a"
+    },
+    {
+      "file": "pulsar/news_normalization.py",
+      "old_sha256": null,
+      "new_sha256": "383a28e6539715a030e4527f0a2c160b6b172bf5664dbff597868c48e0c15c0e"
+    },
+    {
+      "file": "pulsar/worker.py",
+      "old_sha256": "1db38127aea899715b0c979bffc5ff74431aac9ca74d880c81966e1ace132b57",
+      "new_sha256": "cfdac0c6ef2edeeb333af195bd330abf9625b66a51b6c2628cd88b106592d19d"
+    },
+    {
+      "file": "release_unpack.py",
+      "old_sha256": "fd99086b79e91075a404c69ef929907087caab3bcc0773b1a8d92cd3604b7e09",
+      "new_sha256": "9689f1680089fbfa93de8c94f1be8d3760c6af54ef7c81272601ba09bc057c5f"
+    },
+    {
+      "file": "risk_basis_review.py",
+      "old_sha256": null,
+      "new_sha256": "190392beb22a3350e0283f94f5e12bdd641fc12c8a4fc3845947e77271b96ba3"
+    },
+    {
+      "file": "risk_manager.py",
+      "old_sha256": "c55d93b82a0aad3dd0e60c36e842ca26f2b432e304a774423152e4d2f1407166",
+      "new_sha256": "6cf6c0d2890d9327a1bec650affe1bcf76da735b8e8846d02233fffff24e7e68"
+    },
+    {
+      "file": "settings_migration.py",
+      "old_sha256": "b2520dcf2e60fe4086ff25df0b8b2b131e7331277d916a960fcf2b4ce49c2bbb",
+      "new_sha256": "0018c7e8f8e7c20725ee2e37065b024a50d4018633e46110886ca3af1d0d9554"
+    },
+    {
+      "file": "tests/fixtures/candles_20260913.json.gz",
+      "old_sha256": null,
+      "new_sha256": "e87f0718fd1ab168a635c1b06fc740bc4b52ab7449258d10b51cb68eab558e41"
+    },
+    {
+      "file": "tests/fixtures/v101_evidence_packet.py",
+      "old_sha256": null,
+      "new_sha256": "a51375b4cce1e99930b1e10a8667a6f93aa5b103346b19090d37a2a3d646d4a2"
+    },
+    {
+      "file": "tests/test_v101_candle_observation.py",
+      "old_sha256": null,
+      "new_sha256": "97905a0982950a9c7c5d7b9a4ad8ff7d842854b46260686fd62dab5eb399bebf"
+    },
+    {
+      "file": "tests/test_v101_etoro_protection_evidence.py",
+      "old_sha256": null,
+      "new_sha256": "db08b822dd477edf2ca71b096afbb1dedd05117f850f80d24df5ebbf903b0de9"
+    },
+    {
+      "file": "tests/test_v101_evidence_packet.py",
+      "old_sha256": null,
+      "new_sha256": "fb643b1dd079671bd304993d5882ab655d435b4167e6a9b0a4bc0253a5057b2f"
+    },
+    {
+      "file": "tests/test_v101_fmp_context.py",
+      "old_sha256": null,
+      "new_sha256": "fc5b89fcb9d4c3695943eecb3b50a592a9a3d9d3e692bc613f8e2585d6af0295"
+    },
+    {
+      "file": "tests/test_v101_halt_diagnostics.py",
+      "old_sha256": null,
+      "new_sha256": "c97ad839fa32c5a7ebda78a33765fe07036545e4e21b16f9538a16d66bcc7e5e"
+    },
+    {
+      "file": "tests/test_v101_massive.py",
+      "old_sha256": null,
+      "new_sha256": "24cbbcd79cb9e3dceb1f2f1b8af8200de8c83c1ad7a184dc3cfb69b2f2aafcf9"
+    },
+    {
+      "file": "tests/test_v101_migration.py",
+      "old_sha256": null,
+      "new_sha256": "a20d6ee6235bd99813ce2f7a15f3fd315865f9484e8d2728802d698a6080f096"
+    },
+    {
+      "file": "tests/test_v101_risk_basis_review.py",
+      "old_sha256": null,
+      "new_sha256": "77f6399f8ecc9ff54f4c34c33113da9b3df96ec3d44ec78f64926cdceccbcb9f"
+    },
+    {
+      "file": "tests/test_v101_webui_explanations.py",
+      "old_sha256": null,
+      "new_sha256": "ee1613bd1ac65e6f58ed14dd639039d93ac989e1721d405ad2935edac52880ab"
+    },
+    {
+      "file": "tests/test_v812_nexus.py",
+      "old_sha256": "89b731ddaef599766e729bf89c808e1a52f796ab4cff57f09524f9f4cb13db00",
+      "new_sha256": "22b491b92b57ec6b5a841a16735e3ef400b954ad9577c54bb464b30c73a2b7c4"
+    },
+    {
+      "file": "tests/test_v930_ausfuehrungsstatus.py",
+      "old_sha256": "e24124b1cd3f45c8f82364938bfc8cd089a99c446adae5e60d4222bf48b9ba80",
+      "new_sha256": "74d7beef087d363f848fe61bf883654307120f759d563c6ce139209de603b62c"
+    },
+    {
+      "file": "tests/test_v976_release_and_diagnose.py",
+      "old_sha256": "b137f51ca6004ab0cc54259865ce9a9c0ee48d5ad22835321cccc6dc4aeea0af",
+      "new_sha256": "8e1aeffbe23483f4e05b591bc8e63b5c5b7e956653a0fa5fd681cfcec31724b3"
+    },
+    {
+      "file": "tests/test_v988_cold_migration_fix2.py",
+      "old_sha256": "edada5cf0ec963ed38ed88da52e06ad31d3fda8bc09cf1ce079443497904629a",
+      "new_sha256": "67cc1f488b150208af7a43e7a5f6f37d7be317b518a1a4153e647e6f7207e6bf"
+    },
+    {
+      "file": "tests/test_v988_encoding_fix1.py",
+      "old_sha256": "5d49109750c232fc1b6d815a62be1f576087b3c3abde70fe1ff265c600829d81",
+      "new_sha256": "5c665de03a2987b09c2a222a6e8c8bd459e668c0ff6e09d822f56e713ea2392c"
+    },
+    {
+      "file": "tests/v101_financial_fixture.py",
+      "old_sha256": null,
+      "new_sha256": "2b1a316ae81eefe2cc15bfc38303df6cbf30c0e7702ecb5f9233ded88bea46fc"
+    },
+    {
+      "file": "trading_ready.py",
+      "old_sha256": "ff18e4ac0e545488eb5fa4558706e1e6742ef4e00677eaa380b2c1b65ebee747",
+      "new_sha256": "260eea504a8e2111da3fb89a5041ea1b43107a29bd620519c99b70b0dcb7709b"
+    },
+    {
+      "file": "universe/crypto_selector.py",
+      "old_sha256": "641dcefaa529352f05680b509a7b4810292e4f53f0f16bbea032e3202883d594",
+      "new_sha256": "7ffa145c57528b363c8ffaa7ffb036d30aa8865c828572ec72a537df9cb03d9a"
+    },
+    {
+      "file": "webui/app.py",
+      "old_sha256": "4e06370d52b9f5ea4f6222d3a0e8a8d6017ccc21c2c67f56dcd56b3db6e0b574",
+      "new_sha256": "509beb3461e9f366b25b986271a53db2dc405a42cad0523c8b5e40e65ff8fcd8"
+    },
+    {
+      "file": "webui/diagnostics.py",
+      "old_sha256": "2c3e441ff07eaafba6cfd26bc602458e549b1979c27f646d5e37295ec12edb34",
+      "new_sha256": "7dd9107865f7688463b7cdd055d31f098572988b3d3fd79f3dd83a5a894ebf75"
+    },
+    {
+      "file": "webui/settings_store.py",
+      "old_sha256": "efa1b6f9dc123db0270db410c3305891b895580013cd7dc54146f5dcfd545c9e",
+      "new_sha256": "ca92860bb02f54d2c7e51de707bd789e166d33908b02a05fe6419e15b8a92fb0"
+    },
+    {
+      "file": "webui/state.py",
+      "old_sha256": "719dc15eb810db9d5678b8def1b9239df961a46bed2623904ddc8d93ad90f4eb",
+      "new_sha256": "e4efb1e80c17fed39e223093a209ee4921e8e5bf7e1440d8942f9bf66412ffc8"
+    },
+    {
+      "file": "webui/static/ai_diagnostics.js",
+      "old_sha256": "b8ef0f29d633c9719d888a76256c349ad189af219d14635f220a161a5d836a9a",
+      "new_sha256": "895c59220e8da7ea992e4226803247de93b899b67e6a29a4b33b68fb43fa0a97"
+    },
+    {
+      "file": "webui/static/common.js",
+      "old_sha256": "29c58598d19970f07e50b90523c72b3f141cb2295b1223a13f2c6e56caea673b",
+      "new_sha256": "86c9ee0e049b9bccb9fe3886cbd5961d8516ddc86c696f2ce88a20f5f2ebd805"
+    },
+    {
+      "file": "webui/static/dashboard.js",
+      "old_sha256": "6d7de0e783e53dc431dfda8402fc4a0272cb5d81e59210723ccb5d5845bbf99d",
+      "new_sha256": "28702e645f4278cf3f213f4849a5a7a2ac96c0cb8ef695065f03b7ad3d618475"
+    },
+    {
+      "file": "webui/static/execution_details.js",
+      "old_sha256": "3dc06920ffe29582369da094bd7c84cb04c48408f7a9e550f34faf53939bd497",
+      "new_sha256": "f1885eea41d3186cbdca65aa24fe710b87066da64994e93d0945230122d390e3"
+    },
+    {
+      "file": "webui/static/logbook.js",
+      "old_sha256": "f7045d467646857c583addefce89adc5c80bd66e0f9140d586b6f5db5b130715",
+      "new_sha256": "014043c864087c3273a91a8065e29230381df2778348028798a946c2375c8e97"
+    },
+    {
+      "file": "webui/static/nexus.css",
+      "old_sha256": "6b3123966c2a07b4de6a33685bf4525d539477432938bd58b0408bc471582990",
+      "new_sha256": "8110919488043c9081698be68525bc59ce5d0a2cedd862e22f4aaa2342083376"
+    },
+    {
+      "file": "webui/static/positions.js",
+      "old_sha256": "c5c097f259df4d03e0d3ceac5c876d13de8e1b315142e23cbbaa0de1c409b805",
+      "new_sha256": "b74b5e47cbe52e76ca09d1583aa8e063a3aa0fa0b59bda9437bdc5ba7325a8af"
+    },
+    {
+      "file": "webui/static/pulsar.js",
+      "old_sha256": "aa3cc2d044ffd7cf884704b39cd0aa67efb09a9ec9fb06cda1042cc37a99c527",
+      "new_sha256": "d2336fea0c1f6e55624c217a38322b88d5c6e8774d4a9a193ebe636359eb9139"
+    },
+    {
+      "file": "webui/static/settings.js",
+      "old_sha256": "18d2da6f0bb4cf6469daf0ff3440c88499b4ee24ddb27e829d4c31f7ef6480f2",
+      "new_sha256": "65d9feb5aa74b8182a4788b679545f0aeb6d5d99d958fffc9bc864f9b9841d71"
+    },
+    {
+      "file": "webui/static/trades.js",
+      "old_sha256": "8a8225c3ac10227f09730984be324dc6ac264af76d026cd48571e0af54597f3f",
+      "new_sha256": "82594bfcdee6e2c6170f862880d8f10608f24044abe3be6591ab3d01e0def6b0"
+    },
+    {
+      "file": "webui/static/universe.js",
+      "old_sha256": "ff2086a2bede3200d7a7f01e6848c7442eda2383b8c96ea9081a1e758ea59173",
+      "new_sha256": "b822d68d58b1235a484e1821905c792239476698be5d9d30a39e93d20a1a5466"
+    },
+    {
+      "file": "webui/templates/logbook.html",
+      "old_sha256": "f9e2485350e411a12b50d51045e16e64468f4260ab46ffba20331a786cc11454",
+      "new_sha256": "7e94c17b57c23c6559b93bc17d121935712fefba6cbb798e2ae98f8d05ffa0c2"
+    },
+    {
+      "file": "webui/templates/settings.html",
+      "old_sha256": "d5408facae9defa0e016dbd9c85736f3bea678542d3805d2a6e1249b49d198ec",
+      "new_sha256": "056d8aa8025544fba34fab0aad964d420f79a04d494755821726917ffcdec132"
+    }
+  ]
+}

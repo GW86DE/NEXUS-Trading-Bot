@@ -1,0 +1,67 @@
+TRADINGBOT NEXUS 9.0.11 - AENDERUNGSPROTOKOLL
+================================================
+Version: 9.0.11-NEXUS
+Datum: 29.08.2026
+
+OKX-UNIVERSUM NACH DEM FREQTRADE-PRINZIP
+----------------------------------------
+- NEXUS lädt einen breiten öffentlichen OKX-SPOT-Katalog als reine
+  Entdeckungsstufe. Er ist ausdrücklich keine Handelsfreigabe.
+- Der handelbare Pool bleibt die Schnittmenge mit dem authentifizierten
+  privaten Endpunkt /api/v5/account/instruments. Nur dort vorhandene
+  Instrumente mit kontospezifischer tradeQuoteCcyList können gekauft werden.
+- Der Kern enthält bis zu 20 aktuell ausführbare und voll geeignete
+  Basiswerte. Bis zu 30 weitere Werte werden dynamisch nach normalisiertem
+  echtem OKX-24h-Quote-Notional ergänzt.
+- Die dynamische Liste wird beim Update auf die neue Währungsrichtlinie
+  einmalig sofort neu aufgebaut; eine alte Monatsfrist blockiert die neuen
+  USD-Märkte nicht.
+- Das Alter eines Basiswerts wird über den breiten SPOT-Katalog bestimmt,
+  damit eine neue Quote-Variante einen seit Jahren gelisteten Coin nicht
+  fälschlich als neu einstuft.
+
+GETRENNTE HANDELSWÄHRUNGEN
+--------------------------
+- EUR, USD und USDC sind drei eigenständige OKX-Handelskanäle.
+- USD wird wieder verwendet, weil das gemeldete Konto echtes freies USD
+  besitzt und zahlreiche Kontoinstrumente ausschließlich USD in ihrer
+  tradeQuoteCcyList ausweisen.
+- Eine Order ist nur möglich, wenn ihre tradeQuoteCcy sowohl in der privaten
+  Instrumentantwort erlaubt als auch mit freiem Guthaben finanziert ist.
+- EUR, USD und USDC werden niemals addiert oder still im Verhältnis 1:1
+  gleichgesetzt. Für Marktvergleich sowie P&L ist ein beobachteter
+  Spot-Kreuzkurs erforderlich.
+- USDT bleibt deaktiviert. NEXUS übernimmt weder Freqtrade-Futures noch ein
+  simuliertes dry_run_wallet.
+
+RISIKO UND BUCHFÜHRUNG
+---------------------
+- Die Positionsgröße eines USD-Trades basiert ausschließlich auf dem freien
+  USD-Guthaben; EUR- oder USDC-Guthaben können die Order nicht vergrößern.
+- Entsprechendes gilt für EUR- und USDC-Trades.
+- Realisierte Ergebnisse werden für die gemeinsame Tagesbremse nur über einen
+  beobachteten Kreuzkurs in die primäre Risikowährung umgerechnet. Fehlt
+  dieser Beweis, werden neue Käufe vorsorglich gestoppt.
+- Marktquote und tatsächliche tradeQuoteCcy werden im Universumszustand und
+  im Entscheidungsjournal getrennt gespeichert.
+
+DIAGNOSE UND WEBUI
+-----------------
+- Die Universumsdiagnose unterscheidet jetzt öffentliche SPOT-Märkte,
+  kontospezifische Instrumente, geeignete Basen und aktiven Pool.
+- Für EUR, USD und USDC werden freies Guthaben und der Status des jeweiligen
+  Handelskanals ausgewiesen.
+- „Kein finanzierter Handelskanal“ und „keine erlaubte Abrechnungswährung“
+  sind eigene, verständliche Ablehnungsgruppen.
+- In den Einstellungen kann EUR, USD oder USDC als bevorzugter Kanal gewählt
+  werden. Alle drei bleiben technisch getrennt und werden nur bei vorhandenem
+  Guthaben benutzt.
+
+NICHT VERÄNDERT
+---------------
+- OKX bleibt SPOT und standardmäßig DEMO.
+- Keine Futures, keine Margin, kein Leverage und kein künstliches USDT.
+- eToro-Reconciliation, Bot-Eigentumsnachweis und Schutz vor Doppelorders
+  bleiben unverändert aktiv.
+- Mindestalter, Mindestumsatz, Spread-, Kosten-, Risiko- und Orderbuchfilter
+  gelten weiterhin vollständig.

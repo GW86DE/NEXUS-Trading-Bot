@@ -1,0 +1,30 @@
+NEXUS 8.2.1 – Korrekturrelease
+Stand: 26.08.2026
+
+WICHTIG: Dieses Release ersetzt 8.2.0. Es wird nicht in einen laufenden
+Projektordner hineinkopiert, sondern in einen neuen Ordner entpackt und mit
+Pi_Installieren.sh vollstaendig getestet installiert.
+
+FAVORITEN / BROKER-TRENNUNG
+- Die lokale GUI kann Favoriten jetzt automatisch zuordnen:
+  bekannte Aktien -> eToro, bekannte Coins oder Paare wie BTC-EUR -> OKX Spot.
+- Unbekannte oder doppeldeutige Symbole werden nicht geraten; einmalige
+  manuelle Auswahl ist erforderlich.
+- Aktien-Favoriten erweitern nur das eToro-Kandidatenfeld.
+- Krypto-Favoriten erweitern nur die OKX-Qualitaetsbewertung.
+- Ein Favorit wird nicht automatisch aufgenommen, gekauft oder groesser
+  gewichtet. Harte Filter, Ranking, Bewaehrung, Signal, Kosten und Risiko
+  bleiben unveraendert voll wirksam.
+
+INSTALLATION / VERSIONSSICHERHEIT
+- Der Tagesbuch-Test verwendet den aktuellen Kalendertag und kann nicht mehr
+  nach Mitternacht falsch fehlschlagen.
+- Pi_Installieren.sh meldet bei einem Testfehler klar, dass Dienste und
+  Desktop-Starter NICHT umgestellt wurden.
+- Start-, Aktivierungs- und WebUI-Skripte pruefen jetzt fail-closed, dass die
+  systemd-Units exakt auf den aktuellen Release-Ordner zeigen.
+- Die systemd-Beschreibung wird aus VERSION.txt erzeugt; alte 8.1.1-Anzeigen
+  in der Dienstansicht entfallen.
+- Der Status nennt einen noch nicht gestarteten OKX-Core klar, statt eine
+  fehlende runtime_status_okx.json wie einen Schnittstellenfehler aussehen zu
+  lassen.

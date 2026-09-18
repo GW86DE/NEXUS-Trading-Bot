@@ -1,0 +1,43 @@
+TradingBot 8.3.1 NEXUS – Korrekturversion
+==========================================
+
+eToro
+- Angenommene Kaufabsicht, decision_id, Brokerprofil, Menge, Preis, Stop,
+  Take-Profit, orderId und x-request-id/referenceId werden atomar gespeichert.
+- Ein frischer 404 im Order-Lookup bleibt RECONCILING/UNKNOWN_AFTER_SUBMIT.
+  orderId und referenceId werden begrenzt, getrennt und mit Warteabstand
+  abgefragt. Der Kauf-POST wird niemals automatisch wiederholt.
+- Eine ungeklärte Ausführung sperrt nur weitere neue Käufe derselben
+  eToro-Demo/Live-/Profil-Domäne. Schutz und Verkäufe bleiben unabhängig.
+- Neustart-Recovery verwendet ausschließlich exakte Order-, Referenz-, Fill-
+  und Positions-IDs. Symbol/Menge allein begründen niemals AUTO-Ownership.
+- Teil-Fills und RejectedPartiallyFilled behalten gefüllte und offene Menge
+  getrennt. DecisionSnapshot bleibt unverändert; Execution-Events sind append-only.
+- Telegram-Ereignisse unklar/bestätigt/fehlgeschlagen sind persistent und über
+  stabile Ereignis-IDs neustartfest dedupliziert.
+- OBSERVE bleibt ohne automatische Exits; eToro-Kurs, P&L und bestätigte
+  Stop-/Take-Profit-Werte werden read-only angezeigt, Unbekanntes bleibt null/leer.
+
+CORE_VOLUME_20
+- Zusätzlich zum dynamischen OKX-Universum werden die 20 volumenstärksten
+  tatsächlich filterbaren EEA-Spot-Basiswerte geführt.
+- Quelle sind offizielle OKX-24h-Spot-Quotevolumina. Quotes werden nur mit
+  beobachtetem Umrechnungskurs vergleichbar gemacht; Basen werden dedupliziert.
+- Stablecoins, Stable/Stable, Hebeltokens, Swaps/Futures und nicht-live bzw.
+  nicht erlaubte Quotes werden ausgeschlossen.
+- Atomare letzte-gute Liste, STALE-Markierung und fail-closed für neue Käufe.
+  Bestehende Positionen/Exits bleiben unberührt.
+- Beim allerersten Start wird eine vollständig gefilterte, verifiziert aktuelle
+  OKX-24h-Top-20 als Bootstrap aktiviert; spätere Wechsel erfolgen monatlich
+  erst aus dem belastbaren 30-Tage-Median.
+- Lokale tägliche Messpunkte bilden einen 30-Tage-Median. Monatliche Auswahl
+  ist fälligkeits- und neustartfest. GPT erhält höchstens einen kompakten Diff
+  und darf nur Identitäts-/Rebranding-/Risikohinweise liefern.
+- WebUI-Daten enthalten Liste, Rang, Paar, Quote, Volumenfeld, Messzeit,
+  Abdeckung, Änderungen, GPT-Status, letzte/nächste Fälligkeit und Fehlerstatus.
+
+Allgemein
+- Entscheidungen: created_at_utc DESC, id DESC. created_at und updated_at
+  sind getrennt. Migration übernimmt Reconciliation und Volumenhistorie.
+- Versionen, Installer-Pflichtdateien, Service-/Desktop-Rendering und Diagnose
+  wurden auf 8.3.1 abgestimmt.

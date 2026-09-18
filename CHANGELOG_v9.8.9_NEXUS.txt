@@ -1,0 +1,66 @@
+NEXUS 9.8.9 – FMP Starter mit Free-Rueckfall
+Build: 9.8.9-FMP-AUTO
+Datum: 12.09.2026
+Basis: 9.8.8-FIX3-VERIFIED-HISTORY
+
+FMP fuer NEXUS und PULSAR
+- Gemeinsamer, persistenter Abrufdienst: Cache, Budget, Berechtigungen,
+  Wartezeiten und gemessenes Datenvolumen werden pro Pi geteilt.
+- AUTO nutzt den eingetragenen Tarif als Obergrenze. Einzelne abgelehnte
+  Datenarten pausieren; nach Ablehnung von Nachrichten und Jahresergebnis
+  ohne spaeter bestaetigte Zusatzberechtigung gelten wieder Free-Grenzen.
+- Free: maximal 250 Abrufe/UTC-Tag, weiter hoechstens 80 automatische Abrufe
+  nach bestehender Konfiguration; verbleibende Reserve fuer Positionen und
+  manuelle Diagnose. Starter: maximal 300 Abrufe je rollender Minute.
+- Kein Reset des Verbrauchs durch Neustart, Tarifwechsel oder Schluesselwechsel.
+  Bestehende Tageszaehler werden einmalig uebernommen. HTTP 429 ist eine
+  Abrufpause und kein behaupteter Tarifwechsel. Maximal zwei laufende Abrufe.
+- Lokaler 30-Tage-Volumenzaehler: 500 MB Free / 20 GB Starter. Externe Abrufe
+  und Datenvolumen vor Einfuehrung sind darin nicht messbar.
+
+Daten und Analyse
+- Bis zu fuenf Jahre abgeschlossene Tageskerzen, inkrementelle Aktualisierung,
+  OHLC-Pruefung, Split-/Skalenwechsel-Erkennung und echte Datenzeitstaende.
+- Tages-ATR, einfache RSI-14-Berechnung, gleitende Durchschnitte,
+  relatives Volumen und historischer Rueckgang werden lokal berechnet.
+- Jahresabschlussdaten fuer US-Unternehmen: Ergebnis, Bilanz, Cashflow,
+  Verschuldung, freie Mittel und Entwicklung ueber verfuegbare Jahre.
+  Identitaet, Waehrung, Geschaeftsjahr und Veroeffentlichungszeit werden geprueft.
+- PULSAR kann diese Jahresdaten bei fehlendem SEC-Nachweis nutzen. Passende
+  SEC-Originaldaten haben Vorrang. Widersprueche bleiben offen; keine doppelte
+  Punktevergabe fuer denselben Unternehmensbericht.
+- Unternehmensnachrichten dienen als Recherchehinweise. Ein bestaetigter
+  Originalbeleg kann die zusaetzliche GPT-Websuche ersparen. Nachrichten allein
+  erfuellen keine Belegpflicht und belegen keine Community-Breite.
+- NEXUS uebergibt vorhandene FMP-Fakten an seine ohnehin geplante KI-Zweitmeinung.
+  Ausfuehrbare Brokerpreise, Mengen, Stopps und KI-Kostenlimits bleiben bestehen.
+- Gehaltene Aktien erhalten einen eigenen stuendlichen Versorgungslauf, auch
+  ohne aktuelle PULSAR-Kandidaten. Unter Free darf er die Positionsreserve nutzen.
+- Optionaler stuendlicher Kontext: verfuegbare Krypto-/Forex-Nachrichten und
+  aktuelle EURUSD-/BTCUSD-Referenzen. Keine Verwendung als Handels- oder FX-Beleg.
+
+Oberflaeche und Update
+- Einstellungen: FMP-Betrieb AUTO/FREE/STARTER, gebuchter Tarif und Free-Tageslimit.
+  Sichtbar: wirksame Grenze, Berechtigungen, letzte erfolgreiche Abfrage,
+  Wartezeiten, Cache-Nutzung und dokumentierte Verwendung verschiedener Belege.
+- PULSAR zeigt Tageskennzahlen und verfuegbare Jahresdaten; zusaetzliche
+  Chart-Zeitraeume ein und fuenf Jahre. Fehlende Intradaydaten werden nicht erfunden.
+- Der persoenliche Installer setzt AUTO + STARTER und uebernimmt den vorhandenen
+  Schluessel. Die generische Quell-ZIP aktiviert kein bezahltes Profil von selbst.
+- Die neue SQLite-Datei und bestehende Referenzdaten werden bei Updates gesichert.
+
+Bewahrt aus FIX3
+- Gepruefte historische OKX-Zuordnung und separate EUR-Referenzbewertung.
+- PULSAR: begrenzte 90-Sekunden-Pruefphasen, persistente Fehlerpause,
+  korrekte Behandlung verspaeteter Verbrauchsbelege und separater Heartbeat.
+- Automatische Universumsaufnahmen/-entfernungen hoechstens einmal pro lokalem
+  Kalendertag; untertaegige Handelbarkeits- und Positionspruefungen laufen weiter.
+
+Grenzen
+- Starter bedeutet keine zugesagten Intradaykurse, Quartalsdaten, Earnings-
+  Kalender, Transkripte oder weltweite Aktienabdeckung. Diese Daten werden nicht
+  durch pauschale Premium-Abfragen vorausgesetzt.
+- Echte Anbieterberechtigungen werden erst im Betrieb mit dem vorhandenen Key
+  bestaetigt. Offline-Gegenproben pruefen die Software, nicht Georgs FMP-Konto.
+- Bekannte eigenstaendige Ledger-/PULSAR-Regelbefunde bleiben im FIX3-Bericht
+  dokumentiert; die FMP-Erweiterung schliesst sie nicht pauschal ab.

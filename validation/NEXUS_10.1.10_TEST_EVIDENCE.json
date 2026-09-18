@@ -1,0 +1,88 @@
+{
+  "release": "10.1.10-NEXUS",
+  "build": "10.1.10-BROKER-STABILITY-AND-DYNAMIC-INTELLIGENCE",
+  "based_on": "10.1.9-NEXUS",
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "runtime_dependencies_available": false,
+    "note": "pandas/fastapi/requests standen bei der Paketierung nicht zur Verfuegung; verhaltensbasierte Suiten mit diesen Abhaengigkeiten laufen im Pi-Volltest."
+  },
+  "checks": {
+    "ast_syntax": {
+      "python_files": 523,
+      "errors": 0
+    },
+    "utf8_bom_scan": {
+      "files_with_bom_after_cleanup": 0
+    },
+    "targeted_regressions_10_1_10": {
+      "collected": 28,
+      "passed": 27,
+      "skipped_conditionally": 1,
+      "skip_reason": "okx_entry_routing-Verhaltenstest benoetigt pandas (broker.base-Import); laeuft im Pi-Volltest",
+      "suites": [
+        "tests/test_v10110_risk_and_currencies.py",
+        "tests/test_v10110_x_account_registry.py",
+        "tests/test_v10110_news_source_fixes.py",
+        "tests/test_v10110_backtest_webui.py (BacktestSurfaceWiring; BacktestJobContract benoetigt POSIX-fcntl und laeuft im Pi-Volltest)"
+      ]
+    },
+    "browser_review": {
+      "pages": [
+        "/backtest",
+        "Quellen & X (Registry)",
+        "Navigation 'Mehr'"
+      ],
+      "viewports": [
+        "1440px",
+        "768px",
+        "375px"
+      ],
+      "result": "gerendert und bedient (Mock-Daten, kein Server auf Windows)"
+    },
+    "external_measurements_2026_09_16": {
+      "gdelt": {
+        "status": 200,
+        "seconds": 13.5,
+        "consequence": "NEWS_SOURCE_GDELT_TIMEOUT_SECONDS=30"
+      },
+      "api_tradestie_com": {
+        "tls": "certificate has expired"
+      },
+      "tradestie_com": {
+        "status": 200,
+        "seconds": 0.5,
+        "tls": "gueltig",
+        "consequence": "Endpunktwechsel ohne TLS-Bypass"
+      }
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (laeuft im Pi-Update, Pflicht vor Dienststart)",
+    "self_test / compileall / pi_preflight / shell_syntax (Bestandteil des Updateablaufs)",
+    "30-Minuten-Diagnose 1.8.1 als Laufzeitabnahme"
+  ],
+  "no_external_actions": {
+    "broker_orders": 0,
+    "test_orders": 0,
+    "paid_gpt_calls": 0,
+    "paid_x_calls": 0,
+    "telegram_messages": 0
+  },
+  "created_utc": "2026-09-16T00:00:00+00:00",
+  "package_revision": 2,
+  "pi_fullrun_round_1": {
+    "date": "2026-09-16",
+    "host": "Raspberry Pi 5 / aarch64 / Python 3.13.5",
+    "result": "3149 passed, 9 failed, 3 skipped, 283 subtests passed; Update vertragsgemaess abgebrochen, 10.1.9 blieb lauffaehig",
+    "failure_classes": [
+      "alter versionsgebundener Diagnose-Einstieg im Importtest",
+      "risk_basis_review verlangte neue native Felder von Alt-Checkpoints (3)",
+      "Settings-Vertragstest ohne neue Waehrungsschalter",
+      "routes() ohne getattr-Toleranz fuer Testdoubles (4)"
+    ],
+    "fixes": "in Revision 2 enthalten; 27 gezielte Regressionen danach erneut gruen"
+  }
+}

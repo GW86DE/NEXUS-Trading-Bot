@@ -1,0 +1,86 @@
+TRADINGBOT NEXUS 9.0.9 - AENDERUNGSPROTOKOLL
+=============================================
+
+Version: 9.0.9-NEXUS
+Datum: 29.08.2026
+Basis: 9.0.8-NEXUS
+
+OKX: BROKERWAHRHEIT UND DOPPELORDER-SCHUTZ
+------------------------------------------
+- Die clOrdId wird jetzt deterministisch aus der dauerhaft gespeicherten
+  Entscheidung erzeugt und VOR dem ersten POST im Order-Registry abgelegt.
+- Nach Timeout, unlesbarer Antwort oder noch fehlenden Fill-Daten wird nie ein
+  zweiter Kauf gesendet. Ein Hintergrundabgleich fragt dieselbe clOrdId/ordId
+  weiter ab, bis OKX einen terminalen Zustand und echte tradeId-Fills liefert.
+- Eine OKX-Botposition entsteht nur noch aus der Kette
+  clOrdId + NEXUS-tag -> ordId -> echte tradeId-Fills -> Nettomenge.
+- Mehrere tradeIds derselben ordId sind Teilfuellungen einer Order. Sie werden
+  mengen- und preisgewichtet zusammengefuehrt, nicht als doppelte Orders.
+- Gebuehren werden aus fee/feeCcy der echten Fills gespeichert. Eine in der
+  Basiswaehrung abgezogene Gebuehr reduziert die verwaltete Nettomenge.
+- Der Trade-Ledger besitzt eine normalisierte Fill-Tabelle und speichert alle
+  Fill-IDs, clOrdId, tag, Gebuehrenwaehrungen und den Ownership-Status.
+- Schutzorders werden beim Wiederanlauf zuerst abgeglichen. Vorhandener Schutz
+  wird nicht blind doppelt angelegt.
+
+OKX: GUTHABEN, ETH UND SOL
+--------------------------
+- availBal/cashBal/eq aus dem Account-Endpunkt sind Kontosalden. BTC, ETH, SOL
+  und XRP werden dadurch niemals automatisch zu offenen Bot-Trades.
+- Lokale 9.0.8-Zeilen ohne echte tradeId-Beweiskette wechseln in
+  EXTERNAL_OBSERVE/ACCOUNT_ASSET. Sie erscheinen nicht als bestaetigte offene
+  Trades und werden weder verkauft noch mit neuem Schutz versehen.
+- Eine exakt belegte Bot-Teilmenge und ein zusaetzlicher Kontosaldo desselben
+  Coins werden getrennt als BOT_MANAGED und ACCOUNT_ASSET ausgewiesen.
+- SOL ist eine Basiswaehrung/Anlage und keine Cash- oder Quotewaehrung.
+
+OKX: WAEHRUNG UND HANDELBARER 20ER-KERN
+---------------------------------------
+- EUR bleibt primaere Bot-Cashwaehrung, USDC ist die zusaetzlich erlaubte
+  Bot-Cashwaehrung. USD/USDT werden nicht stillschweigend hinzugerechnet.
+- Bei Unified-USD-Instrumenten gilt ausschliesslich die kontospezifische
+  tradeQuoteCcyList aus GET /api/v5/account/instruments. Eine beobachtete
+  Spot-Umrechnung ist erforderlich; USD wird nicht als USDC = 1 angenommen.
+- Der feste Kern besteht nun aus bis zu 20 Basiswerten, die im aktuellen
+  Kontokatalog live, gegen die Bot-Cashwaehrungen ausführbar und nach Alter,
+  Volumen, Spread, Tick, Lot und minSz vollständig geeignet sind.
+- Sind weniger als 20 Werte wirklich geeignet, zeigt NEXUS ehrlich z. B.
+  Kern 7/20 statt unhandelbare Platzhalter als Teil des Universums zu führen.
+- Der Kern bleibt stabil, solange seine Mitglieder die Regeln bestehen; freie
+  Plätze werden deterministisch aus den liquidesten geeigneten Basen ergänzt.
+
+ETORO: ASYNCHRONE API UND PRIVATSTREAM
+-------------------------------------
+- Der vorhandene v3-202-Auftrag, getrennte Lookup über genau einen Anker
+  orderId oder referenceId, dauerhafte Reconciliation und die fünfminütige
+  positionId-Karenz bleiben erhalten.
+- Der private eToro-WebSocket wss://ws.etoro.com/ws wird optional authentifiziert
+  und auf topic private abonniert. RequestGuid, OrderID, StatusID,
+  ExecutedUnits und Positionsereignisse beschleunigen die Zuordnung.
+- WebSocket-Pushs sind nur Hinweise. REST-Lookup plus exakter positionId-Abgleich
+  bleiben die endgültige Freigabe für BOT/AUTO und den Trade-Ledger.
+- Die dokumentierten 60/min-Lese- und 20/min-Ausführungsfenster bleiben durch
+  zentrale gleitende Limiter, Abstände und Backoff geschützt.
+
+ENTSCHEIDUNGS- UND SYSTEMLOGBUCH
+-------------------------------
+- Die Logbuch-Seite verwendet keine impliziten Browser-Globals mehr. Dadurch
+  funktioniert das Entscheidungslog wieder unabhängig vom reservierten
+  window.status-Namen; das Systemlog bleibt unverändert nutzbar.
+- Normale HOLD-Zyklen heißen NO_SIGNAL statt BLOCKED.
+- Die Freqtrade-SampleStrategy protokolliert für jede Regel den Messwert und
+  den konkreten Grund: RSI-Kreuzung, TEMA gegen BB-Mitte, TEMA-Richtung und
+  Volumen. Die WebUI zeigt fehlgeschlagene Checks und relevante Messwerte.
+
+SICHERHEIT UND BETRIEB
+----------------------
+- Release-Korrektur: Der Tagesbuch-Regressionstest erzeugt auch zwischen
+  00:00 und 01:00 UTC sicher eine Buchung des aktuellen UTC-Tages. Zuvor
+  wurde "vor einer Stunde" in diesem Zeitfenster zu gestern und verursachte
+  sieben falsche Testfehler. Produktive Tagesbuch- und Handelslogik wurden
+  dabei nicht veraendert.
+- eToro bleibt bei der Migration PAPER; OKX bleibt DEMO.
+- Bestehende, unbelegte lokale SOL-/ETH-Zeilen werden absichtlich nicht
+  automatisch zu Botpositionen hochgestuft.
+- Echte Broker-Laufzeittests benötigen die kontoeigenen Demo-Zugangsdaten und
+  müssen nach Installation kontrolliert durchgeführt werden.

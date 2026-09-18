@@ -1,0 +1,79 @@
+{
+  "release": "10.2.1-NEXUS",
+  "build": "10.2.1-COMPOSITE-EXIT-SETTLEMENT",
+  "based_on": "10.2.0-NEXUS (Revision 2, auf dem Pi installiert)",
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "trigger_incident": {
+    "date": "2026-09-17",
+    "case": "DOGE trade 73: eigener OCO-TP-Teilfill 1575.48 (DOGE-USD, Abrechnung USDC) + Nutzerorders 1280.1 (teilgefuellt-storniert) und 4478.6 (DOGE-EUR) = exakt 7334.18847; Domaene gesperrt trotz vollstaendiger Broker-Belege",
+    "diagnoses_analyzed": [
+      "02:31 UTC",
+      "03:51 UTC"
+    ]
+  },
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "note": "POSIX-gebundene Module (fcntl: 8 Testdateien) und Windows-Plattformklassen (Symlink-Privileg, SQLite-Dateisperren, MAX_PATH-Subprozesse) laufen im Pi-Volltest."
+  },
+  "checks": {
+    "ast_syntax": {
+      "errors": 0
+    },
+    "release_checklist_automated": {
+      "findings": 0
+    },
+    "targeted_regressions_10_2_1": {
+      "passed": 15,
+      "failed": 0,
+      "suite": "tests/test_v1021_composite_exit.py",
+      "highlights": [
+        "DOGE-Mischfall in Originalzahlen vollstaendig belegt (2 native Legs, kein Mischkurs)",
+        "teilgefuellt-stornierte Order terminal belegbar; Unter-/Ueberdeckung, unbelegte Ordermengen, Doppel-Fills, fehlende Gebuehrenwaehrung brechen ab",
+        "record_composite_exit: Ledger CLOSED, okx_balance_gaps RESOLVED, idempotent, beziffertes Ergebnis unantastbar",
+        "calculate_composite: EUR-Summen ueber Legs nachgerechnet; Verkauf vor Kauf abgelehnt",
+        "Gap-Aufloesung auch im bestehenden record_native_exit-Pfad (Nebenbugfix)",
+        "Rev 2: EUR-Konsistenz rechnet den im nativen Beleg dokumentierten Lot-Staub ein (Pi-Befund 11:08 UTC: 0,00847 DOGE); End-zu-End inkl. formatgueltigem Kursbeleg-Dokument und load_on-Nachrechnung"
+      ]
+    },
+    "broad_local_pytest": {
+      "passed_tests": 235,
+      "passed_subtests": 266,
+      "skipped": 4,
+      "environment_failures_windows_only": 11,
+      "note": "identische Fehlklassen wie bei 10.2.0 (fcntl/WinError 1314/32/267); Lauf endet unter Windows in einem threading-Teardown-Interrupt, daher zusaetzlich gezielte Suiten separat gruen (v1020: 37, v1021: 13)"
+    },
+    "okx_api_review": {
+      "result": "NO_CHANGE_REQUIRED",
+      "eea_rest_base_live_and_demo": "https://eea.okx.com",
+      "demo_header": "x-simulated-trading: 1",
+      "my_okx_com": "Weboberflaeche derselben EU-Entitaet; API-Keys subdomaingebunden",
+      "endpoints_reviewed": 21,
+      "sources": [
+        "https://my.okx.com/docs-v5/en/",
+        "https://github.com/nautechsystems/nautilus_trader/issues/4250",
+        "https://www.okx.com/docs-v5/log_en/"
+      ]
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (Pi-Update, Pflicht vor Dienststart)",
+    "Laufzeitabnahme: DOGE-Composite-Verbuchung -> EUR-Referenzbewertung -> Domaenenfreigabe",
+    "30-Minuten-Diagnose 1.8.1"
+  ],
+  "no_external_actions": {
+    "broker_orders": 0,
+    "test_orders": 0,
+    "paid_gpt_calls": 0,
+    "paid_x_calls": 0,
+    "telegram_messages": 0,
+    "note": "Die Paketierung selbst hat keine OKX-/EZB-Abrufe ausgefuehrt; die neuen oeffentlichen Kursbeleg-Abrufe laufen erst zur Laufzeit auf dem Pi."
+  },
+  "created_utc": "2026-09-17T00:00:00+00:00",
+  "package_revision": 2,
+  "pi_fullrun_round_1": {
+    "date": "2026-09-17",
+    "result": "Rev 1 installiert; Composite-Verbuchung erfolgreich (Trade 73 CLOSED, Bestandsbeleg geloest, 2->1 offene Belege); EUR-Bewertung scheiterte reproduzierbar am undokumentiert verglichenen Lot-Staub",
+    "fix": "in Revision 2 enthalten (_native_consistency_composite beruecksichtigt receipt.residual des nativen Belegs)"
+  }
+}

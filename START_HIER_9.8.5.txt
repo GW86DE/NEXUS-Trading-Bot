@@ -1,0 +1,48 @@
+NEXUS 9.8.5 – Update mit PULSAR- und WebUI-Korrekturen
+
+Die SH-Datei enthält das vollständige ZIP. Für die Installation reicht:
+
+  bash ~/Downloads/NEXUS_9.8.5_Installieren.sh
+
+Als georg starten. Der bestehende Updater prüft Abhängigkeiten und den Offline-
+Volltest vor der Umstellung. Danach übernimmt er Einstellungen, verschlüsselte
+Zugänge, Historie, Positionen, Risiken und Orderregister aus der Installation,
+die in den Diensten eingetragen ist. SQLite-Daten werden konsistent gesichert.
+Ziel: ~/Georg/TradingBot_v9.8.5_NEXUS. ZIP nicht über eine laufende Version kopieren.
+
+Nur das Paket prüfen, ohne Dienste zu ändern:
+  bash ~/Downloads/NEXUS_9.8.5_Installieren.sh --paket-pruefen
+
+Nach erfolgreichem Update die WebUI neu laden. Kopfzeile: 9.8.5.
+Im Hauptmenü und im mobilen Auswahlmenü stehen:
+  Universum – /universe
+  Underdogs – /underdogs
+  PULSAR – /pulsar
+
+Underdogs sind gekennzeichnet. KATALOG bedeutet: noch nicht aufgenommen.
+Handel > Klärung zeigt jetzt auch abgeschlossene Verkäufe mit offenen
+Ergebnisbelegen. Diese bleiben unter Verkäufe; es entsteht kein neuer Bestand.
+Eigene bestätigte Käufe gehören nach Offen, auch bei laufender Schutzprüfung.
+Brutto kann als Kurve erscheinen, wenn Gebühren für ein bestätigtes Netto fehlen.
+
+PULSAR: Bei Erststart Beobachten auswählen und Übernehmen drücken. Ein bereits
+gespeicherter Modus bleibt beim Update erhalten. Der Core-Dienst muss laufen.
+ApeWisdom benötigt keinen Schlüssel; Tradestie ist optional. Unternehmensdaten,
+Charts und KI-Analysen benötigen die bereits eingerichteten FMP-/SEC-/MASSIVE-
+bzw. KI-Zugänge. Die WebUI nennt fehlende Daten, Budgets und Quellenfehler.
+
+Die fünf Kandidaten erhalten individuelle Luna-Texte. Ausgewählte Kandidaten
+bekommen Terra-Analysen; deren Quellenreferenzen werden formal geprüft.
+Im Beobachtungsmodus kann daraus ein simulierter Recherchefavorit je Woche
+entstehen. Er löst keinen Kauf aus und ist keine verbuchte Position.
+
+Noch offen: ApeWisdom und Tradestie liefern keine Einzelbeiträge/Autoren für
+die strengen Community-Regeln. Auch die automatische Verifizierung eines
+wirtschaftlichen Primärereignisses ist noch nicht angeschlossen. Daher ist
+PULSARs persönliche Handelsfreigabe mit diesen Quellen noch nicht nutzbar.
+Fehlende historische Gebühren und Wechselkurse werden nicht erfunden.
+
+Das Paket wurde lokal offline geprüft. Ein erfolgreicher Lauf auf deinem Pi
+und die Broker-/Quellenantworten nach dem Update müssen noch bestätigt werden.
+Details: CHANGELOG_v9.8.5_NEXUS.txt und PULSAR_9.8.5_DE.md.
+Ältere Anleitungen und Prüfberichte im Paket sind Versionshistorie.

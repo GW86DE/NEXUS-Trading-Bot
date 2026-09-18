@@ -1,0 +1,393 @@
+TRADINGBOT v8.1.5 NEXUS — AENDERUNGSBERICHT
+================================================================================
+Stand: 25.08.2026        Basis: v8.1.4
+
+Anlass: sieben Punkte aus Georgs Meldung vom 25.08.2026 abends, dazu die
+Korrekturnotiz TradingBot_8_1_4_Korrekturen.py und die hochgeladenen Dateien
+decision_history.sqlite und risk_state_etoro.json.
+
+Vier der sieben Punkte waren FALSCHE MELDUNGEN. Sie haben nichts falsch
+gehandelt -- und das ist genau der Grund, warum sie so lange stehen blieben.
+Eine falsche Begruendung schickt die Fehlersuche in die falsche Richtung. Bei
+der Ursachensuche kam ein fuenfter Befund heraus, der KEINE Anzeigesache war:
+die eToro-Tagesverlustbremse konnte seit Einfuehrung der Risikotoepfe nie
+ausloesen.
+
+Unveraendert geblieben — auf ausdrueckliche Ansage:
+  * Verbindungseinstellungen (eToro, OKX, Telegram-Zugang, WireGuard, Web-Login)
+  * Einstellungsuebernahme aus der Vorgaengerversion
+  * Universumsseite und Logbuchseite der WebUI
+  * das auto-fit-Kachelraster des Dashboards
+
+
+1. "POSITIONSLIMIT ERREICHT (OFFEN=0)"
+================================================================================
+Am 25.08. der haeufigste Ablehnungsgrund des Tages: 243 Meldungen. Dazu 15
+weitere mit "(offen=1)" bei einem Limit von 8. Bei null offenen Positionen
+kann kein Positionslimit greifen.
+
+URSACHE
+    Entscheidung und Begruendung wurden getrennt gepflegt.
+    risk_manager.can_open_new_position() kannte sechs Sperrgruende; die
+    Begruendungskette in live_trader.py kannte vier. Alles Uebrige fiel in
+    einen Sammelzweig:
+
+        else:
+            grund = f"Positionslimit erreicht (offen={risk.open_positions})"
+
+    Die Equity-Tagesbremse hatte keinen eigenen Zweig und landete dort.
+
+BEHOBEN
+    Es gibt jetzt genau eine Quelle: risk_manager.kaufsperre_grund() liefert
+    den Text, und can_open_new_position() ist nur noch "gibt es einen Grund?".
+    Wer einen Grund ergaenzt, ergaenzt zwangslaeufig auch seine Meldung.
+
+    Neue Meldungen, jeweils mit Zahlen:
+        "Equity-Tagesbremse aktiv: -3,40 % seit Tagesbeginn (Grenze -3,00 %).
+         Verkaeufe und Stops laufen weiter."
+        "Positionslimit erreicht (offen=8, Limit=8)"
+        "Tagesverlustlimit erreicht (heute realisiert -226,60)"
+        "Maximale Trades pro Tag erreicht (20/20)"
+        "Kostenquote zu hoch: 45,2 % > 30 %"
+        "Konfigurationsfehler: MAX_OPEN_POSITIONS muss mindestens 1 sein"
+
+TESTS
+    * Bei offen=0 kann NIE ein Positionslimit gemeldet werden -- ueber alle
+      Sperrzustaende geprueft.
+    * gesperrt <=> es gibt einen Text: die beiden koennen nicht mehr
+      auseinanderlaufen.
+    * live_trader formuliert keine Sperrtexte mehr (AST-Pruefung).
+
+
+2. "MARKT GESCHLOSSEN" BEI OFFENER BOERSE
+================================================================================
+Georg: "Macht aber kein sinn weil er noch offen ist (Amerika)."
+
+Er hatte recht -- und die Sperre trotzdem auch. GOOGL hatte einen 18 741
+Sekunden alten Kurs, also 5 Stunden 12 Minuten. COST 474 s und 790 s. Auf so
+einem Kurs waeren Stop und Positionsgroesse geraten gewesen.
+
+URSACHE
+    market_session_status() stuft REGULAR auf CLOSED herab, wenn der Kurs zu
+    alt ist. Danach war nur noch die FOLGE sichtbar, nicht der GRUND:
+    entry_allowed() meldete "ausserhalb regulaerer Boersenzeit". Das Kursalter
+    lag im Rohdatensatz und kam nie bis zur Meldung.
+
+BEHOBEN
+    MarketSessionStatus fuehrt jetzt Symbol, Kalenderlage vor der
+    Herabstufung, Herabstufungsgrund, Kursalter und Grenze mit. entry_allowed()
+    nennt die Ursache:
+
+        "GOOGL: Kein Einstieg, weil der Kurs 5 h 12 min alt ist (erlaubt:
+         3 min). Die Boerse ist laut Kalender offen -- das ist ein
+         Datenproblem, keine Handelszeit. Ohne aktuellen Kurs waeren Stop und
+         Positionsgroesse geraten."
+
+    Bei echtem Feierabend steht jetzt dabei, wann wieder aufgemacht wird
+    ("Regulaerer Handel wieder ab Mo 31.08., 15:30 Uhr").
+
+    NEU: Sagt der Kalender offen und der Bot kauft trotzdem nicht, geht
+    EINMAL JE WERT UND TAG eine Telegram-Nachricht raus -- nicht 243.
+
+    MARKET_SESSION_QUOTE_MAX_AGE_SECONDS ist in der WebUI einstellbar
+    (Einstellungen -> Datenfrische), fuer Aktien und Krypto getrennt, wirkt
+    ohne Neustart, geklammert auf 30 s bis 24 h. Die drei Aufrufstellen in
+    live_trader teilen sich jetzt eine Quelle statt drei eigener Standardwerte.
+
+
+3. DIE VERLUSTBETRAEGE
+================================================================================
+Telegram meldete "Heute realisiert: -226,60 USD". Tatsaechlich:
+
+    DVLT    geschlossen   -44,40 USD   (so auch im Handelsbuch)
+    FLR.US  noch offen   -121,26 USD   Buchverlust
+    Gebuehren              -3,00 USD
+
+Keine Kombination ergibt -226,60.
+
+URSACHE
+    Der Wert kam aus risk_state.realized_pnl_today -- einem fortgeschriebenen
+    Summenzaehler ohne Belege. Er kann durch einen doppelt verbuchten Fill,
+    einen Abbruch zwischen Buchung und Speicherung oder einen alten Zustand
+    danebenliegen, und hinterher kann niemand sagen, welcher Betrag zu welchem
+    Trade gehoerte.
+
+BEHOBEN
+    Neues Modul tagesbuch.py bildet das Tagesergebnis aus den EINZELNEN
+    Buchungen des Handelsbuchs:
+
+        Realisiert heute: -44,40 USD (1 Trade)
+          davon Gebuehren: -3,00 USD (bereits abgezogen)
+        Offen unrealisiert: -121,26 USD (1 Position)
+        Tagesergebnis gesamt: -165,66 USD
+        Buchungen:
+          14:25 DVLT -44,40 · MANUAL_SELL
+
+    Drei Festlegungen:
+      * Gebuehren stecken im Nettowert und werden NICHT ein zweites Mal
+        abgezogen. Ein doppelter Abzug waere der naechste falsche Betrag.
+      * Ein Ausstieg ohne bekannten Einstand geht nie als 0,00 in die Summe.
+        Er zaehlt als "unvollstaendig" und wird benannt.
+      * Weicht der Summenzaehler ab, wird die ABWEICHUNG GEMELDET statt eine
+        der beiden Zahlen auszuwaehlen. Die Auswahl waere geraten.
+
+    Betroffen: Verkaufsmeldung (trade_messages.sell_message) und /pnl
+    (berichte.pnl_text).
+
+
+3b. ZWEI ETORO-RISIKOSTAENDE, DIE NICHTS VONEINANDER WUSSTEN
+================================================================================
+Der schwerere Befund, gefunden bei der Suche nach den -226,60.
+
+    live_trader.py      RiskState.load(config.RISK_STATE_FILE) -> risk_state.json
+    risk_pots.RiskPot   f"risk_state_{broker}.json"      -> risk_state_etoro.json
+
+Der Aktienkern fuehrte den echten Handel und schrieb ausschliesslich in die
+erste Datei. Die zweite wurde NIE beschrieben -- Georgs hochgeladene Datei
+enthielt an einem Tag mit zwei geschlossenen Positionen und dreistelligem
+Verlust nur Nullen.
+
+Das war kein Anzeigefehler:
+  * RiskPot.tagesverlust_erreicht() verglich immer 0,00 gegen die Grenze. Die
+    Tagesverlustbremse des eToro-Topfes konnte NIE ausloesen.
+  * RiskPotManager.globale_pruefung() summiert die Toepfe. Die Aktienseite
+    steuerte dauerhaft 0,00 bei -- die brokeruebergreifende Klammer sah nur
+    die Kryptoverluste.
+
+settings_migration.UMBENENNUNGEN sagt seit v8 "risk_state.json ->
+risk_state_etoro.json". Gemeint war also immer EIN Zustand; nur der Aktienkern
+hat den Wechsel nie mitgemacht.
+
+BEHOBEN
+    Neues Modul risk_state_pfad.py ist die einzige Stelle, die den Dateinamen
+    kennt. live_trader, risk_pots und gui_app fragen dort.
+
+    Beim ersten Start zieht umzug_etoro() um -- und wirft nichts weg:
+      * Zieldatei fehlt        -> umbenennen
+      * Zieldatei leer         -> gefuehrte Werte gewinnen, leere als
+                                  .abgeloest-<Zeitstempel> aufbewahrt
+      * beide gefuellt         -> juengeres Datum gilt, das andere wird
+                                  aufbewahrt UND es wird ausdruecklich zum
+                                  Gegenpruefen im Broker aufgefordert
+    Der Umzug wird per Telegram gemeldet und ist mehrfach aufrufbar.
+
+    Ein Test verbietet, dass irgendein Modul den Namen wieder selbst bildet.
+
+NEBENBEFUND, MITGEFIXT
+    RiskState.default_path() gab einen relativen Namen unveraendert zurueck --
+    der loeste damit gegen das ARBEITSVERZEICHNIS auf. Beim Start als
+    systemd-Dienst ist das ein anderer Ordner als das Botverzeichnis: die
+    Tagesbremse haette dort nach jedem Neustart bei null angefangen, ohne dass
+    es jemand bemerkt. Der Pfad ist jetzt immer absolut.
+
+
+4. UNIVERSUMSAUFNAHME OHNE BESTAETIGUNG
+================================================================================
+Georg: "bitte aender auch das die freigabe fuer die aufnahme ins Universum
+keine Bestaetigung mehr von mir braucht ... es ist doch eh dynamisch und
+fliegt wieder raus wenn es eine schlechte Wahl war" -- und danach: "mach nicht
+24h sondern 4h weil es ja im Universum wegen guten werten gelandet ist".
+
+GEAENDERT
+    UniverseRegeln.fuer("etoro"): autonome_aufnahme=True,
+    beobachtung_stunden=4.0 (neu: STOCK_UNIVERSE_PROBATION_HOURS).
+
+    Ohne Rueckfrage heisst nicht ohne Grenzen. Unveraendert:
+        75 feste Kernwerte
+        hoechstens 25 dynamische Plaetze
+        hoechstens 5 Wechsel je Lauf
+        4 h Bewaehrung mit stabiler Bewertung, bevor ein Wert handelbar wird
+
+    Die vier Stunden passen zum Universumstakt: bei einem Lauf alle 45 Minuten
+    sind das rund fuenf Messungen, die Stabilitaetspruefung braucht drei. Wer
+    den Wert senkt, muss STOCK_UNIVERSE_REFRESH_SECONDS mitsenken -- sonst
+    wird nie freigegeben. Das steht als Warnung in der config.
+
+    Die Meldungen sagen jetzt, was PASSIERT IST, statt zu fragen:
+        "AKTIEN-UNIVERSUM · NEU IN BEWAEHRUNG ... Beobachtet heisst noch nicht
+         handelbar. Grenzen: 75 + max. 25, max. 5 Wechsel je Lauf."
+        "AKTIEN-UNIVERSUM · BEWAEHRUNG BESTANDEN"
+    "Vorschlaege" heisst jetzt "nicht aufgenommen" und betrifft nur noch
+    Werte, die an einem Deckel haengen.
+
+UNVERAENDERT
+    "Im Universum" heisst weiterhin nur: wird beobachtet. Ob gekauft wird,
+    entscheidet allein die deterministische Kaufkaskade. Getestet ist auch,
+    dass GPT die Aufnahme weder freigeben noch blockieren kann -- selbst wenn
+    es ausdruecklich "blockieren" zurueckgibt -- und dass ein GPT-Ausfall die
+    Aufnahme nicht aufhaelt.
+
+    Fuenf Tests der Vorgaengerversion wurden auf das neue Verhalten
+    umgeschrieben, mit Begruendung im Text. Keine Zusicherung wurde
+    abgeschwaecht: ein Favorit ueberspringt die Bewaehrung weiterhin nicht.
+
+
+5. "NONE" UND "UPDATED_AT" IN DER UNIVERSUMSTABELLE
+================================================================================
+URSACHE
+    stock_universe_runner._offene_positionen():
+
+        eintraege = daten.get("positions") or daten.get("positionen") or daten
+
+    Bei {"updated_at": "...", "positions": {}} ist das leere Dict falsy. Die
+    Kette fiel deshalb auf die GANZE Datei zurueck, und jeder Schluessel der
+    obersten Ebene -- auch "updated_at" -- wurde zu einem Symbol. Beim Wert
+    None kam ueber str(None) zusaetzlich der Text "None" heraus, der nicht
+    leer und damit wahr ist.
+
+BEHOBEN
+    Drei Regeln, fest verdrahtet:
+      1. Ein vorhandener, aber leerer Bereich ist eine Antwort ("keine
+         Positionen") und kein Grund, woanders zu suchen -> "is None" statt "or".
+      2. Aus None wird nie ein Symbol.
+      3. Ein Symbol muss wie ein Ticker aussehen (AAPL, FLR.US, BRK.B, RDS-A
+         ja; "None", "updated_at", Zeitstempel nein).
+
+
+6. DASHBOARD: OKX DOPPELT, ETORO NIRGENDS
+================================================================================
+Die Karten "Offene Krypto-Positionen" und "OKX Positionen" zeigten beide OKX.
+Fuer die Aktienseite gab es ueberhaupt keine Datei, aus der die Oberflaeche
+haette lesen koennen -- die WebUI hat bewusst keine Brokerverbindung.
+
+BEHOBEN
+    * PositionManager schreibt bei jedem Abgleich stock_positions.json --
+      das Gegenstueck zu crypto_positions.json der Kryptoseite.
+    * Doppelte Kachel entfernt, neue Kachel "eToro Positionen" mit Anzahl,
+      Buchwert und je Position Menge, Einstand und Verwaltung.
+    * Fehlt ein Kurs, steht dort "Buchwert unbekannt" -- nicht 0. Eine 0 saehe
+      aus wie ausgeglichen und waere eine Falschaussage.
+    * Kacheln gruppiert: Zustand · Aktien · Krypto · System. Die Gruppenzeile
+      spannt ueber die volle Rasterbreite (.dashboard-gruppe); das
+      auto-fit-Raster bleibt unveraendert.
+
+
+7. EIGENE POSITION AN DEN BOT UEBERGEBEN
+================================================================================
+Georg: "die funktion gibt es dort ja aber es wurde blockiert weil sie zu sehr
+im minus war."
+
+URSACHE
+    position_manager.request_takeover() verlangte
+
+        stop < rec.avg_cost < take
+
+    also gemessen am EINSTAND. Bei einer Position, die 30 % im Minus steht,
+    liegt der Einstand weit ueber dem Kurs: ein Stop darunter haette ueber dem
+    Marktpreis gelegen und SOFORT AUSGELOEST, ein Ziel darueber waere
+    unerreichbar. Der Einstand ist Vergangenheit -- er sagt nichts darueber,
+    wo Stop und Ziel sinnvoll liegen.
+
+    Zweite Blockade in gui_app: "nur Instrumente im konfigurierten Universum".
+    Eine selbst gekaufte Position gehoert da naturgemaess nicht hinein.
+
+BEHOBEN
+    Massgeblich ist der AKTUELLE KURS: stop < kurs < ziel. Zusaetzlich muss
+    der Stop weiter weg sein als die Handelskosten der Runde -- dieselbe Regel
+    wie beim Bot-Einstieg. Ohne aktuellen Kurs wird ehrlich abgelehnt statt
+    auf den Einstand auszuweichen.
+
+    Der Universumszwang entfaellt; die Position bekommt source=USER_MANAGED.
+
+    Steht sie im Minus, sagt die Antwort, was ein ausgeloester Stop kostet:
+        "Hinweis: Die Position steht mit -1.500,00 USD im Minus. Greift der
+         Stop, wird ein Verlust von rund -1.700,00 USD realisiert."
+
+    Unveraendert: Die Uebernahme setzt nur eine Anforderung. Handelbar wird
+    die Position erst, wenn der Kern den Broker-Schutz bestaetigt hat.
+
+NEUE WEBUI-SEITE "POSITIONEN"
+    Je Position: Menge, Einstand, Kurs, Buchwert, Stop/Ziel, Verwaltung und
+    ein Knopf "Bot uebernehmen" bzw. "Nur beobachten".
+
+    Die Seite fasst weder Broker noch Positionsbuch an -- zwei Prozesse
+    duerfen nie gleichzeitig position_state.json schreiben. Sie legt einen
+    Auftrag ab (positions_auftraege.py); der Kern fuehrt ihn in seiner
+    Schleife aus, wo er Broker und Kurs hat. Derselbe Weg, den
+    bot_zustand.json fuer Pausieren/Aktivieren schon geht.
+
+    Stop und Ziel werden IN PROZENT zum Kurs angegeben, nicht als feste
+    Betraege: der Kurs auf der Seite ist Sekunden alt, und ein fester Stop
+    koennte bis zur Ausfuehrung schon ueber dem Marktpreis liegen.
+
+    Auftraege verfallen nach 30 Minuten mit Hinweis, statt stumm liegen zu
+    bleiben. Ein Auftrag ohne Kurs bleibt offen und wird erneut versucht.
+    Ein zweiter Auftrag zum selben Wert ersetzt den ersten.
+
+    Ein Test verbietet, dass webui/app.py je selbst ins Positionsbuch greift.
+
+
+TESTHYGIENE (ohne Anlass, aber laengst faellig)
+================================================================================
+Sechs Testdateien schrieben ihre Laufzeitdateien in den RELEASE-BAUM, weil die
+betroffenen Module ihren Zustandspfad beim IMPORT festlegen und die Tests
+TRADINGBOT_TEST_STATE_DIR erst danach setzten. Zwei echte Folgen:
+
+  * volltest.py meldete nach jedem Testlauf zu Recht "Laufzeitdatei im
+    Release-Baum". Vor jedem Packen musste jemand von Hand aufraeumen -- und
+    wer es vergass, packte eine fremde Entscheidungsdatenbank mit ins Release.
+  * Das KI-Tagesbudget in ai_router_usage.json summierte sich ueber Testlaeufe
+    hinweg auf. Irgendwann war das Terra-Budget aufgebraucht, und
+    test_universe_research schlug fehl -- mit einem Fehlerbild, das mit dem
+    gepruefen Verhalten nichts zu tun hatte. Genau so entstehen Tests, denen
+    man nicht mehr glaubt.
+
+BEHOBEN
+    * Neues tests/conftest.py setzt das Zustandsverzeichnis, bevor pytest die
+      Testmodule laedt.
+    * decision_analytics und ai_router bestimmen ihren Pfad beim ZUGRIFF statt
+      beim Import. Eine gezielt gesetzte DB_PATH gilt weiterhin.
+    * Der neue Einstellungstest schreibt in ein Wegwerfverzeichnis.
+
+    Ein voller Testlauf hinterlaesst jetzt keine Datei mehr im Release-Baum.
+
+
+NEUE UND GEAENDERTE DATEIEN
+================================================================================
+NEU
+    tagesbuch.py                        Tagesergebnis aus den Buchungen
+    risk_state_pfad.py                  ein Risikopfad je Broker, mit Umzug
+    positions_auftraege.py              Auftraege der Oberflaeche an den Kern
+    webui/templates/positions.html      Seite "Positionen"
+    webui/static/positions.js
+    tests/conftest.py
+    tests/test_v815_meldungen_und_symbole.py
+    tests/test_v815_tagesbuch_und_risikostand.py
+    tests/test_v815_positionen_und_kacheln.py
+
+GEAENDERT
+    risk_manager.py         kaufsperre_grund(), absoluter Zustandspfad
+    live_trader.py          eine Begruendungsquelle, Kursaltergrenze,
+                            Risikoumzug, Tagesbuch, Positionsauftraege
+    market_session.py       Herabstufungsgrund, Kursalter, Klartextmeldungen,
+                            Meldung je Symbol und Tag
+    position_manager.py     request_takeover am Kurs, Anzeigedatei
+    universe/manager.py     autonome Aktienaufnahme, 4 h Bewaehrung
+    stock_universe_runner.py Symbolpruefung, neue Meldetexte
+    crypto_engine.py        Tickeralter aus den Einstellungen
+    live_settings.py        Datenfrische-Schwellen, Grenze der Ausnahme
+    webui/settings_store.py Gruppe "handel"
+    webui/state.py          stock_positions, Bewaehrungswerte
+    webui/app.py            Routen /positions und /api/positions
+    webui/static/dashboard.js  Gruppen, eToro-Kachel, Duplikat entfernt
+    webui/templates/*.html  Navigationspunkt "Positionen"
+    gui_app.py              Universumszwang entfaellt, Kurs statt Einstand
+    berichte.py             /pnl aus dem Tagesbuch
+    trade_messages.py       Tagesbuchblock in der Verkaufsmeldung
+    decision_analytics.py   Pfad beim Zugriff
+    ai_router.py            Zustandspfad beim Zugriff
+    risk_pots.py            gemeinsamer Risikopfad
+    config.py               8.1.5, STOCK_UNIVERSE_PROBATION_HOURS,
+                            RISK_STATE_FILE auf risk_state_etoro.json
+    volltest.py             neue Pflichtdateien, stock_positions.json,
+                            handel_settings.json
+
+
+PRUEFUNG
+================================================================================
+628 Tests gruen, 1 uebersprungen, 164 Subtests.
+volltest.py: STATIC RELEASE HYGIENE, PYTEST, SELF TEST, COMPILEALL,
+PI PREFLIGHT, SHELL SYNTAX -- alle OK.
+
+Grenze: echte eToro-/Telegram-/KI-Netzwerkaufrufe und ARM64-Hardware werden
+offline nicht simuliert.

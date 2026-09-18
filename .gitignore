@@ -1,0 +1,101 @@
+# NEXUS Trading-Bot -- Laufzeitdaten, Zugangsdaten und Buchhaltung gehoeren
+# NIE ins Repository. Die Liste spiegelt volltest.forbidden_runtime und die
+# FORBIDDEN_RUNTIME-Menge des Bauskripts.
+
+# Zugangsdaten
+.env
+.env.*
+!.env.template
+okx_credentials.json
+web_ui_credentials.json
+*.pem
+*.key
+
+# Datenbanken (Ledger, Journale, Belege) und ihre WAL/SHM-Dateien
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
+*-journal
+
+# Zustands- und Einstellungsdateien des laufenden Bots
+settings.json
+bot_zustand.txt
+bot_zustand.json
+handelsmodus.txt
+position_state.json
+crypto_positions.json
+stock_positions.json
+risk_state.json
+risk_state_etoro.json
+risk_state_okx.json
+risk_state_*.bak
+etoro_risk_period_*.json
+runtime_status_okx.json
+telegram_queue.json
+telegram_control_status.json
+telegram_control_state.json
+telegram_command_audit.jsonl
+etoro_cost_status.json
+news_source_status.json
+ai_attention_usage.json
+ai_control_state.json
+ai_router_usage.json
+ai_router_cache.json
+ai_usage_audit.jsonl
+ai_pending_orders.json
+live_trading_arm.json
+okx_live_arm.json
+etoro_live_arm.json
+approved_universe.json
+universe_proposals.json
+universe_state.json
+universe_audit.jsonl
+weekly_intelligence_state.json
+decision_sources.jsonl
+market_regime.json
+second_opinion_settings.json
+handel_settings.json
+web_ui_settings.json
+migration_report.json
+crypto_strategy_mode.json
+.crypto_strategy_mode.seen
+etoro_strategy_mode.json
+etoro_fee_snapshots.json
+.manual_trade_control.lock
+crypto_dynamic_30.json
+crypto_dynamic_30_history.json
+manual_trade_commands.json
+manual_coin_locks.json
+scan_uebersicht.json
+risiko_stufen.json
+.risiko_stufen.seen
+etoro_reconciliation.json
+fill_progress.json
+okx_accounting_repair_report.json
+
+# Protokolle, Diagnosen, Backtests
+trading_bot.log
+*.log
+!validation/*.log
+!docs/history/**/*.log
+NEXUS_10_Diagnose_*.zip
+NEXUS_Backtests/
+
+# Python / Node / Werkzeuge
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+node_modules/
+build/
+dist/
+
+# Betriebssystem
+.DS_Store
+Thumbs.db
+desktop.ini

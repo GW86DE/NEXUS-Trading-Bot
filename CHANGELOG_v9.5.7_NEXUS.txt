@@ -1,0 +1,157 @@
+TradingBot NEXUS -- Version 9.5.7
+=================================
+
+Ein Fehler, der es in sich hatte -- und eine Gegenpruefung, die sechs Fehler
+in meiner ERSTEN Fassung dieser Korrektur gefunden hat.
+
+
+DER BEFUND (HYPE, 03.09.2026)
+------------------------------
+Im Logbuch stand im Minutentakt:
+
+  OKX-Schutzorder HYPE-EUR abgelehnt (51008): Your available HYPE balance
+  is insufficient
+
+Die Kontodiagnose zeigte, warum:
+
+  Konto gesamt      : 31,6721581 HYPE
+  davon frei        :  0,0000581
+  davon eingefroren : 31,6721000
+  Schutzorder       : algoId 3889992275388477441 | HYPE-EUR | Menge 31,6721
+                      SL 63,18 | TP 73,52
+                      Kennung TBP91b0d068a351f42f98e207079eb3b
+
+Die Position WAR geschuetzt. NEXUS hat die eigene Order nur nicht
+wiedererkannt und versuchte eine zweite -- die OKX ablehnen musste, weil die
+erste das Guthaben haelt.
+
+WARUM 9.5.6 SIE NICHT ERKANNTE
+
+Die Uebernahme aus 9.5.6 verlangte Uebereinstimmung von Menge UND SL/TP.
+Bei HYPE passten die Preise nicht:
+
+  im Konto:       SL 63,18        TP 73,52
+  NEXUS erwartet: SL 63,27786405  TP 73,63563475
+
+Beide um denselben Faktor daneben, denn 63,18 / 0,9 = 70,20: die Schutzorder
+wurde mit einem VORLAEUFIGEN Einstiegspreis gesetzt, bevor der echte VWAP von
+70,30873783 feststand. Danach wurden SL und TP neu gerechnet.
+
+Der Beweis lag die ganze Zeit vor: die Kennung beginnt mit "TBP9" -- das ist
+NEXUS' eigenes Praefix. Ob SL und TP noch aktuell sind, sagt nichts darueber,
+WEM die Order gehoert.
+
+
+DIE URSACHE, EINE EBENE TIEFER
+-------------------------------
+Warum trug die Order ueberhaupt eine zufaellige TBP9-Kennung statt der
+deterministischen? Weil ``reconcile_order_evidence`` -- der Pfad, der einen
+unklaren Kauf nachtraeglich aufklaert -- ``reconcile_position_protection``
+OHNE Schutzkennung aufrief. ``_setze_schutz`` erzeugte daraufhin eine
+zufaellige, die nirgends gespeichert wurde. Ab dem naechsten Takt war die
+Order nicht mehr zuzuordnen.
+
+Genau so entstand am 03.09. die Lage: der HYPE-Kauf um 12:55:21 wurde als
+"ungeklaerte eigene OKX-Order" gefuehrt und ueber diesen Pfad aufgeklaert.
+
+
+WAS 9.5.7 AENDERT
+-----------------
+1. URSPRUNG. Der Wiederaufsetzpfad bildet die Schutzkennung jetzt genauso
+   deterministisch wie der Kaufpfad ("P" + cl_ord_id). Die Order ist damit ab
+   dem naechsten Takt ueber den strengen Filter auffindbar.
+
+2. ERKENNUNG. Eine Order mit NEXUS-Praefix auf demselben Instrument ist die
+   eigene -- unabhaengig von SL/TP. Die Praefixliste deckt jetzt alle
+   Schreibweisen ab, die NEXUS erzeugt: PN9, PTB, TBP, N9.
+
+3. DECKUNG. ALLE eigenen Orders zaehlen zur Deckung, nicht nur eine mit exakt
+   passender Menge. Deckt eine Order zu wenig ab, wird der Rest regulaer
+   nachgeschuetzt.
+
+4. AENDERN STATT DUPLIZIEREN. Weichen SL/TP ab, wird die vorhandene Order
+   geaendert. amend_algo_order aendert in place -- es gibt keine Luecke, in
+   der die Position ungeschuetzt waere.
+
+5. RIEGEL. Keine Order senden, die am gebundenen Guthaben scheitern MUSS --
+   aber nur, wenn liegende Verkaufsorders den Fehlbestand auch wirklich
+   erklaeren.
+
+
+DIE SECHS FEHLER IN MEINER ERSTEN FASSUNG
+------------------------------------------
+Ich habe die fertige Aenderung gegnerisch gegenpruefen lassen. Das Ergebnis
+war unbequem und richtig -- zwei der Befunde waren kritisch:
+
+  KRITISCH  Ein Schutz, der bereits AUSGELOEST hatte und als normale
+            Verkaufsorder weiterlief, wurde als fehlend gemeldet, sobald
+            zusaetzlich eine aeltere eigene Algo-Order herumlag. Das war die
+            exakte Spiegelung des Fehlers, den 9.5.7 beheben sollte.
+
+  KRITISCH  Deckte die eigene Order zu WENIG ab, sendete meine Fassung gar
+            nichts mehr -- der Rest waere dauerhaft ungeschuetzt geblieben.
+            Ausserdem warf sie die bekannte algoId weg, womit sich die
+            Position spaeter nicht mehr haette verkaufen lassen: vor jedem
+            Verkauf storniert NEXUS die eigene Schutzorder, und dafuer
+            braucht es ihre Kennung.
+
+  WICHTIG   Scheiterte das Aendern, meldete meine Fassung "kein Schutz" und
+            versuchte es im naechsten Takt erneut -- dieselbe
+            Minutentakt-Schleife, nur auf einem anderen Endpunkt.
+
+  WICHTIG   Ohne gesetzten Stop UND Take-Profit bestaetigte sie jede
+            beliebige Order als "SL/TP passen exakt", ohne einen einzigen
+            Preis zu vergleichen: all() ueber eine leere Bedingung ist wahr.
+
+  WICHTIG   Die Mengentoleranz von 0,1 Prozent liess echte Luecken durch --
+            bei 100.000 DOGE waren das 100 Stueck, gemeldet als voll
+            geschuetzt. Deckung gilt jetzt erst, wenn hoechstens ein Lot
+            fehlt; ein Rest unter der OKX-Mindestmenge zaehlt als gedeckt,
+            weil sich dafuer gar keine Order stellen laesst.
+
+  WICHTIG   Eine von OKX ANGENOMMENE, aber nicht rueckgelesene Aenderung
+            wurde als "bestaetigt ungeschuetzt" verbucht. "Nicht abrufbar"
+            ist nicht dasselbe wie "nicht vorhanden".
+
+Dazu zwei Angleichungen: der Aenderungspfad benutzte eine andere
+Slippage-Konstante als der Anlegepfad und hatte den Sub-Cent-Riegel aus v9.1
+nicht -- bei Cent-Coins waere der Stop-Limitpreis auf 0 gerundet worden und
+OKX haette die ganze OCO abgelehnt.
+
+
+AUSSERDEM
+---------
+Die Meldung "ACHTUNG: Broker-Schutz fehlt" war zu absolut. Sie stand an HYPE,
+obwohl im Konto sehr wohl eine Schutzorder lag. Sie heisst jetzt "kein
+bestaetigter Broker-Schutz" und nennt den Grund darunter.
+
+
+ZUM ETH-FALL (deine zweite Frage)
+----------------------------------
+Das war KEIN Fehler. Um 12:20:26 stand "Ungeklaerte eigene OKX-Order: ETH",
+und gleichzeitig lag ETH im Konto. Diese Kombination heisst: der Bestand
+koennte zu der offenen Order gehoeren. Also RESIDUAL_EXPOSURE und keine neuen
+Einstiege. Um 12:30:06 war es geklaert, die Sperre fiel von selbst weg.
+
+Solange unklar ist, wieviel Geld gebunden ist, wird nicht gekauft. Genau so
+soll es laufen.
+
+
+TESTS
+-----
+1185 Tests, 1 uebersprungen, 186 Subtests -- gruen, aus dem entpackten ZIP
+verifiziert. Keine neuen statischen Befunde (11, genau wie 9.5.6).
+
+  tests/test_v957_hype_schutzorder.py   15 Tests, davon 7 ausschliesslich fuer
+                                        die Befunde aus der Gegenpruefung
+  tests/test_v956_schutzorder_uebernahme.py  an den neuen Vertrag angepasst
+
+Gerechnet wird mit den echten Zahlen vom 03.09.2026, nicht mit erfundenen.
+
+
+UNVERAENDERT
+------------
+Verbindungseinstellungen, Einstellungsuebernahme, Universums- und
+Logbuchseiten, WebUI-Kacheln, Freqtrade-Modus als Zusatzfunktion,
+GPT/Terra-Grenzen. Die Order wird weiterhin ausschliesslich durch die festen
+Regeln, Live-Freigabe und Broker-Schutz ausgeloest.

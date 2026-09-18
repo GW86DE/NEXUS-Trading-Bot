@@ -1,0 +1,221 @@
+TradingBot NEXUS -- Version 9.5.5
+=================================
+
+Ausloeser: "Warum hat NEXUS teilweise keine aktuellen Daten mehr? Beispiel
+AVGO. Bei eToro sind die Daten aktuell. Sicher, dass es nicht an NEXUS liegt?"
+
+Die Frage war berechtigt gestellt. Die Antwort lautet: es liegt an eToro --
+und das ist bewiesen, nicht vermutet.
+
+
+0. WAS ICH ZURUECKNEHMEN MUSSTE
+-------------------------------
+Mein erstes Diagnoseskript hat aus "Bid und Ask bewegen sich" geschlossen,
+der Kurs sei aktuell, und daraus "Fehler in NEXUS". Der Schluss war falsch:
+ein verzoegerter Feed bewegt sich genauso -- er gibt die Kurse von vor
+20 Minuten wieder, laufend, im Echtzeittakt.
+
+Der Beweis lief dann ueber eine zweite, unabhaengige Kursquelle:
+
+    AAPL   Zeitstempel  0,0 min   Abweichung  +0,000 %   Spanne 0,009 %
+    JPM    Zeitstempel 21,0 min   Abweichung  -0,174 %   Spanne 0,020 %
+
+Sagt der Zeitstempel "frisch", stimmt der Preis auf fuenf Nachkommastellen.
+Sagt er "21 Minuten alt", weicht der Preis um das Neunfache der Handelsspanne
+ab. Der Zeitstempel hat also recht.
+
+Ausserdem: "date" ist das EINZIGE Zeitfeld der eToro-Antwort -- ein falsches
+Feld kann NEXUS gar nicht auswerten. Und die Datenachse lief mit Faktor 1,00
+bei konstant 20,3 Minuten Rueckstand: eine verzoegerte Wiedergabe, kein
+kaputter Zeitstempel.
+
+NEXUS blockiert diese Einstiege also zu Recht. Mit einem 21 Minuten alten
+Kurs waeren Stop und Positionsgroesse geraten -- bei JPM um 0,62 USD daneben.
+
+
+1. VERZOEGERTE WERTE PARKEN UND NACHRUECKEN LASSEN
+--------------------------------------------------
+Rund ein Drittel des Aktienuniversums lieferte unbrauchbare Kurse, blieb aber
+im aktiven Universum, belegte Kandidatenplaetze und wurde bei jedem Versuch
+erneut abgelehnt.
+
+  universe/stock_selector.py  Das Kursalter kommt in derselben Antwort mit und
+                              wurde bisher weggeworfen -- die Pruefung kostet
+                              KEINEN zusaetzlichen Abruf.
+  universe/manager.py         Parken und Entsperren.
+  config.py                   STOCK_UNIVERSE_MAX_QUOTE_AGE_SECONDS = 600
+                              STOCK_UNIVERSE_STALE_RUNS_BEFORE_PARK = 2
+
+Bewusst zurueckhaltend:
+
+  * Nur bei OFFENER Boerse. Nachts ist jeder Kurs legitim alt -- ohne diese
+    Bedingung wuerde jeden Abend das halbe Universum geparkt.
+  * Erst ab 10 Minuten, nicht ab 3. Ein kurzer Aussetzer parkt nichts.
+  * Erst nach zwei Laeufen hintereinander.
+  * Ohne lesbaren Zeitstempel wird NICHT geparkt.
+
+Kernwerte werden GESPERRT, nicht entfernt -- die Kernzusammensetzung wird
+nicht heimlich umgeschrieben, der Wert bleibt mit Grund sichtbar. Dynamische
+fliegen raus. Fuer jeden gesperrten Kernwert darf ein zusaetzlicher
+dynamischer Wert nachruecken; die handelbare Gesamtzahl bleibt bei rund 100
+statt auf 60 zu fallen. Liefert ein Wert wieder frische Kurse, loest sich
+alles von selbst.
+
+Die Altersgrenze fuer Einstiege (180 s) bleibt unveraendert.
+
+
+2. BLOCKADEMELDUNG GEDROSSELT
+-----------------------------
+Allein AVGO stand sechsmal mit derselben Zeile im Logbuch. Eine unveraenderte
+Sperre wird jetzt nur noch alle 30 Minuten geschrieben
+(DECISION_BLOCK_LOG_COOLDOWN_SECONDS).
+
+Die unterdrueckten Wiederholungen werden GEZAEHLT und beim naechsten Eintrag
+ausgewiesen -- die Auswertung "welcher Filter lehnt wie viel ab" bleibt
+ehrlich.
+
+
+3. OKX-FEHLERCODES IM KLARTEXT  (neu: okx_fehlercodes.py)
+---------------------------------------------------------
+Am 02.09. stand 25 Minuten lang nur "OKX-Serverfehler HTTP 503" im Log. Jetzt
+steht dort:
+
+  OKX-Serverfehler HTTP 503 (GET /account/balance, privat, Demo,
+  OKX-Code 50001: Service temporarily unavailable) -- WARTUNG: Der
+  OKX-Dienst ist voruebergehend nicht erreichbar. Das liegt an OKX, nicht an
+  den Zugangsdaten -- warten und erneut versuchen.
+
+23 belegte Codes, jeder mit Klasse (ZUGANG / ZEIT / UEBERLAST / WARTUNG /
+ORDER / UNKLAR) und einer Handlungsanweisung. Die Bedeutungen stammen aus der
+offiziellen OKX-V5-Dokumentation. Ein nicht belegter Code bleibt unveraendert
+-- eine erfundene Erklaerung waere schlimmer als keine.
+
+Nebenbei: ein falscher Kommentar von mir in okx.py ist korrigiert. Dort
+stand, ein 503 komme als HTML-Seite. Der echte 503 war gueltiges JSON.
+
+
+4. DER ETH-VERKAUF OHNE ERGEBNIS  (dein Befund)
+-----------------------------------------------
+URSACHE, im Code belegt. In external_exit_evidence stand:
+
+    allowed_orders = {...}
+    if not allowed_orders:
+        return {}
+
+Belegt werden konnte damit ausschliesslich ein Verkauf, dessen ordId NEXUS
+vorher schon kannte -- ein eigener Exit oder eine ausgeloeste eigene
+Schutzorder. Eine Order, die DU in der OKX-App sendest, steht in keiner
+dieser Quellen. Sie war strukturell nie beweisbar, und die Position wurde
+danach mit "Ergebnis bleibt unbekannt" geschlossen.
+
+Das galt fuer JEDEN manuellen Verkauf, nicht nur fuer ETH.
+
+Jetzt werden auch SELL-Fills fremder Orders akzeptiert. Das ist kein
+Aufweichen des Eigentumsbeweises: die Fills stammen aus dem Konto des Bots,
+tragen echte tradeIds und werden bei OKX abgefragt. Ein Spot-Guthaben ist
+fungibel -- wird verkauft, betrifft es denselben Bestand, egal wer die Order
+gesendet hat. Das Ergebnis traegt "beweisart": FREMDVERKAUF oder
+EIGENER_EXIT, damit ein Fremdverkauf nie als eigener Ausstieg gilt.
+
+
+5. VIER WEGE, AUF DENEN ETWAS STUMM VERSCHWAND
+----------------------------------------------
+Aus der Pruefung beider Ketten (Kaufentscheidung bis Buchung):
+
+  * Ein Positionseintrag, den NEXUS nicht lesen konnte, wurde beim Laden
+    still uebersprungen -- und beim naechsten Speichern endgueltig geloescht.
+    Kein Ledgerabschluss, keine Meldung, die Schutzorder blieb stehen. Der
+    einzige Verlustpfad ganz ohne Spur. Solche Eintraege werden jetzt
+    unveraendert aufbewahrt und gemeldet.
+
+  * Schlug der Ledgerabschluss einer verschwundenen Position fehl, wurde das
+    verschluckt und die Position TROTZDEM entfernt. Buchhaltung, die nicht
+    schreibt, darf keine Position vernichten -- sie bleibt jetzt stehen.
+
+  * Die eigene Schutzorder traegt die Kennung "PN9...". Die Aufraeumroutine
+    suchte nach "TBP"/"N9" -- sie hat die eigenen Schutzorders NIE erkannt.
+
+  * trade_open(critical=True) gab bei fehlender decision_id stumm None
+    zurueck. Der Verkaufspfad behandelt genau das seit 9.1 als kritisch, der
+    Kaufpfad tat es nicht.
+
+
+6. EIGENE DEFEKTE AUS 9.5.4
+---------------------------
+  * Die Erkennung verwaister Schutzorders verglich nur die Basiswaehrung.
+    Eine Position ETH-USDC hat damit die Waise auf ETH-EUR verdeckt -- genau
+    die Konstellation des Quotewechsels. Jetzt instrumentgenau. GESPERRT wird
+    weiterhin nach Basiswaehrung, weil ein Spot-Guthaben fungibel ist.
+  * Der Platzhalter "<SCHUTZORDERS-UNLESBAR>" sperrte faktisch nichts: der
+    Kaufpfad filtert nach Symbolnamen. Jetzt eine echte Sperrflagge.
+  * Der Fund wurde nur einmal je Prozesslauf gemeldet und war sonst
+    nirgends sichtbar. Jetzt Cooldown und Eintrag im Status.
+  * In einem Test hatte ich eine algoClOrdId erfunden und als Befund
+    dargestellt. Entfernt.
+
+
+7. EXPOSURE KANNTE KEINE SCHUTZORDERS
+-------------------------------------
+1,043377 ETH (rund 2530 EUR) mit lebender OCO-Order galten als "frei
+verfuegbares Konto-Asset; kein offener Trade". Die Klassifizierung bekam
+Guthaben, Positionsbuch, offene Orders und Ledger -- Schutzorders nie. Ein
+Bestand mit scharfem Stop wird jetzt als ungeklaert gefuehrt und sperrt neue
+Einstiege.
+
+
+8. eTORO-BUCHHALTUNG
+--------------------
+  * eigene_kaeufe(max_alter_stunden) stand in der Signatur, wurde im Rumpf
+    aber nie benutzt -- der Symbolrueckfall hatte gar kein Zeitfenster. Ein
+    Monate alter, nie geklaerter Kauf konnte einen heutigen manuellen Kauf
+    als eigenen beanspruchen (verkauft haette der Bot ihn nicht, dafuer fehlt
+    die bewiesene positionId, aber Depotbild und Kapitalreservierung waren
+    falsch).
+  * Ein Verkaufsfill ohne zugeordnete Ledgerzeile wird jetzt als
+    Buchungsluecke vermerkt statt stillschweigend quittiert.
+
+
+TESTS
+-----
+1157 Tests, 1 uebersprungen, 186 Subtests -- gruen, verifiziert aus dem
+entpackten ZIP. Keine neuen statischen Befunde (26, genau wie 9.5.4).
+
+Neu:
+  tests/test_v955_kursalter_universum.py     7
+  tests/test_v955_fremdverkauf.py            4
+  tests/test_v955_stille_verluste.py         4
+  tests/test_v955_okx_fehlerklartext.py      6
+  tests/test_v955_ablehnung_drosseln.py      3
+
+ZWEI DINGE, DIE DIE TESTS SELBST BETREFFEN:
+
+  * test_v815 verglich das UTC-Datum, waehrend der Handelstag bewusst
+    Europe/Berlin ist. Zwischen 22:00 UTC und Mitternacht fiel die Suite
+    deshalb JEDE NACHT zwei Stunden lang um, ohne dass sich am Bot etwas
+    geaendert hatte. Genau das ist mir beim Bauen dieser Version passiert.
+    Das heisst auch: die Zusicherung "1134 gruen" fuer 9.5.4 galt nur
+    ausserhalb dieses Fensters. Jetzt behoben.
+
+  * Beim Einbau der Kursalter-Messung war die Spread-Berechnung kurzzeitig
+    toter Code -- und die gesamte Suite blieb gruen, weil sie niemand
+    abdeckte. Gefunden hat es die statische Pruefung. Jetzt gibt es einen
+    Test dafuer.
+
+
+NICHT IN DIESER VERSION
+-----------------------
+  * Doppelte Eintraege im Orderregister (jede eToro-Order unter orderId UND
+    referenceId).
+  * Die 6 nicht unterstuetzten deutschen Symbole.
+  * EVER-artige kaputte Zeitmarken als eigener Defekt.
+  * Ein Verkauf auf einem ANDEREN Quotemarkt als dem der Position (ETH-EUR
+    gekauft, ETH-USDC verkauft) wird weiterhin herausgefiltert. Sauber
+    loesbar erst mit einer belegten Waehrungsumrechnung.
+
+
+UNVERAENDERT
+------------
+Verbindungseinstellungen, Einstellungsuebernahme, Universums- und
+Logbuchseiten, WebUI-Kacheln, Freqtrade-Modus als Zusatzfunktion,
+GPT/Terra-Grenzen. Die Order wird weiterhin ausschliesslich durch die festen
+Regeln, Live-Freigabe und Broker-Schutz ausgeloest.
