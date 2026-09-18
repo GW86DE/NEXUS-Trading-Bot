@@ -158,21 +158,52 @@ def test_risikogruende_werden_klassifiziert(text, grund, reichweite, ablauf, tmp
     import risk_manager
     monkeypatch.setattr(risk_manager, 'kaufsperre_grund', lambda risk: text)
     import etoro_reconciliation
-    monkeypatch.setattr(etoro_reconciliation, 'pnl_unvollstaendig', lambda domain='': (False, ''))
+    monkeypatch.setattr(etoro_reconciliation, 'buchungsluecken', lambda domain='': [])
     sperren = etoro_sperren(SimpleNamespace())
     assert [(s.grund, s.reichweite, s.ablauf) for s in sperren] == [(grund, reichweite, ablauf)]
     assert sperren[0].detail == text
 
 
 def test_etoro_buchungsabgleich_erscheint_als_tagesreset_sperre(tmp_path, monkeypatch):
+    """Verknuepfter Verkauf mit noch unbeziffertem Ergebnis: Tagesregel."""
     monkeypatch.setenv('TRADINGBOT_TEST_STATE_DIR', str(tmp_path))
     import etoro_reconciliation
-    monkeypatch.setattr(etoro_reconciliation, 'pnl_unvollstaendig',
-                        lambda domain='': (True, 'PNL_INCOMPLETE: 1 Buchungsfall (CSCO)'))
+    monkeypatch.setattr(etoro_reconciliation, 'buchungsluecken', lambda domain='': [
+        {'symbol': 'CSCO', 'status': 'RESOLVED', 'blocks_entries': True, 'trade_ids': [88],
+         'detail': 'Konto, Umgebung, Position ... bestaetigt; aktuelles Ergebnis/Gebuehren noch unvollstaendig'}])
     sperren = etoro_sperren(None)
-    assert len(sperren) == 1 and sperren[0].grund == 'PNL_INCOMPLETE'
+    assert len(sperren) == 1 and sperren[0].grund == 'PNL_INCOMPLETE' and sperren[0].symbol == 'CSCO'
     assert sperren[0].reichweite == DOMAIN and sperren[0].ablauf == TAGESRESET
     assert 'Erwartungswert' in sperren[0].aufloesung
+
+
+def test_etoro_offener_ledgerabgleich_endet_nicht_mit_dem_handelstag(tmp_path, monkeypatch):
+    """10.7.1: CSCO am 18.09.2026 -- der Abgleich schlug 324x fehl ('Einstiegs-
+    Fillregister enthaelt widersprechenden Beleg'). So ein Fall ist ACTIVE, nicht
+    RESOLVED, und faellt NICHT unter die Tagesregel; er braucht die Reparatur.
+    10.7.0 zeigte trotzdem 'endet durch TAGESRESET'."""
+    monkeypatch.setenv('TRADINGBOT_TEST_STATE_DIR', str(tmp_path))
+    import etoro_reconciliation
+    monkeypatch.setattr(etoro_reconciliation, 'buchungsluecken', lambda domain='': [
+        {'symbol': 'CSCO', 'status': 'ACTIVE', 'blocks_entries': True, 'trade_ids': [],
+         'detail': 'Ledgerabgleich noch nicht erfolgreich'},
+        {'symbol': 'AMD', 'status': 'RESOLVED', 'blocks_entries': True, 'trade_ids': [87],
+         'detail': 'bestaetigt; aktuelles Ergebnis/Gebuehren noch unvollstaendig'}])
+    sperren = etoro_sperren(None)
+    assert [(s.grund, s.symbol, s.ablauf) for s in sperren] == [
+        ('LEDGERABGLEICH_OFFEN', 'CSCO', REPARATUR), ('PNL_INCOMPLETE', 'AMD', TAGESRESET)]
+    assert all(s.reichweite == DOMAIN for s in sperren)
+    assert 'Ledgerabgleich noch nicht erfolgreich' in sperren[0].detail
+
+
+def test_etoro_buchungsabgleich_unlesbar_sperrt_sichtbar(tmp_path, monkeypatch):
+    monkeypatch.setenv('TRADINGBOT_TEST_STATE_DIR', str(tmp_path))
+    import etoro_reconciliation
+    def kaputt(domain=''):
+        raise OSError('Abgleichdatei')
+    monkeypatch.setattr(etoro_reconciliation, 'buchungsluecken', kaputt)
+    sperren = etoro_sperren(None)
+    assert [(s.grund, s.reichweite, s.ablauf) for s in sperren] == [('BUCHUNG_NICHT_PRUEFBAR', DOMAIN, REPARATUR)]
 
 
 # ---------------------------------------------------------------------------

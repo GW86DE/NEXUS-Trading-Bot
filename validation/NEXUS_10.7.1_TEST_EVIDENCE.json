@@ -1,0 +1,93 @@
+{
+  "release": "10.7.1-NEXUS",
+  "build": "10.7.1-LOCK-RESOLUTION-AND-LEDGER-RECEIPTS",
+  "based_on": "10.7.0-NEXUS Revision 2 (auf dem Pi installiert, 18.09.2026 17:56 UTC)",
+  "package_revision": 1,
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "approval": "Georg 18.09.2026: 'Loese das Problem nachhaltig. Bitte arbeite es sauber aus. Schau dir das noch mal komplett an, dass wir nichts vergessen haben. Die Sperren muessen sauber geloest werden und ueberpruefe, ob nachfolgende Trades dann endlich sauber laufen. Bitte achte darauf, dass die Installation sauber laeuft.'",
+  "trigger": "Diagnose NEXUS_10_Diagnose_2026-09-18_18-28-27_157435_UTC_d043945f3e auf 10.7.0 Rev 2: eToro gesperrt (CSCO, PNL_INCOMPLETE), OKX BTC/ETH/XRP einzeln gesperrt, 1.072 blockierte Kaufwuensche in 30 Minuten, 324 Warnungen 'Einstiegs-Fillregister enthaelt widersprechenden Beleg' pro Stunde",
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "node": "v18.4.0 (PyPI nodejs-bin) fuer die Frontendsuite"
+  },
+  "checks": {
+    "static_hygiene_full": {
+      "method": "volltest._static_hygiene() komplett auf frischem Spiegel der versionierten Arbeitskopie",
+      "issues": 0
+    },
+    "node_frontend_suite_local": {
+      "tests": 30,
+      "passed": 30,
+      "failed": 0,
+      "note": "keine JS-Aenderung in 10.7.1"
+    },
+    "new_suite_sperren_aufloesung": {
+      "module": "tests/test_v1071_sperren_aufloesung.py",
+      "tests": 15,
+      "passed": 15,
+      "belegt": [
+        "OKX: Rest-Zeile als RESIDUAL_EXPOSURE umbenannt (Datenlage 18.09.) -> Reparatur schliesst die Luecke (LOT_RESIDUAL_LINEAGE, residual=0.001765), Coin frei",
+        "OKX: Rest ohne jede Notiz wird an der Struktur erkannt; offene Zeile MIT eigenen Fills ist kein Rest (Luecke bleibt PENDING)",
+        "OKX: nach der Reparatur laesst require_tradable den Coin durch; neuer Kauf + Vollverkauf hinterlassen keine Luecke",
+        "OKX: Sperrliste nennt einen Coin mit Buchungsbeleg genau einmal, nicht als Fehlbestand",
+        "eToro: trade_open speichert fee_currency (eToro) wie feeCcy (OKX)",
+        "eToro: Datenbestand Trade 88 (Gebuehr 1,00, Waehrung leer) -> Abgleich traegt USD nach, Einstieg CONFIRMED; EUR und andere Gebuehr bleiben Widerspruch ohne Aenderung",
+        "eToro: vom Abgleich verbuchter Verkauf ohne Risikobeleg wird in EINEM Abgleichlauf registriert und per Erwartungswert beziffert; kaufsperre_grund leer, offene_ergebnisse_heute 0",
+        "eToro: heutiger Verkauf: registriert (heute), im selben Lauf beziffert, Tages-P&L gebucht, keine Sperre",
+        "eToro: manuelle Position und bezifferte Zeile nicht registriert; zweiter Lauf und fremdes Konto tun nichts; Fill-Schluessel wird als Alias uebernommen (keine Doppelzaehlung)",
+        "eToro: zweiter Verkauf im naechsten Lauf laeuft genauso; alle Belege CONFIRMED oder ALIAS"
+      ]
+    },
+    "adjusted_suite_handelsfreigabe": {
+      "module": "tests/test_v1070_handelsfreigabe.py",
+      "tests": 24,
+      "passed": 24,
+      "change": "eToro-Sperrliste je Buchungsfall: RESOLVED -> PNL_INCOMPLETE/TAGESRESET, ACTIVE -> LEDGERABGLEICH_OFFEN/REPARATUR, unlesbar -> BUCHUNG_NICHT_PRUEFBAR"
+    },
+    "full_isolated_run_1": {
+      "date": "2026-09-18",
+      "method": "229 Module je in eigenem Prozess (6 parallel), Netzwerkwaechter aktiv, Node auf PATH, Spiegel der Arbeitskopie vor der Versionierung",
+      "modules": 229,
+      "modules_green": 190,
+      "passed": 3236,
+      "failed": 60,
+      "errors": 7,
+      "skipped": 9,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": 13,
+      "red_modules_without_network_event": 26,
+      "diff_to_10_7_0_run": {"neu_rot": [], "neu_gruen": []},
+      "note": "3236 = 3219 (10.7.0) + 15 neue + 2 ergaenzte Tests"
+    },
+    "full_isolated_run_2": {
+      "date": "2026-09-18",
+      "method": "Wiederholung auf dem versionierten Baum (Pins, Wrapper, Listen 10.7.1)",
+      "modules": 229,
+      "modules_green": 189,
+      "passed": 3235,
+      "failed": 61,
+      "errors": 7,
+      "skipped": 9,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": 13,
+      "red_modules_without_network_event": 27,
+      "diff_to_run_1": {"neu_rot": ["test_v100_execution_recovery::test_tracker_merge_is_process_safe"], "neu_gruen": []},
+      "note": "Der eine neu rote Test ist eine Prozess-Sicherheitspruefung des Fill-Trackers mit echten Kindprozessen; unter Last (6 parallele pytest-Prozesse) kippte er einmal, allein sofort wieder 37/37 gruen; Modul in 10.7.0 und Lauf 1 gruen, keine 10.7.1-Aenderung beruehrt den Fill-Tracker. Alle uebrigen roten Module sind die dokumentierten Windows-Artefakte (fcntl, flock, Symlinks, systemd, Installerpfade)."
+    },
+    "per_test_comparison_with_posix_shims": {
+      "method": "Bauskript: alle Module je Prozess mit fcntl/pwd/grp-Shims, junitxml, Vergleich JE TEST gegen NEXUS_10.7.0_Quellpaket.zip; neu rote Tests werden einmal allein wiederholt; bleibt einer rot, bricht der Bau ab",
+      "result": "siehe Bauprotokoll (Zeile 'Je-Test-Vergleich OK')"
+    },
+    "network_guard": {
+      "method": "PULSAR-Worker-Module, 10.6.0-, 10.7.0- und 10.7.1-Suiten unter dem Waechter des Volltests (Bauskript)",
+      "http_or_dns_events": 0
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (Pi-Update, Pflicht vor Dienststart)",
+    "Abnahme OKX (erster Zyklus): 'OKX: 3 Bestandsbeleg(e) geschlossen -- die Trades 81, 82, 83 ...', danach 'BTC, ETH, XRP wieder fuer Neueinstiege frei'; erster echter Kauf eines dieser Coins",
+    "Abnahme eToro (Minuten bis ~30 Minuten): keine 'widersprechenden Beleg'-Warnung mehr; 'eToro-Verkauf Trade 88 (CSCO, ...) im Risikozustand nachregistriert'; 'eToro-Abrechnung Trade 88 ... Weg INTERVAL' oder '... mit ERWARTUNGSWERT eingetragen: netto -10.16 USD'; Uebersicht eToro ohne Kaufsperre",
+    "Abnahme Sperrliste: keine Doppelnennung BESTAND_FEHLT fuer Coins mit Buchungsbeleg; eToro-Faelle je Symbol mit echtem Ablauf"
+  ]
+}

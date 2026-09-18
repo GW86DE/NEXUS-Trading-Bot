@@ -1,0 +1,140 @@
+NEXUS 10.7.1 -- Die Sperren vom 18.09. loesen sich, und der naechste Trade laeuft
+================================================================================
+Stand: 18.09.2026 abends. Basis 10.7.0 Revision 2 (auf dem Pi installiert).
+
+ANLASS
+------
+Diagnose 18:28 UTC auf 10.7.0 Rev 2: eToro weiter gesperrt (CSCO), bei OKX
+BTC/ETH/XRP weiter einzeln gesperrt -- und genau auf diese drei kamen alle
+Kaufsignale (1.072 Kaufwuensche in 30 Minuten, jeder mit "kein Neueinstieg in
+diesen Coin"). Vier Ursachen, alle in 10.7.0 selbst, alle mit den echten
+Datenlagen des Pi nachgestellt.
+
+Was in 10.7.0 funktioniert hat: OKX-Konto frei (Reichweite je Coin), der
+Erwartungswert (TXN und AMD wurden um 20:05 Uhr automatisch abgerechnet),
+die Sperrliste mit Grund/Reichweite/Ablauf/Aufloesung.
+
+
+1. ETORO: DER RISIKOZUSTAND LERNT JEDEN GESCHLOSSENEN TRADE AUS DEM LEDGER
+--------------------------------------------------------------------------
+BEFUND. Trade 88 (CSCO) hatte keinen Beleg ``ledger:88`` im Risikozustand.
+Die Position wurde 1,5 s nach dem Kauf vom Broker geschlossen, bevor der Bot
+sie bestaetigt hatte. Den Verkauf verbuchte der eToro-Abgleich im Ledger --
+einen Risikobeleg meldete bis 10.7.0 nur der eigene Verkaufspfad. Der
+Abrechnungs-Worker (Intervallrechnung, Erwartungswert) arbeitet aber nur
+registrierte Belege ab: fuer 88 geschah nichts.
+
+NEU. ``risk_result_recovery.register_closed_etoro_rows``: vor jedem
+Abgleichlauf werden geschlossene Bot-Trades (BOT_VERIFIED) dieses Kontos
+ohne bezifferbares Netto und ohne Beleg als ``ledger:<id>`` mit ihrem
+Verkaufstag registriert -- so, wie es die OKX-Seite nach einem Neustart
+schon tat. Ein bekannter Fill-Schluessel wird als Alias uebernommen, nicht
+verdoppelt; beziffert Zeilen und Fremdpositionen werden nicht angefasst.
+Danach greifen im selben Lauf Intervallrechnung oder Erwartungswert.
+
+
+2. ETORO: GEBUEHRENWAEHRUNG WIRD GESPEICHERT, LEER IST KEIN WIDERSPRUCH
+----------------------------------------------------------------------
+BEFUND. 324x pro Stunde: "Exaktes eToro-Ledger-Backfill fuer 3601191853
+fehlgeschlagen: Einstiegs-Fillregister enthaelt widersprechenden Beleg".
+``trade_open`` las die Gebuehrenwaehrung nur aus dem OKX-Feld ``feeCcy``;
+der eToro-Beleg heisst ``fee_currency``. Gespeichert: Gebuehr 1,00 USD,
+Waehrung leer. Der Kostenabgleich las die leere Waehrung als Widerspruch und
+brach ab -- damit blieb der Einstieg UNKNOWN, der Ledgerabgleich ACTIVE
+(sperrt OHNE Tagesreset), es gab keinen Historienbeleg, und weder
+Intervall noch Erwartungswert durften rechnen (Vorbedingung: bestaetigter
+Einstieg).
+
+NEU. ``trade_open`` uebernimmt ``feeCcy`` ODER ``fee_currency``. Der
+Kostenabgleich (``reconcile_entry_fees_exact``) wertet eine LEERE gespeicherte
+Waehrung bei gleicher Gebuehr als fehlenden Wert und traegt USD nach; eine
+andere Waehrung oder eine andere Gebuehr bleibt ein Widerspruch. Auf dem Pi
+heilt sich Trade 88 damit beim naechsten Abgleichlauf (Sekunden), der
+Kostennachlauf zeichnet den Historienbeleg auf (<= 30 Minuten), und der
+Abrechnungs-Worker beziffert das Ergebnis (Intervall oder Erwartungswert).
+
+
+3. OKX: DIE LOT-REST-REPARATUR ERKENNT DEN REST AN DER STRUKTUR
+--------------------------------------------------------------
+BEFUND. ``repair_gaps_explained_by_lineage`` erkannte Rest-Zeilen an der
+Notiz 'Rest nach Teilverkauf'. Der Positionsabgleich hatte die Zeilen 84-86
+laengst in RESIDUAL_EXPOSURE umbenannt ("Coin-Guthaben vorhanden, aber kein
+Eintrag im OKX-Positionsbuch"). Die Reparatur hielt sie fuer fremde offene
+Zeilen und liess die Luecken 81-83 stehen.
+
+NEU. ``_ist_rest_split``: eine offene Zeile derselben Einstiegskette ist ein
+Rest, wenn sie keine eigenen Einstiegs-Fills traegt (die gehoeren der
+Kopfzeile), ODER die Notiz 'Rest nach Teilverkauf' traegt, ODER als
+RESIDUAL_EXPOSURE / accounting_kind RESIDUAL gefuehrt wird. Eine offene Zeile
+MIT eigenen Fills ist eine eigene Position und nie ein Beweis. Die Luecken
+81-83 schliessen sich im ersten Zyklus ("OKX: 3 Bestandsbeleg(e)
+geschlossen"); BTC, ETH und XRP sind danach frei.
+
+
+4. SPERRLISTE OHNE DOPPELNENNUNG, ECHTER ABLAUF JE BUCHUNGSFALL
+--------------------------------------------------------------
+* OKX: Coins mit offenem Buchungsbeleg standen zusaetzlich als
+  "BESTAND_FEHLT_UNBESTAETIGT" in der Liste, obwohl der Bestand nicht fehlte
+  (der Waechter uebergab die Gesamtsperre als Fehlbestand). Jetzt werden nur
+  die vom Waechter gemessenen Fehlbestaende so genannt.
+* eToro: Jeder Buchungsfall einzeln. Ein verknuepfter Verkauf mit noch
+  unbeziffertem Ergebnis ist PNL_INCOMPLETE und endet mit dem Handelstag
+  (Tagesregel). Ein Fall, dessen Ledgerabgleich fehlschlaegt, heisst jetzt
+  LEDGERABGLEICH_OFFEN, Ablauf REPARATUR -- er endet NICHT mit dem
+  Handelstag. Bis 10.7.0 hiess beides "endet durch TAGESRESET"; fuer CSCO
+  war das falsch.
+
+
+WAS NACH DEM UPDATE VON SELBST PASSIERT
+---------------------------------------
+OKX (erster Zyklus): Logzeile "OKX: 3 Bestandsbeleg(e) geschlossen -- die
+Trades 81, 82, 83 sind vollstaendig verkauft und verbucht"; Sperrliste OKX
+leer; die naechsten BTC/ETH/XRP-Signale duerfen kaufen.
+
+eToro (Minuten bis ~30 Minuten): Abgleich verknuepft CSCO (keine
+"widersprechenden Beleg"-Warnungen mehr), Kostennachlauf bestaetigt den
+Einstieg und zeichnet den Historienbeleg auf, Abrechnungs-Worker:
+"eToro-Verkauf Trade 88 (CSCO, ...) im Risikozustand nachregistriert", dann
+"eToro-Abrechnung Trade 88 ... Weg INTERVAL" oder "... mit ERWARTUNGSWERT
+eingetragen: netto -10.16 USD". Danach ist eToro frei.
+
+Aeltere geschlossene Bot-Trades ohne Netto (6 Zeilen) werden ebenfalls
+registriert -- mit ihrem historischen Verkaufstag, also ohne Sperre -- und
+bekommen einen Erwartungswert, sobald ihr Einstieg und ihr Historienbeleg
+vorliegen. Zeilen ohne Einstiegsbeleg bleiben offen sichtbar.
+
+
+TESTS
+-----
+Neu: tests/test_v1071_sperren_aufloesung.py (15): die vier Datenlagen des
+Pi nachgestellt (umbenannter Rest, Rest ohne Notiz, offene Zeile mit eigenen
+Fills, naechster Trade des Coins; Gebuehrenwaehrung beim Anlegen und im
+Abgleich, EUR/andere Gebuehr weiter abgelehnt; Registrierung, Alias,
+manuelle und bezifferte Zeilen, heutiger Verkauf, zwei Laeufe zwei Trades;
+Sperrliste ohne Doppelnennung; Verdrahtung). Angepasst:
+tests/test_v1070_handelsfreigabe.py (+2: LEDGERABGLEICH_OFFEN, unlesbarer
+Abgleich).
+
+Bau: kompletter Testbestand isoliert (zweimal), volltest-Hygiene komplett,
+Node-Suite, Netzwerkwaechter, Je-Test-Vergleich mit POSIX-Shims gegen das
+ausgelieferte 10.7.0-Paket, Installer-Selbsttest.
+
+
+DATEIEN
+-------
+Neu:      tests/test_v1071_sperren_aufloesung.py, NEXUS_10_7_1_Diagnose.py,
+          NEXUS_10.7.1_Diagnose_Starten.sh
+Geaendert: risk_result_recovery.py, trade_ledger.py, okx_accounting.py,
+          crypto_engine.py, handelsfreigabe.py, tests/test_v1070_handelsfreigabe.py,
+          config.py, volltest.py, VERSION.txt, RELEASE_BUILD.txt,
+          tests/test_v1019_report_repairs.py, tests/test_v976_release_and_diagnose.py
+Entfernt: NEXUS_10_7_0_Diagnose.py, NEXUS_10.7.0_Diagnose_Starten.sh
+
+
+INVARIANTEN UNVERAENDERT
+------------------------
+UNKNOWN bleibt UNKNOWN (Erwartungswert ist gekennzeichnet, nie bestaetigt).
+Kein Verkauf auf Fremdbestand. Kontowechsel, nicht persistierbarer
+Risikozustand und unlesbares Ledger sperren weiter die ganze Domaene. Kein
+TLS-Bypass. PULSAR, X und GPT haben keine Orderbefugnis. CSP script-src
+'self', kein CDN. Keine Klarnamen in Diagnose-Exporten.

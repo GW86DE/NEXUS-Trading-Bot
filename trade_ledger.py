@@ -1025,7 +1025,12 @@ def _trade_open(*, broker: str, symbol: str, menge, einstieg_preis,
                      str((row or {}).get("clOrdId") or client_order_id or "")[:80],
                      fill_id[:240], _zahl((row or {}).get("fillSz") or (row or {}).get("quantity")),
                      _zahl((row or {}).get("fillPx") or (row or {}).get("price")),
-                     _zahl((row or {}).get("fee")), str((row or {}).get("feeCcy") or "")[:16],
+                     _zahl((row or {}).get("fee")),
+                     # 10.7.1: OKX-Fills tragen 'feeCcy', eToro-Belege 'fee_currency'.
+                     # Bis 10.7.0 wurde die eToro-Gebuehr MIT Betrag, aber OHNE
+                     # Waehrung gespeichert; der spaetere Kostenabgleich las das
+                     # als Widerspruch (CSCO, Trade 88).
+                     str((row or {}).get("feeCcy") or (row or {}).get("fee_currency") or "").upper()[:16],
                      str((row or {}).get("ts") or (row or {}).get("filled_at") or "")[:60],
                      json.dumps(row or {}, ensure_ascii=False, sort_keys=True, default=str)),
                 )
@@ -1877,18 +1882,23 @@ def reconcile_entry_fees_exact(*, broker, account, paper, position_id,
         by_id = {f["fill_id"]: f for f in entry_fills}
         for r in stored:
             incoming = by_id[r["fill_id"]]
+            # 10.7.1: Eine LEERE gespeicherte Waehrung ist kein Widerspruch,
+            # sondern ein fehlender Wert (CSCO 18.09.2026: Gebuehr 1,00 ohne
+            # Waehrung gespeichert, Beleg sagt USD -- der Abgleich schlug 324x
+            # in einer Stunde fehl und hielt die Domaene gesperrt). Nur eine
+            # ANDERE Waehrung oder eine andere Gebuehr widerspricht.
             if (not same(r["quantity"], incoming["quantity"])
                     or not same(r["price"], incoming["price"])
                     or incoming.get("filled_at") and r.get("filled_at") != incoming["filled_at"]
                     or r["fee"] is not None and (not same(r["fee"], incoming["fee"])
-                        or r["fee_currency"] != "USD")):
+                        or (r["fee_currency"] and r["fee_currency"] != "USD"))):
                 raise LedgerZuordnungUnklar("Einstiegs-Fillregister enthaelt widersprechenden Beleg")
         con.execute("""CREATE TABLE IF NOT EXISTS etoro_entry_cost_audit (
             trade_id INTEGER PRIMARY KEY, projected_at TEXT NOT NULL,
             before_json TEXT NOT NULL, receipts_json TEXT NOT NULL)""")
         updates = 0
         for r in stored:
-            if r["fee"] is None:
+            if r["fee"] is None or not r["fee_currency"]:
                 incoming = by_id[r["fill_id"]]
                 raw = json.loads(r["raw_json"] or "{}")
                 raw["entry_cost_receipt"] = incoming

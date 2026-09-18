@@ -19,6 +19,61 @@ def _enrich_okx(row, broker):
     return None
 
 
+def register_closed_etoro_rows(state, account, paper):
+    """10.7.1: Der Risikozustand lernt jeden geschlossenen eToro-Trade aus dem Ledger.
+
+    Bis 10.7.0 meldete nur der eigene Verkaufspfad (live_trader, beobachteter
+    Fill) einen Beleg ``ledger:<id>`` an den Risikozustand. Wurde eine Position
+    vom Broker geschlossen, bevor der Bot sie ueberhaupt bestaetigt hatte
+    (CSCO 18.09.2026: Kauf 14:15:11, Broker-Stop 14:15:12, Bot-Bestaetigung
+    14:15:21), verbuchte der eToro-Abgleich den Verkauf im Ledger -- und der
+    Risikozustand erfuhr nie davon. Ohne Beleg lief fuer diesen Trade weder die
+    Intervallrechnung noch der Erwartungswert; die Domaene blieb gesperrt.
+
+    Regeln: nur Trades dieses Kontos und dieser Umgebung, nur Bot-Positionen
+    (``BOT_VERIFIED``), nur Zeilen OHNE bezifferbares Netto (ein bereits
+    beziffertes Ergebnis wurde unter einem aelteren Schluessel gezaehlt und
+    darf nicht ein zweites Mal entstehen). Ein bekannter Fill-Schluessel wird
+    zuerst als Alias uebernommen. Das Buchungsdatum ist der Verkaufstag --
+    wie beim eigenen Verkaufspfad und der OKX-Entdeckung nach Neustart.
+    Rueckgabe: neu registrierte Schluessel.
+    """
+    import trade_ledger as tl
+    if not account:
+        return []
+    tl.init_ledger()
+    with closing(tl._connect()) as con, con:
+        rows = [dict(r) for r in con.execute('''SELECT * FROM trades WHERE broker='etoro'
+            AND broker_account_fingerprint=? AND paper=? AND ausgestiegen_am IS NOT NULL
+            AND superseded_by IS NULL ORDER BY ausgestiegen_am''', (str(account), int(bool(paper))))]
+    registered = []
+    for row in rows:
+        key = 'ledger:' + str(row['trade_id'])
+        if (str(row.get('ownership_status') or '') != 'BOT_VERIFIED'
+                or str(row.get('accounting_kind') or 'TRADE') != 'TRADE'
+                or usable_net(row)):
+            continue
+        if key not in state.realized_receipts:
+            try:
+                exit_ids = json.loads(row.get('exit_fill_ids_json') or '[]')
+            except (TypeError, ValueError):
+                exit_ids = []
+            aliases = ['etoro:' + str(fid) for fid in exit_ids if fid]
+            if aliases and callable(getattr(state, 'adopt_receipt_alias', None)):
+                state.adopt_receipt_alias(key, aliases)
+        if key in state.realized_receipts:
+            continue
+        try:
+            if state.register_unknown_pnl_at(key, row['ausgestiegen_am']):
+                registered.append(key)
+                log.info('eToro-Verkauf Trade %s (%s, %s) im Risikozustand nachregistriert; '
+                         'Abrechnung folgt aus Barbestand oder Erwartungswert',
+                         row['trade_id'], row.get('symbol'), row['ausgestiegen_am'])
+        except ValueError as exc:
+            log.debug('eToro-Verkauf Trade %s nicht registrierbar: %s', row['trade_id'], exc)
+    return registered
+
+
 def reconcile(state, broker, *, account_equity):
     import trade_ledger as tl
     name = str(getattr(broker, 'name', '')).lower()
@@ -54,6 +109,9 @@ def reconcile(state, broker, *, account_equity):
                     if (r['accounting_kind']=='RESIDUAL' and same_quantity(r['quantity'],r['menge'])
                             and hashlib.sha256(r['proof_json'].encode()).hexdigest()==r['proof_hash']):
                         state.resolve_proven_residual('ledger:'+str(r['trade_id']),r['proof_hash'])
+    else:
+        # 10.7.1: Auch ein vom Abgleich verbuchter Verkauf bekommt seinen Beleg.
+        register_closed_etoro_rows(state, account, paper)
     state.refresh()
     done = []
     for key, receipt in list(state.realized_receipts.items()):

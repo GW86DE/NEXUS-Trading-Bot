@@ -39,11 +39,14 @@ HYGIENE_EXCLUDED_DIRS = {
 }
 
 REQUIRED_RELEASE_FILES = (
+    "CHANGELOG_v10.7.1_NEXUS.txt", "INSTALLATIONSANLEITUNG_NEXUS_10.7.1_DE.md",
+    "NEXUS_10.7.1_IMPLEMENTATION_REPORT.md", "NEXUS_10.7.1_Pruefbericht.md",
+    "tests/test_v1071_sperren_aufloesung.py",
+    "NEXUS_10_7_1_Diagnose.py", "NEXUS_10.7.1_Diagnose_Starten.sh",
     "CHANGELOG_v10.7.0_NEXUS.txt", "INSTALLATIONSANLEITUNG_NEXUS_10.7.0_DE.md",
     "NEXUS_10.7.0_IMPLEMENTATION_REPORT.md", "NEXUS_10.7.0_Pruefbericht.md",
     "handelsfreigabe.py", "tests/test_v1070_lot_rest.py", "tests/test_v1070_aktien_stop.py",
     "tests/test_v1070_gebuehrenbeleg.py", "tests/test_v1070_handelsfreigabe.py",
-    "NEXUS_10_7_0_Diagnose.py", "NEXUS_10.7.0_Diagnose_Starten.sh",
     "CHANGELOG_v10.6.0_NEXUS.txt", "INSTALLATIONSANLEITUNG_NEXUS_10.6.0_DE.md",
     "NEXUS_10.6.0_IMPLEMENTATION_REPORT.md", "NEXUS_10.6.0_Pruefbericht.md",
     "risk_levels.py", "tests/test_v1060_einsatzstufen.py",

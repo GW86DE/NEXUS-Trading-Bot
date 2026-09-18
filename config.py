@@ -1098,7 +1098,7 @@ NEWS_SOURCE_GDELT_TIMEOUT_SECONDS = 30
 # vollstaendig funktionsfaehig und der Nutzer muss nichts neu eintragen.
 # ===========================================================================
 
-VERSION_NEXUS = "10.7.0-NEXUS"
+VERSION_NEXUS = "10.7.1-NEXUS"
 
 # OKX-Ausfuehrungssicherheit: Ticker-last ist kein ausfuehrbarer Preis.
 OKX_EXECUTION_BOOK_DEPTH = 100

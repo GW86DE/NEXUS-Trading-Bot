@@ -691,6 +691,10 @@ class CryptoEngine:
                         + ". Bestand ist durch eigene Orderfuellungen erklaert; nur diese "
                         "Werte sind fuer Neueinstiege gesperrt.", wichtig=True)
         self._exit_in_progress_symbole = exit_laufend
+        # 10.7.1: Nur der WIRKLICH fehlende Bestand heisst in der Sperrliste
+        # "Bestand fehlt". Die Gesamtsperre (unten) enthaelt auch die Coins mit
+        # offenem Buchungsbeleg -- die stehen dort schon unter ihrem Grund.
+        self._fehlende_symbole = {str(s).upper() for s in (guard.get("missing") or [])}
         gesperrt = {str(s).upper() for s in (guard.get("blocked_symbols") or [])}
         vorher = getattr(self, "_gesperrte_symbole", set())
         if gesperrt != vorher:
@@ -2779,9 +2783,13 @@ class CryptoEngine:
         """10.7.0: Jede aktive Kaufsperre mit Grund, Reichweite, Ablauf, Aufloesung."""
         try:
             from handelsfreigabe import okx_sperren, zusammenfassung
+            # 10.7.1: "missing" sind nur die vom Waechter gemessenen Fehlbestaende;
+            # Coins mit offenem Buchungsbeleg stehen ueber die Buchhaltung in der
+            # Liste (bis 10.7.0 erschienen sie hier zusaetzlich als
+            # BESTAND_FEHLT_UNBESTAETIGT, obwohl der Bestand nicht fehlte).
             guard = {"valid": not getattr(self.topf, "_snapshot_error", ""),
                      "detail": getattr(self.topf, "_snapshot_error", ""),
-                     "missing": sorted(getattr(self, "_gesperrte_symbole", set())
+                     "missing": sorted(set(getattr(self, "_fehlende_symbole", set()) or set())
                                        - set(getattr(self, "_exit_in_progress_symbole", set()))),
                      "exit_in_progress": [{"symbol": s} for s in sorted(
                          getattr(self, "_exit_in_progress_symbole", set()))]}

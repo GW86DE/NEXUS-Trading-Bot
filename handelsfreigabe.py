@@ -139,15 +139,40 @@ def etoro_sperren(risk_state=None, domain: str = "", stock_bereitschaft=None) ->
         if grund:
             aus.append(_risiko_sperre("etoro", grund))
     try:
-        from etoro_reconciliation import pnl_unvollstaendig
-        offen, detail = pnl_unvollstaendig(domain)
+        from etoro_reconciliation import buchungsluecken
+        faelle = list(buchungsluecken(domain))
+        fehler = ""
     except Exception as exc:
-        offen, detail = False, f"nicht pruefbar: {type(exc).__name__}"
+        faelle, fehler = [], f"nicht pruefbar: {type(exc).__name__}"
         logger.debug("eToro-Buchungsabgleich fuer Sperrliste nicht lesbar", exc_info=True)
-    if offen:
-        aus.append(Sperre("etoro", "PNL_INCOMPLETE", DOMAIN, TAGESRESET,
-                          "Gebuehrenbeleg (Barbestand, Erwartungswert) oder naechster Handelstag",
-                          detail=detail, quelle="buchungsabgleich"))
+    # 10.7.1: Jeder Buchungsfall einzeln, mit seinem echten Ablauf. Ein Fall,
+    # dessen Ledgerabgleich fehlschlaegt (ACTIVE), endet NICHT mit dem
+    # Handelstag -- er braucht die Reparatur des Belegs. Nur ein verknuepfter
+    # Fall mit noch unbeziffertem Ergebnis (RESOLVED) faellt unter die
+    # Tagesregel. Bis 10.7.0 hiess beides "endet durch TAGESRESET" (CSCO).
+    for fall in faelle:
+        symbol = str(fall.get("symbol") or "").upper()
+        status = str(fall.get("status") or fall.get("state") or "").upper()
+        detail = str(fall.get("detail") or "")
+        if status == "RESOLVED":
+            aus.append(Sperre("etoro", "PNL_INCOMPLETE", DOMAIN, TAGESRESET,
+                              "Gebuehrenbeleg (Barbestand, Erwartungswert) oder naechster Handelstag",
+                              detail=f"{symbol}: {detail}" if symbol else detail,
+                              symbol=symbol, quelle="buchungsabgleich"))
+        elif status == "STORAGE_ERROR":
+            aus.append(Sperre("etoro", "BUCHUNG_NICHT_PRUEFBAR", DOMAIN, REPARATUR,
+                              "Abgleichdatei und Ledger lesbar machen", detail=detail,
+                              quelle="buchungsabgleich"))
+        else:
+            aus.append(Sperre("etoro", "LEDGERABGLEICH_OFFEN", DOMAIN, REPARATUR,
+                              "Verkauf im Ledger verknuepfen (laeuft automatisch; bei Widerspruch "
+                              "Beleg pruefen)",
+                              detail=f"{symbol}: {detail}" if symbol else detail,
+                              symbol=symbol, quelle="buchungsabgleich"))
+    if fehler:
+        aus.append(Sperre("etoro", "BUCHUNG_NICHT_PRUEFBAR", DOMAIN, REPARATUR,
+                          "Abgleichdatei und Ledger lesbar machen", detail=fehler,
+                          quelle="buchungsabgleich"))
     if stock_bereitschaft is not None:
         try:
             darf, grund = stock_bereitschaft.darf_kaufen()

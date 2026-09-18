@@ -252,6 +252,27 @@ def resolve_balance_gap_on(con, *, trade_id, account, environment, sold, residua
     return True
 
 
+def _ist_rest_split(row):
+    """Offene Zeile derselben Einstiegskette, die einen weitergefuehrten Rest darstellt.
+
+    Erkennung an der Struktur: keine eigenen Einstiegs-Fills (die gehoeren der
+    Kopfzeile) ODER Notiz 'Rest nach Teilverkauf' ODER als Staub/Restbestand
+    klassifiziert (RESIDUAL_EXPOSURE, accounting_kind RESIDUAL). Eine offene
+    Zeile MIT eigenen Fills ist eine eigene Position und nie ein Rest.
+    """
+    try:
+        fills = json.loads(row.get('entry_fill_ids_json') or '[]')
+    except (TypeError, ValueError):
+        fills = ['unlesbar']
+    eigene_fills = bool(fills) or bool(str(row.get('entry_fill_id') or '').strip())
+    if not eigene_fills:
+        return True
+    if str(row.get('notiz') or '').startswith('Rest nach Teilverkauf'):
+        return True
+    return (str(row.get('accounting_kind') or 'TRADE').upper() == 'RESIDUAL'
+            or str(row.get('reconciliation_status') or '').upper() == 'RESIDUAL_EXPOSURE')
+
+
 def repair_gaps_explained_by_lineage(con, account, environment):
     """Schliesst PENDING-Luecken, deren Trade laengst verkauft und verbucht ist.
 
@@ -263,9 +284,17 @@ def repair_gaps_explained_by_lineage(con, account, environment):
 
     Beweis hier: Die Summe der Mengen aller Zeilen derselben Einstiegskette
     (Verkauf + weitergefuehrte Reste) deckt den gemeldeten Abgang. Eine noch
-    offene Zeile mit unverkaufter Menge ist KEIN Beweis -- sie zaehlt nur,
-    wenn sie den Rest-Split einer geschlossenen Zeile darstellt (Notiz
-    'Rest nach Teilverkauf') oder selbst geschlossen ist.
+    offene Zeile zaehlt nur, wenn sie ein Rest-Split dieser Kette ist oder
+    selbst geschlossen ist.
+
+    10.7.1: Der Rest-Split wird an seiner STRUKTUR erkannt, nicht am Notiztext.
+    ``trade_close`` legt den Rest ohne eigene Einstiegs-Fills an (die Fills
+    gehoeren der Kopfzeile) und schreibt 'Rest nach Teilverkauf'; der
+    Positionsabgleich benennt dieselbe Zeile spaeter in RESIDUAL_EXPOSURE um
+    ("Coin-Guthaben vorhanden, aber kein Eintrag im OKX-Positionsbuch"), und
+    ein Staubrest kann als eigene RESIDUAL-Zeile gefuehrt werden. Am 18.09.2026
+    trugen die Reste 84-86 genau diese Umbenennung -- 10.7.0 hielt sie fuer
+    fremde offene Zeilen und liess die Luecken 81-83 stehen.
     Rueckgabe: Liste der geschlossenen trade_ids.
     """
     names = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
@@ -297,10 +326,10 @@ def repair_gaps_explained_by_lineage(con, account, environment):
                 ok = False; break
             if row['ausgestiegen_am']:
                 sold += menge
-            elif str(row.get('notiz') or '').startswith('Rest nach Teilverkauf'):
+            elif _ist_rest_split(row):
                 residual += menge
             elif int(row['trade_id']) != int(gap['trade_id']):
-                ok = False; break         # offene, unerklaerte Fremdzeile in der Kette
+                ok = False; break         # offene Zeile mit eigenen Fills: kein Rest, kein Beweis
         if not ok:
             continue
         if resolve_balance_gap_on(con, trade_id=gap['trade_id'], account=account, environment=environment,
