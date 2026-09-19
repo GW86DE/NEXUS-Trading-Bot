@@ -44,6 +44,58 @@ def candidate_instruments(broker, known):
     return selected
 
 
+_KARTEN_INSTRUMENTE: dict = {}
+KARTEN_AUFLOESUNG_TTL = 6*3600
+AKTIVE_KARTEN_ZUSTAENDE = ("AUSLOESER", "HYPE_KANDIDAT")
+
+
+def aktive_karten_instrumente(broker, known, *, now=None, limit=5):
+    """eToro-Instrumente der aktiven PULSAR-Karten fuer den 15-Minuten-Kerzenabruf (10.8.0).
+
+    Aktiv sind Karten im Zustand AUSLOESER oder HYPE_KANDIDAT der juengsten
+    Bewertung, hoechstens ``limit`` (Rangfolge der Karte), nur bei offener
+    NY-Sitzung und nur, wenn PULSAR nicht AUS ist. Die Identitaet loest
+    weiterhin der Broker auf (``qualifiziere``), hoechstens einmal je 6 h je
+    Symbol -- auch ein Fehlschlag wird gemerkt, damit das Eligibility-Budget
+    nicht jeden Zyklus fuer dasselbe unbekannte Symbol zahlt.
+    """
+    now = time.time() if now is None else now
+    if control.settings()["mode"] == "AUS":
+        return []
+    from market_calendar import sitzungsstatus
+    if not sitzungsstatus(datetime.fromtimestamp(now, timezone.utc)).get("offen"):
+        return []
+    from instrument_identity import canonical_key
+    symbols = []
+    for card in sorted(research.latest_cards(), key=lambda c: c.get("attention_rank") or 99):
+        symbol = str(card.get("symbol") or "").upper()
+        if card.get("state") in AKTIVE_KARTEN_ZUSTAENDE and symbol and symbol not in symbols:
+            symbols.append(symbol)
+    selected = []
+    for symbol in symbols[:max(0, int(limit))]:
+        existing = known.get(canonical_key(symbol, "stock"))
+        if existing:
+            selected.append(existing)
+            continue
+        merk = _KARTEN_INSTRUMENTE.get(symbol)
+        if merk and now - merk[1] < KARTEN_AUFLOESUNG_TTL:
+            if merk[0] is not None:
+                selected.append(merk[0])
+            continue
+        inst = None
+        try:
+            from contracts import build_universe
+            instruments = build_universe([{"symbol": symbol, "currency": "USD", "broad": True}], [], [])
+            qualified, _ = broker.qualifiziere(instruments)
+            inst = next((i for i in qualified if broker.instrument_metadata(i).get("asset_type") == "stock"), None)
+        except Exception:
+            inst = None
+        _KARTEN_INSTRUMENTE[symbol] = (inst, now)
+        if inst is not None:
+            selected.append(inst)
+    return selected
+
+
 def context(broker, instrument):
     account = broker.account_fingerprint()
     environment = "DEMO" if broker.paper else "LIVE"

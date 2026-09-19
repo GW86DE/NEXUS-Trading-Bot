@@ -43,6 +43,10 @@ VOLUME_MULTIPLE_DAILY = 3.0
 # die nie befuellte Intraday-Reihe: Ausbruch am selben Tag statt am Folgetag.
 QUOTE_MAX_AGE = 900
 QUOTE_VOLUME_MULTIPLE = 1.0
+# 10.8.0: 15-Minuten-Kerzen von eToro (aktive Karten) gehen vor dem FMP-Quote,
+# wenn die juengste Kerze hoechstens 45 Minuten alt ist; danach ist der Quote
+# der Rueckfall, dann die Tageskerze. Gleiche Schwellen ueberall.
+INTRADAY_FRESH_AGE = 2700
 
 
 def _quote_source(card):
@@ -180,12 +184,17 @@ def _social_spike(card, *, now):
 
 
 def _price_confirmation(card, *, now):
-    """Kurs- und Volumenbestaetigung aus abgeschlossenen FMP-Kerzen.
+    """Kurs- und Volumenbestaetigung aus abgeschlossenen Kerzen und dem Quote.
 
-    Bevorzugt: aktueller 15-Minuten-Stand des laufenden Tages gegen den
-    letzten Tagesschluss, plus heutiges Volumen mindestens auf Hoehe eines
-    kompletten Durchschnittstages. Ohne Intraday-Belege entscheidet die letzte
-    abgeschlossene Tageskerze (+5 % und 3x Durchschnittsvolumen).
+    Reihenfolge (10.8.0): frische 15-Minuten-Kerzen des laufenden Tages (eToro,
+    aktive Karten; hoechstens 45 min alt) gegen den letzten Tagesschluss, plus
+    heutiges Volumen mindestens auf Hoehe eines kompletten Durchschnittstages
+    DERSELBEN Quelle (eToro-Kerzen zaehlen ihr Volumen anders als FMP; der
+    Vergleich bleibt skalenfrei); bestaetigen die Kerzen nicht, entscheidet der
+    frische FMP-Quote (Rueckfall) -- die Kerzen koennen eine Bestaetigung nur
+    hinzufuegen, nie wegnehmen; sonst aeltere Intraday-Kerzen bis 2 h; sonst
+    die letzte abgeschlossene Tageskerze (+5 % und 3x Durchschnittsvolumen).
+    Nichts wird aus fehlenden Daten erfunden.
     """
     bars = card.get("bars") or []
     closes = [(_number(r.get("close")), _number(r.get("volume"))) for r in bars[-21:]]
@@ -210,6 +219,35 @@ def _price_confirmation(card, *, now):
         except (TypeError, ValueError):
             continue
     prev_close = closes[-1][0]
+    intraday_source = str(card.get("intraday_source") or "FMP")
+    # eToro-Kerzen: Tagesdurchschnitt derselben Quelle (skalenfrei); ohne ihn
+    # gibt es fuer eToro-Kerzen keine Volumenaussage und damit keine Bestaetigung.
+    eigene_basis = _number(card.get("intraday_avg_day_volume")) if intraday_source == "ETORO_15M" else None
+    basis = eigene_basis if intraday_source == "ETORO_15M" else avg_volume
+
+    def _intraday_verdict():
+        intraday_today.sort()
+        last_close = intraday_today[-1][1]
+        gain = last_close/prev_close-1
+        traded = sum(v for _, _, v in intraday_today)
+        quelle = "eToro-15-Minuten-Kerzen" if intraday_source == "ETORO_15M" else "Intraday-Kerzen"
+        if basis is None:
+            return None, f"Intraday ohne Vergleichsbasis ({quelle}): Tagesdurchschnitt derselben Quelle fehlt"
+        if gain >= PRICE_MIN_GAIN and traded >= basis:
+            return {"kind": "INTRADAY", "gain": gain, "volume_multiple": traded/basis, "source": intraday_source,
+                    "detail": f"Heute {gain*100:.1f} % ueber dem letzten Tagesschluss bei "
+                              f"{traded/basis:.1f}x eines Durchschnittstagesvolumens ({quelle})."}, None
+        return None, (f"Intraday nicht bestaetigt ({quelle}): {gain*100:.1f} % Kursplus, "
+                      f"{traded/basis:.1f}x Tagesvolumen (noetig: >= {PRICE_MIN_GAIN*100:.0f} % "
+                      "und >= 1,0x)")
+
+    # 10.8.0: Frische 15-Minuten-Kerzen (eToro, aktive Karten) zuerst -- nur
+    # eine BESTAETIGUNG daraus zaehlt sofort; ein Nein faellt auf den Quote zurueck.
+    intraday_gap = None
+    if intraday_today and now-max(t for t, _, _ in intraday_today) <= INTRADAY_FRESH_AGE:
+        verdict, intraday_gap = _intraday_verdict()
+        if verdict:
+            return verdict, None
     # 10.4.0: Frischer Starter-Quote gegen den Vortagesschluss. Das
     # Quote-Volumen ist das bisherige Tagesvolumen; es muss mindestens einen
     # vollen Durchschnittstag erreichen, damit ein fruehes Tagesviertel mit
@@ -232,23 +270,16 @@ def _price_confirmation(card, *, now):
             # Aussage ueber HEUTE; die Tageskerze von gestern ersetzt sie nicht.
             return None, (f"Quote nicht bestaetigt: {gain*100:.1f} % zum Vortagesschluss, "
                           f"{q_volume/avg_volume:.1f}x Tagesvolumen (noetig: >= {PRICE_MIN_GAIN*100:.0f} % "
-                          f"und >= {QUOTE_VOLUME_MULTIPLE:g}x)")
+                          f"und >= {QUOTE_VOLUME_MULTIPLE:g}x)"
+                          + (f"; {intraday_gap}" if intraday_gap else ""))
+    if intraday_gap:
+        return None, intraday_gap
     # Der Kursstand muss aktuell sein; das Tagesvolumen summiert ALLE heutigen
     # abgeschlossenen 15-Minuten-Kerzen.
     if intraday_today and now-max(t for t, _, _ in intraday_today) > 2*3600:
         intraday_today = []
     if intraday_today:
-        intraday_today.sort()
-        last_close = intraday_today[-1][1]
-        gain = last_close/prev_close-1
-        traded = sum(v for _, _, v in intraday_today)
-        if gain >= PRICE_MIN_GAIN and traded >= avg_volume:
-            return {"kind": "INTRADAY", "gain": gain, "volume_multiple": traded/avg_volume,
-                    "detail": f"Heute {gain*100:.1f} % ueber dem letzten Tagesschluss bei "
-                              f"{traded/avg_volume:.1f}x eines Durchschnittstagesvolumens."}, None
-        return None, (f"Intraday nicht bestaetigt: {gain*100:.1f} % Kursplus, "
-                      f"{traded/avg_volume:.1f}x Tagesvolumen (noetig: >= {PRICE_MIN_GAIN*100:.0f} % "
-                      "und >= 1,0x)")
+        return _intraday_verdict()
     last_close, last_volume = closes[-1]
     prior_close = closes[-2][0]
     gain = last_close/prior_close-1
@@ -263,6 +294,35 @@ def _price_confirmation(card, *, now):
     return None, (f"Tageskerze nicht bestaetigt: {gain*100:.1f} % Kursplus, "
                   f"{last_volume/avg_prior:.1f}x Volumen (noetig: >= {PRICE_MIN_GAIN*100:.0f} % "
                   f"und >= {VOLUME_MULTIPLE_DAILY:g}x)")
+
+
+def _x_confirmation(card, *, now):
+    """Punkt 3 (10.8.0): Ergebnis der angeforderten X-Bestaetigungssuche als Social-Familie.
+
+    Zaehlt nach derselben Regel wie die X-Stichprobe (>= 8 Beitraege von >= 5
+    Konten, hoechstens 24 h alt) -- aber nur als ZWEITE Social-Familie fuer
+    die Bestaetigung "zweite_social_familie", nie als Ausloeser und nie als
+    eigener Bestaetigungsplatz. Keine Suche, kein Ergebnis: UNKNOWN.
+    """
+    from .research import _count
+    context = (card.get("x_context") or {}).get("candidate_research") or {}
+    if not context or not context.get("confirmation"):
+        return None, None
+    if context.get("state") != "PROCESSED":
+        return None, "X-Bestaetigungssuche: " + str(context.get("state") or "offen")
+    processed = context.get("processed_at")
+    if type(processed) not in (int, float) or not 0 <= now-processed <= X_MAX_AGE:
+        return None, "X-Bestaetigungssuche aelter als 24 Stunden"
+    posts = _count(context.get("usable_posts"))
+    accounts = _count(context.get("distinct_accounts_in_sample"))
+    if posts is None or accounts is None:
+        return None, "X-Bestaetigungssuche ohne Post-/Accountzahlen"
+    if posts >= X_MIN_POSTS and accounts >= X_MIN_ACCOUNTS:
+        return {"kind": "X_BESTAETIGUNG", "posts": posts, "accounts": accounts,
+                "detail": f"{posts} Beitraege von {accounts} Accounts in der angeforderten X-Suche "
+                          "(begrenzte Stichprobe; zaehlt nur als zweite Social-Familie)."}, None
+    return None, (f"X-Bestaetigungssuche zu duenn ({posts} Beitraege / {accounts} Accounts; "
+                  f"mindestens {X_MIN_POSTS}/{X_MIN_ACCOUNTS})")
 
 
 def _own_baseline_spike(card):
@@ -382,6 +442,13 @@ def evaluate(card, *, now=None):
                    "parts": [{"kind": k, "detail": d} for k, d in triggers],
                    "detail": "; ".join(f"{k}: {d}" for k, d in triggers)}
     # --- Bestaetigungen (zwei von drei) --------------------------------------
+    # 10.8.0 Punkt 3: Die angeforderte X-Bestaetigungssuche zaehlt NUR als
+    # zweite Social-Familie -- nach den Ausloesern, damit sie nie selbst einer wird.
+    x_confirm, x_confirm_gap = _x_confirmation(card, now=now)
+    if x_confirm_gap:
+        gaps.append(x_confirm_gap)
+    if x_confirm and "X" not in families:
+        families["X"] = x_confirm
     social_families_hit = set(families)
     first_social = next((k for k, _ in triggers if k != "VOLUMEN"), None)
     other_social = sorted(social_families_hit - ({first_social} if first_social else set()))
@@ -397,7 +464,8 @@ def evaluate(card, *, now=None):
     from .requirements import next_earnings
     earnings = next_earnings(card, now=now)
     hype = {"trigger": trigger, "confirmations": confirmations, "confirmed_count": confirmed,
-            "social": social, "stocktwits": st, "volume": card.get("volume") or {}, "price": price,
+            "social": social, "stocktwits": st, "x_confirmation": x_confirm,
+            "volume": card.get("volume") or {}, "price": price,
             "luna": {"verdict": verdict, "available": bool(precheck.get("ok"))},
             "existence_risk": {"blocked": bool(existence_block), "findings": existence_findings},
             "finance_note": finance_note, "squeeze": squeeze,

@@ -271,8 +271,10 @@ STOCK_FIXED_CORE_SYMBOLS = _festen_kern_bilden(
 # eToro-Aufnahmepruefung entsteht approved_universe.json. Diese Erweiterungen
 # werden ausschliesslich beim Prozessstart angehaengt und danach normal erneut
 # vom eToro-Adapter qualifiziert.
-from approved_universe import merge_approved_stocks
-STOCK_SYMBOLS = merge_approved_stocks(STOCK_FIXED_CORE_SYMBOLS)[:100]
+import approved_universe as _approved_universe
+# 10.8.0 (Schritt 2): approved_universe liest den Katalog aus dem bereits
+# geladenen config (sys.modules) und importiert config nicht mehr (Import-Zyklus).
+STOCK_SYMBOLS = _approved_universe.merge_approved_stocks(STOCK_FIXED_CORE_SYMBOLS)[:100]
 
 # Forex standardmaessig aus: andere Eigenschaften als Aktien, und die
 # Strategie wurde auf Aktienlogik entwickelt und getestet.
@@ -1098,7 +1100,7 @@ NEWS_SOURCE_GDELT_TIMEOUT_SECONDS = 30
 # vollstaendig funktionsfaehig und der Nutzer muss nichts neu eintragen.
 # ===========================================================================
 
-VERSION_NEXUS = "10.7.1-NEXUS"
+VERSION_NEXUS = "10.8.0-NEXUS"
 
 # OKX-Ausfuehrungssicherheit: Ticker-last ist kein ausfuehrbarer Preis.
 OKX_EXECUTION_BOOK_DEPTH = 100
@@ -1505,7 +1507,9 @@ STOCK_UNIVERSE_BLOCKLIST = ()
 AI_ROUTER_ENABLED = bool(AI_ATTENTION_ENABLED)  # alte OpenAI-Einstellung bleibt wirksam
 AI_LUNA_MODEL = "gpt-5.6-luna"
 AI_TERRA_MODEL = "gpt-5.6-terra"
-AI_LUNA_MAX_CALLS_PER_DAY = 40
+# 10.8.0: 40 -> 200. Luna kostet je Anfrage Bruchteile eines Cents; der
+# USD-Deckel (AI_MAX_COST_PER_DAY_USD) bleibt die harte Grenze.
+AI_LUNA_MAX_CALLS_PER_DAY = 200
 AI_TERRA_MAX_CALLS_PER_DAY = 8
 AI_MAX_COST_PER_DAY_USD = 0.50
 AI_TERRA_FALLBACK_TO_LUNA = True

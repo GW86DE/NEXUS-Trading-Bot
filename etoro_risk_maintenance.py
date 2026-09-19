@@ -191,7 +191,7 @@ def collect(broker, *, local_timezone="Europe/Berlin", max_pages=12, clock=None)
 
 def review_evidence(evidence, *, expected_scope=None, today=None, now=None):
     """Current account proof only. Never a self-issued historical checkpoint."""
-    from risk_basis_review import scope
+    from risk_basis_status import scope
     reasons = []
     now = now or _now()
     try:

@@ -99,3 +99,6 @@ dist/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Graphify-Wissensgraph (abgeleitet, nicht Teil des Pakets)
+graphify-out/

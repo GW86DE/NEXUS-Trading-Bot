@@ -591,14 +591,19 @@ class EtoroBroker(BrokerBase):
                                         "last_tick_started_at_utc"] = tick_started
                             try:
                                 import etoro_reconciliation
+                                import etoro_nachlauf
                                 # Re-match durable hints after late REST import
                                 # or restart. Replay never performs an order or
                                 # treats WS data as final execution evidence.
                                 inbox_state = self._replay_private_stream_hints()
+                                # 10.8.0: Storno- und Gebuehrennachlauf werden
+                                # dem Tick uebergeben, statt vom Abgleich
+                                # importiert (Import-Zyklus).
                                 changed = etoro_reconciliation.background_tick(
                                     self, paper=bool(self.paper),
                                     profile=str(getattr(
-                                        config, "ACTIVE_PROFILE", "") or ""))
+                                        config, "ACTIVE_PROFILE", "") or ""),
+                                    nachlauf=etoro_nachlauf.SCHRITTE)
                                 domain = etoro_reconciliation.domain_key(
                                     paper=bool(self.paper),
                                     profile=str(getattr(
@@ -3079,7 +3084,7 @@ class EtoroBroker(BrokerBase):
         protection rates before a missing stop type can be enriched.
         """
         self._require_bound_identity("Schutztyp-Readback")
-        from etoro_protection_repair import merge_breakdown, fresh
+        from etoro_protection_readback import merge_breakdown, fresh
         fresh(pnl.get("_snapshot_at"))
         key = (str(pnl.get("_snapshot_id") or ""), str(instrument_id))
         cache = getattr(self, "_protection_breakdown_cache", {})

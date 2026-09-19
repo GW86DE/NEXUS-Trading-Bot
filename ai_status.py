@@ -21,7 +21,7 @@ def main():
     print("1) Luna – haeufig und guenstig")
     print("   Modell             :",status["luna_modell"])
     print("   Aufgaben           : Fokus-Ranking, Batch-Einstufung, News-Relevanz, Duplikate")
-    print("   Tageslimit         :",getattr(config,"AI_LUNA_MAX_CALLS_PER_DAY",40),"Aufrufe")
+    print("   Tageslimit         :",getattr(config,"AI_LUNA_MAX_CALLS_PER_DAY",200),"Aufrufe")
     print()
     print("2) Terra – selten und anspruchsvoll")
     print("   Modell             :",status["terra_modell"])

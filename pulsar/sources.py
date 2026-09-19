@@ -439,7 +439,7 @@ def enrich(symbol, market, router, *, now=None):
     leads={"urls": urls[:20], "ok": False, "detail": "Vorhandene Unternehmensmeldungen werden zuerst geprüft"}
     corporate, issues = corporate_documents(symbol, market, leads, now=now)
     if corporate:
-        from fmp_service import record_use
+        from fmp_kontext import record_use
         from .diagnostics import not_started
         record_use("GPT_WEBSUCHE_DURCH_ORIGINALHINWEIS_GESPART",symbol,{"documents":[d.get("id") for d in corporate]})
         detail = "Unternehmensoriginal aus vorhandenen FMP-Hinweisen geprüft; keine zusätzliche GPT-Websuche"

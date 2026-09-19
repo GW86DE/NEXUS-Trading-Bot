@@ -14,6 +14,10 @@ Grundsaetze:
   innerhalb des bestehenden eToro-Lesebudgets (``ergaenze_fuer_trades``).
 - Nur abgeschlossene Kerzen; Rohwerte, keine Fuellung fehlender Intervalle.
 - Ein Fehler hier beruehrt den Handelspfad nie.
+- 10.8.0: 15-Minuten-Kerzen zusaetzlich fuer aktive PULSAR-Karten (Ausloeser /
+  Hype-Kandidat), hoechstens 5 Reihen je Zyklus und 15 Minuten Ruhe je Reihe
+  (``ergaenze_fuer_karten``): <= 20 Abrufe je Stunde. PULSAR liest nur
+  (``lade_neueste``); der Kern ruft ab.
 """
 from __future__ import annotations
 
@@ -135,6 +139,39 @@ def _trade_symbols(account: str, environment: str, now: float) -> set[str]:
         return set()
 
 
+def _konto(broker):
+    if str(getattr(broker, "name", "")).lower() != "etoro":
+        return "", ""
+    account = str(broker.account_fingerprint() or "")
+    environment = "DEMO" if broker.ist_paper() else "LIVE"
+    return account, environment
+
+
+def _abrufen(broker, account, environment, reihen, *, now, max_fetches):
+    """Reihen ``[(symbol, instrument, bar), ...]`` abrufen: Budget und Ruhezeit je Reihe."""
+    done = 0
+    for symbol, inst, bar in reihen:
+        if done >= max_fetches:
+            return done
+        key = (symbol, bar)
+        if now - _LAST_FETCH.get(key, 0.0) < REFRESH_SECONDS:
+            continue
+        bar_size, _, _ = BARS[bar]
+        # broker.historie() bildet "N D" auf count=min(1000, N*24) ab:
+        # 17 D -> 408 Fuenfzehnminutenkerzen (~6 Handelstage),
+        # 400 D -> 1000 Tageskerzen (eToro kappt auf sein Maximum).
+        dauer = "17 D" if bar == "15m" else "400 D"
+        try:
+            frame = broker.historie(inst, dauer, bar_size, nur_handelszeiten=True)
+            speichere(account, environment, symbol, bar, frame)
+            _LAST_FETCH[key] = now
+            done += 1
+        except Exception as exc:
+            _LAST_FETCH[key] = now
+            logger.debug("eToro-Chartreihe %s %s nicht abrufbar: %s", symbol, bar, exc)
+    return done
+
+
 def ergaenze_fuer_trades(broker, instrument_by_symbol: dict, *, now=None, max_fetches: int = 4) -> int:
     """15m- und Tageskerzen nur fuer Instrumente mit Position/Trade (<=7 Tage).
 
@@ -143,41 +180,45 @@ def ergaenze_fuer_trades(broker, instrument_by_symbol: dict, *, now=None, max_fe
     """
     now = time.time() if now is None else now
     try:
-        if str(getattr(broker, "name", "")).lower() != "etoro":
-            return 0
-        account = str(broker.account_fingerprint() or "")
-        environment = "DEMO" if broker.ist_paper() else "LIVE"
+        account, environment = _konto(broker)
         if not account:
             return 0
         wanted = _trade_symbols(account, environment, now)
-        done = 0
+        reihen = []
         for symbol in sorted(wanted):
             inst = instrument_by_symbol.get(symbol) or instrument_by_symbol.get(f"stock:{symbol}".lower()) \
                 or next((i for k, i in instrument_by_symbol.items() if str(getattr(i, "name", "")).upper() == symbol), None)
             if inst is None:
                 continue
-            for bar in ("15m", "1d"):
-                if done >= max_fetches:
-                    return done
-                key = (symbol, bar)
-                if now - _LAST_FETCH.get(key, 0.0) < REFRESH_SECONDS:
-                    continue
-                bar_size, _, _ = BARS[bar]
-                # broker.historie() bildet "N D" auf count=min(1000, N*24) ab:
-                # 17 D -> 408 Fuenfzehnminutenkerzen (~6 Handelstage),
-                # 400 D -> 1000 Tageskerzen (eToro kappt auf sein Maximum).
-                dauer = "17 D" if bar == "15m" else "400 D"
-                try:
-                    frame = broker.historie(inst, dauer, bar_size, nur_handelszeiten=True)
-                    speichere(account, environment, symbol, bar, frame)
-                    _LAST_FETCH[key] = now
-                    done += 1
-                except Exception as exc:
-                    _LAST_FETCH[key] = now
-                    logger.debug("eToro-Chartreihe %s %s nicht abrufbar: %s", symbol, bar, exc)
-        return done
+            reihen.extend((symbol, inst, bar) for bar in ("15m", "1d"))
+        return _abrufen(broker, account, environment, reihen, now=now, max_fetches=max_fetches)
     except Exception:
         logger.debug("eToro-Chartreihen nicht ergaenzt", exc_info=True)
+        return 0
+
+
+def ergaenze_fuer_karten(broker, instruments, *, now=None, max_fetches: int = 5) -> int:
+    """15-Minuten-Kerzen fuer aktive PULSAR-Karten (10.8.0).
+
+    ``instruments`` liefert ``pulsar.core.aktive_karten_instrumente`` (hoechstens
+    fuenf Karten im Zustand AUSLOESER/HYPE_KANDIDAT, nur bei offener Sitzung).
+    Dieselbe Ruhezeit je Reihe (15 min) und dasselbe Lesebudget wie fuer Trades:
+    5 Karten x 4 Abrufe je Stunde = hoechstens 20 Abrufe je Stunde. Der Kern
+    ruft ab, PULSAR liest nur (``lade_neueste``) -- PULSAR bekommt keinen Broker.
+    """
+    now = time.time() if now is None else now
+    try:
+        account, environment = _konto(broker)
+        if not account or not instruments:
+            return 0
+        reihen = []
+        for inst in list(instruments)[:5]:
+            symbol = str(getattr(inst, "name", "") or "").upper()
+            if symbol and getattr(inst, "asset_type", "stock") == "stock":
+                reihen.append((symbol, inst, "15m"))
+        return _abrufen(broker, account, environment, reihen, now=now, max_fetches=max_fetches)
+    except Exception:
+        logger.debug("eToro-Chartreihen fuer PULSAR-Karten nicht ergaenzt", exc_info=True)
         return 0
 
 
@@ -207,6 +248,26 @@ def lade(account: str, environment: str, symbol: str, bar: str, *, start_ts: int
             "bar_seconds": BARS[bar][1]}
 
 
+def lade_neueste(symbol: str, bar: str = "15m", *, limit: int = 500) -> dict:
+    """Juengste gesicherte Reihe eines Symbols, ueber Konten/Umgebungen hinweg (10.8.0).
+
+    Kerzen sind Marktdaten, keine Kontodaten: DEMO und LIVE liefern dieselben
+    Werte. PULSAR nimmt die zuletzt gesicherte Reihe. Ohne Datei oder Reihe:
+    leere Kerzenliste und ``saved_at`` None -- nie ein erfundener Stand.
+    """
+    if bar not in BARS:
+        raise ValueError("Unbekannter Kerzenzeitraum")
+    symbol = str(symbol).upper()
+    if not pfad().exists():
+        return {"candles": [], "saved_at": None, "rows_total": 0, "bar": bar, "bar_seconds": BARS[bar][1]}
+    with _LOCK, _connect() as con:
+        state = con.execute("SELECT account, environment FROM series_state WHERE symbol=? AND bar=? AND rows>0 "
+                            "ORDER BY saved_at DESC LIMIT 1", (symbol, bar)).fetchone()
+    if not state:
+        return {"candles": [], "saved_at": None, "rows_total": 0, "bar": bar, "bar_seconds": BARS[bar][1]}
+    return lade(state["account"], state["environment"], symbol, bar, limit=limit)
+
+
 def gespeicherte_reihen(bar: str = "1h") -> list[tuple[str, str, str]]:
     """Alle gesicherten Reihen (Konto, Umgebung, Symbol) eines Zeitrahmens (10.5.0, PULSAR-Volumenscan)."""
     if bar not in BARS or not pfad().exists():
@@ -225,4 +286,5 @@ def verfuegbare_bars(account: str, environment: str, symbol: str) -> list[str]:
     return [b for b in ("15m", "1h", "1d") if b in {r[0] for r in rows}]
 
 
-__all__ = ["speichere", "merke_scan", "ergaenze_fuer_trades", "lade", "verfuegbare_bars", "gespeicherte_reihen", "pfad", "BARS"]
+__all__ = ["speichere", "merke_scan", "ergaenze_fuer_trades", "ergaenze_fuer_karten", "lade", "lade_neueste",
+           "verfuegbare_bars", "gespeicherte_reihen", "pfad", "BARS"]

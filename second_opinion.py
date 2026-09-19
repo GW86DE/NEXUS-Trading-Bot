@@ -170,11 +170,11 @@ def hole(router, fakten: dict) -> Urteil:
         # extra provider/GPT calls or replace the supplied broker price.
         prepared = dict(fakten)
         try:
-            from fmp_data import research_context
+            from fmp_kontext import research_context
             context = research_context(prepared.get("symbol", ""))
             if context:
                 prepared["fmp_reference_context"] = context
-                from fmp_service import record_use
+                from fmp_kontext import record_use
                 from pulsar.research import facts as stable_facts
                 record_use("NEXUS_ZWEITMEINUNG_MIT_FMP",prepared.get("symbol", ""),stable_facts(context))
         except Exception as exc:

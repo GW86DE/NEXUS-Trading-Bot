@@ -256,7 +256,7 @@ def main():
     args=ap.parse_args();os.umask(0o077)
     if args.apply:
         if not args.workers_stopped:raise SystemExit('--workers-stopped ist Pflicht')
-        from nexus_update import Host
+        from installer_host import Host
         Host().other_writers(args.source.resolve())
     report=repair(args.source,args.trades,args.fx,apply=args.apply,workers_stopped=args.workers_stopped)
     if args.output:

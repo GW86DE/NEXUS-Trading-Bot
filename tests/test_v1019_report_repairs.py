@@ -6,15 +6,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_current_release_identity_and_diagnosis_match():
-    assert (ROOT / "VERSION.txt").read_text(encoding="utf-8").strip() == "10.7.1-NEXUS"
-    assert "10.7.1-LOCK-RESOLUTION-AND-LEDGER-RECEIPTS" in (ROOT / "RELEASE_BUILD.txt").read_text(encoding="utf-8")
+    assert (ROOT / "VERSION.txt").read_text(encoding="utf-8").strip() == "10.8.0-NEXUS"
+    assert "10.8.0-ARCHITEKTUR-LEITPLANKEN-UND-PULSAR-BESTAETIGUNG" in (ROOT / "RELEASE_BUILD.txt").read_text(encoding="utf-8")
     assert "TOOL_VERSION = '1.9.0'" in (ROOT / "NEXUS_10_Diagnose.py").read_text(encoding="utf-8")
-    assert (ROOT / "NEXUS_10.7.1_Diagnose_Starten.sh").is_file()
+    assert (ROOT / "NEXUS_10.8.0_Diagnose_Starten.sh").is_file()
 
 
 def test_versioned_diagnosis_entry_is_bound_to_release():
-    source = (ROOT / "NEXUS_10_7_1_Diagnose.py").read_text(encoding="utf-8")
-    assert 'EXPECTED_VERSION = "10.7.1-NEXUS"' in source
+    source = (ROOT / "NEXUS_10_8_0_Diagnose.py").read_text(encoding="utf-8")
+    assert 'EXPECTED_VERSION = "10.8.0-NEXUS"' in source
     assert "from NEXUS_10_Diagnose import main" in source
 
 

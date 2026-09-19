@@ -10,11 +10,15 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime, timezone
 from decimal import Decimal
-import hashlib
 import json
 from pathlib import Path
 
 from etoro_protection_evidence import assess, number
+# 10.8.0 (Schritt 2): digest, fresh und merge_breakdown liegen in
+# etoro_protection_readback -- reine Regeln, die auch der Broker-Adapter
+# braucht. Der Re-Export haelt die bisherigen Aufrufer und Tests stabil und
+# loest den Import-Zyklus broker.etoro <-> etoro_protection_repair.
+from etoro_protection_readback import digest, fresh, merge_breakdown  # noqa: F401
 from broker.base import BrokerFehler
 
 SCHEMA = "ETORO_EXISTING_PROTECTION_PLAN_V1"
@@ -25,67 +29,6 @@ def canonical_state_path():
     import config
     path = Path(config.POSITION_STATE_FILE)
     return path.resolve() if path.is_absolute() else Path(__file__).resolve().parent / path
-
-
-def digest(value):
-    raw = value if isinstance(value, bytes) else json.dumps(
-        value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
-    return hashlib.sha256(raw).hexdigest()
-
-
-def fresh(timestamp, *, now=None, maximum_seconds=90):
-    now = now or datetime.now(timezone.utc)
-    try:
-        at = datetime.fromisoformat(str(timestamp).replace("Z", "+00:00"))
-        if not at.tzinfo or not -5 <= (now - at).total_seconds() <= maximum_seconds:
-            raise ValueError
-    except (ValueError, TypeError):
-        raise ValueError("ETORO_REPAIR_SNAPSHOT_STALE_OR_UNTIMED") from None
-    return at
-
-
-def merge_breakdown(rows, breakdown, *, instrument_id, now=None):
-    """Join stop type only after all overlapping position facts agree.
-
-    Called by the CID-bound adapter. A display or a cached historical fixture
-    can never supply missing broker facts. Missing flags remain missing.
-    """
-    if not isinstance(breakdown, dict) or breakdown.get("accountCurrency") != "USD":
-        raise ValueError("ETORO_REPAIR_BREAKDOWN_CURRENCY_UNPROVEN")
-    fresh(breakdown.get("timestamp"), now=now)
-    groups = breakdown.get("instruments")
-    if not isinstance(groups, list):
-        raise ValueError("ETORO_REPAIR_BREAKDOWN_INCOMPLETE")
-    groups = [g for g in groups if isinstance(g, dict)
-              and str(g.get("instrumentId")) == str(instrument_id)]
-    if len(groups) != 1 or not isinstance(groups[0].get("positions"), list):
-        raise ValueError("ETORO_REPAIR_BREAKDOWN_INSTRUMENT_UNPROVEN")
-    if not isinstance(groups[0].get("orders"), list):
-        raise ValueError("ETORO_REPAIR_PENDING_ORDER_VIEW_UNPROVEN")
-    output = []
-    for row in rows:
-        matches = [r for r in groups[0]["positions"] if isinstance(r, dict)
-                   and str(r.get("positionId")) == str(row.get("positionId"))]
-        if len(matches) != 1:
-            raise ValueError("ETORO_REPAIR_BREAKDOWN_POSITION_UNPROVEN")
-        other = matches[0]
-        if (str(other.get("instrumentId")) != str(instrument_id)
-                or row.get("isBuy") is not True or other.get("direction") != "long"
-                or other.get("assetCurrency") != "USD"):
-            raise ValueError("ETORO_REPAIR_BREAKDOWN_IDENTITY_MISMATCH")
-        # Exact Decimal equality deliberately avoids guessing a tolerance or tick.
-        for field in ("units", "stopLossRate", "takeProfitRate"):
-            if number(row.get(field)) != number(other.get(field)):
-                raise ValueError("ETORO_REPAIR_READBACK_CHANGED")
-        if row.get("stopLossType") not in (None, other.get("stopLossType")):
-            raise ValueError("ETORO_REPAIR_STOP_TYPE_CONFLICT")
-        merged = dict(row)
-        merged["stopLossType"] = other.get("stopLossType")
-        merged["_stop_type_source"] = {
-            "source": "ETORO_CID_BOUND_INSTRUMENT_BREAKDOWN",
-            "timestamp": breakdown["timestamp"], "response_sha256": digest(breakdown)}
-        output.append(merged)
-    return output, deepcopy(groups[0]["orders"])
 
 
 def validate_record(record):

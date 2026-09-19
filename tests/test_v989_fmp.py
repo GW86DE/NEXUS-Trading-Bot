@@ -358,9 +358,9 @@ def test_recent_company_primary_lead_saves_an_extra_gpt_search(monkeypatch):
 
 
 def test_optional_context_preserves_broker_facts_and_one_gpt_call(monkeypatch):
-    import fmp_data,second_opinion
+    import fmp_kontext,second_opinion
     from types import SimpleNamespace
-    monkeypatch.setattr(fmp_data,'research_context',lambda symbol:{'annual':{'net_income':12}})
+    monkeypatch.setattr(fmp_kontext,'research_context',lambda symbol:{'annual':{'net_income':12}})
     seen=[]
     class Router:
         def frage(self,kind,facts,*a,**kw):

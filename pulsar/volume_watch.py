@@ -8,6 +8,11 @@ Beitrag in einem Forum. Zwei Datenwege, beide ohne zusaetzlichen Abruf:
 2. Stundenkerzen des eToro-Kerzenspeichers (der Handelskern sichert sie bei
    jedem Scan): heutiges kumuliertes Volumen bis zur gleichen Stunde gegen den
    Mittelwert derselben Stunde der letzten 20 Sitzungen.
+3. 10.8.0: 15-Minuten-Kerzen von eToro fuer AKTIVE Karten (Ausloeser /
+   Hype-Kandidat). Der Kern ruft sie ab (etoro_chart_store.ergaenze_fuer_karten),
+   PULSAR liest sie (``intraday_from_store``). Dieselbe Rechnung wie bei den
+   Stundenkerzen, nur alle 15 Minuten statt einmal je Stunde -- der FMP-Quote
+   ist dann nur noch der Rueckfall.
 
 Grundsaetze: kein relatives Volumen ohne Vergleichsbasis (UNKNOWN), keine
 Bewertung vor Handelsbeginn, keine Kursprognose. Schwellen: Ausloeser >= 3,0x,
@@ -80,12 +85,14 @@ def from_quote(quote, *, now=None):
                       + (f", Kurs {gain*100:+.1f} % zum Vortag" if gain is not None else "")}
 
 
-def from_hourly(rows, *, now=None):
-    """Relatives Volumen aus Stundenkerzen ``[(ts, volume, close), ...]`` (UTC-Sekunden).
+def from_hourly(rows, *, now=None, method="HOURLY_CUMULATIVE_VS_20_SESSIONS"):
+    """Relatives Volumen aus Sitzungskerzen ``[(ts, volume, close), ...]`` (UTC-Sekunden).
 
     Vergleich: heutiges kumuliertes Volumen bis zur letzten abgeschlossenen
-    Stunde gegen den Mittelwert des kumulierten Volumens bis zur gleichen
-    Sitzungsstunde der letzten 20 Sitzungen. Ohne 10 Vergleichssitzungen UNKNOWN.
+    Kerze gegen den Mittelwert des kumulierten Volumens bis zur gleichen
+    Sitzungsminute der letzten 20 Sitzungen. Ohne 10 Vergleichssitzungen UNKNOWN.
+    Die Rechnung ist von der Kerzenlaenge unabhaengig (Stunden- oder
+    15-Minuten-Kerzen); ``method`` benennt die Quelle im Ergebnis.
     """
     now = time.time() if now is None else now
     sessions = {}
@@ -129,7 +136,7 @@ def from_hourly(rows, *, now=None):
         return {"status": "UNKNOWN", "rvol": None, "detail": "Vergleichsvolumen null"}
     return {"status": "OK", "rvol": rvol, "gain": gain, "sessions": len(history),
             "today_volume": today_volume, "expected_volume": expected, "last_bar_minute": last_minute,
-            "method": "HOURLY_CUMULATIVE_VS_20_SESSIONS", "observed_at": current[-1][0],
+            "method": method, "observed_at": current[-1][0],
             "detail": f"{rvol:.1f}x des kumulierten Volumens bis {last_minute//60:02d}:{last_minute%60:02d} NY "
                       f"({len(history)} Vergleichssitzungen)"
                       + (f", Kurs {gain*100:+.1f} % zum Vortagesschluss" if gain is not None else "")}
@@ -165,6 +172,73 @@ def scan_universe(rows_by_symbol, *, now=None):
     return out
 
 
+INTRADAY_STORE_MAX_AGE = 2700  # 45 min: 15-min-Kerzen werden alle 15 min nachgeladen
+INTRADAY_METHOD = "ETORO_15M_CUMULATIVE_VS_20_SESSIONS"
+
+
+def intraday_from_store(symbol, *, now=None):
+    """15-Minuten-Kerzen einer aktiven Karte aus dem eToro-Kerzenspeicher (10.8.0, kein Abruf).
+
+    Liefert ``{"rows": [(ts, volume, close), ...], "intraday": [FMP-artige Zeilen],
+    "saved_at": ..., "fresh": bool, "avg_day_volume": ...}``. ``fresh`` heisst:
+    die juengste Kerze ist hoechstens 45 Minuten alt -- nur dann zaehlt sie vor
+    dem FMP-Quote. ``avg_day_volume`` ist das mittlere Sitzungsvolumen der
+    letzten 20 vollen Sitzungen DERSELBEN Quelle (mindestens 10; sonst None):
+    eToro zaehlt Volumen nicht wie FMP, deshalb wird nie gegen den FMP-Tages-
+    durchschnitt verglichen. Ohne Speicher, Reihe oder bei veralteter Reihe
+    bleibt alles leer/False; es wird nichts geraten.
+    """
+    import logging
+    now = time.time() if now is None else now
+    leer = {"rows": [], "intraday": [], "saved_at": None, "fresh": False, "source": "ETORO_15M", "avg_day_volume": None}
+    try:
+        import etoro_chart_store as store
+        data = store.lade_neueste(str(symbol).upper(), "15m", limit=25*30)
+    except Exception as exc:
+        logging.getLogger(__name__).debug("15-Minuten-Kerzen fuer %s nicht lesbar: %s", symbol, exc)
+        return leer
+    rows, intraday = [], []
+    for c in data.get("candles") or []:
+        try:
+            ts = int(datetime.fromisoformat(c["zeit"]).timestamp())
+        except (KeyError, TypeError, ValueError):
+            continue
+        if ts + 900 > now:
+            continue  # nur abgeschlossene Kerzen
+        rows.append((ts, c.get("volume"), c.get("close")))
+        intraday.append({"date": datetime.fromtimestamp(ts, NY).isoformat(),
+                         "open": c.get("open"), "high": c.get("high"), "low": c.get("low"),
+                         "close": c.get("close"), "volume": c.get("volume")})
+    if not rows:
+        return leer
+    fresh = now - rows[-1][0] <= INTRADAY_STORE_MAX_AGE + 900
+    return {"rows": rows, "intraday": intraday, "saved_at": data.get("saved_at"), "fresh": fresh, "source": "ETORO_15M",
+            "avg_day_volume": session_average_volume(rows, now=now)}
+
+
+def session_average_volume(rows, *, now=None, sessions=LOOKBACK_SESSIONS, minimum=MIN_SESSIONS):
+    """Mittleres Gesamtvolumen der letzten vollen Sitzungen (ohne heute); None unter ``minimum``."""
+    now = time.time() if now is None else now
+    today = datetime.fromtimestamp(now, NY).date().isoformat()
+    totals = {}
+    for item in rows or []:
+        try:
+            ts, volume = float(item[0]), _number(item[1])
+        except (TypeError, ValueError, IndexError):
+            continue
+        if volume is None or ts > now:
+            continue
+        local = datetime.fromtimestamp(ts, NY)
+        key = local.date().isoformat()
+        if local.weekday() >= 5 or key >= today:
+            continue
+        totals[key] = totals.get(key, 0.0) + volume
+    history = [totals[k] for k in sorted(totals)[-sessions:] if totals[k] > 0]
+    if len(history) < minimum:
+        return None
+    return sum(history) / len(history)
+
+
 def hourly_rows_from_store(*, limit_symbols=60):
     """Stundenkerzen aller eToro-Aktien aus dem Kern-Kerzenspeicher (kein Abruf).
 
@@ -186,4 +260,4 @@ def hourly_rows_from_store(*, limit_symbols=60):
 
 
 __all__ = ["from_quote", "from_hourly", "classify", "scan_universe", "session_fraction", "hourly_rows_from_store",
-           "TRIGGER_MULTIPLE", "CONFIRM_MULTIPLE"]
+           "intraday_from_store", "session_average_volume", "INTRADAY_METHOD", "TRIGGER_MULTIPLE", "CONFIRM_MULTIPLE"]

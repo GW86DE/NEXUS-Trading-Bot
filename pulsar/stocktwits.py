@@ -11,8 +11,14 @@ Grundsaetze:
   (``truncated_1h``), keine Messung.
 - Kein Rohtext, keine Autorenkennung wird gespeichert: nur Zaehlwerte.
 - DNS-/Netzfehler sind UNKNOWN (Abrufpause), nie "keine Erwaehnungen".
-- Eigenes Budget (``stocktwits``: 150/Tag, 800/Woche) unterhalb des
-  dokumentierten Anbieterlimits (200 Abfragen je Stunde ohne Anmeldung).
+- Eigenes Budget (``stocktwits``: 400/Tag, 2000/Woche; bis 10.7.1 150/800)
+  unterhalb des dokumentierten Anbieterlimits (200 Abfragen je Stunde ohne
+  Anmeldung).
+- 10.8.0: Ist die Stundenzahl nur eine Untergrenze (alle 30 Nachrichten der
+  ersten Seite juenger als eine Stunde), werden bis zu drei aeltere Seiten
+  ueber den ``max``-Cursor nachgeladen, bis die Stunde vollstaendig ist.
+  Aktive Karten (Ausloeser/Hype-Kandidat) werden alle 15 Minuten statt
+  einmal je Stunde gezaehlt; die Trending-Liste alle 15 statt 30 Minuten.
 """
 from __future__ import annotations
 
@@ -29,11 +35,14 @@ LOG = logging.getLogger(__name__)
 
 TRENDING_URL = "https://api.stocktwits.com/api/2/trending/symbols.json"
 STREAM_URL = "https://api.stocktwits.com/api/2/streams/symbol/{symbol}.json"
-TRENDING_TTL = 1800
+TRENDING_TTL = 900
 STREAM_TTL = 3600
+STREAM_TTL_ACTIVE = 900
 SAMPLE_SIZE = 30
 WINDOW = 3600
 MAX_BYTES = 2_000_000
+MAX_EXTRA_PAGES = 3
+FORBIDDEN_PAUSE = 4*3600
 
 
 def _stamp(value):
@@ -83,13 +92,29 @@ def _number(value):
         return None
 
 
-def normalise_stream(symbol, raw, *, now):
-    """Zaehlwerte der letzten Stunde aus der 30er-Stichprobe; Rohtexte verworfen."""
+def _messages(raw):
     messages = raw.get("messages") if isinstance(raw, dict) else None
     if not isinstance(messages, list):
         raise ValueError("stocktwits: unerwartetes Stromformat")
+    return messages
+
+
+def oldest_id(raw):
+    """Kleinste Nachrichten-ID einer Seite (Cursor fuer ``max``); None ohne IDs."""
+    ids = []
+    for item in _messages(raw):
+        try:
+            ids.append(int(item.get("id")))
+        except (TypeError, ValueError, AttributeError):
+            continue
+    return min(ids) if ids else None
+
+
+def normalise_stream(symbol, raw, *, now, pages=1):
+    """Zaehlwerte der letzten Stunde aus der Stichprobe (30 je Seite); Rohtexte verworfen."""
+    messages = _messages(raw)
     stamps, authors, bullish, bearish = [], set(), 0, 0
-    for item in messages[:SAMPLE_SIZE]:
+    for item in messages[:SAMPLE_SIZE*max(1, int(pages))]:
         if not isinstance(item, dict):
             continue
         stamp = _stamp(item.get("created_at"))
@@ -107,22 +132,39 @@ def normalise_stream(symbol, raw, *, now):
         bullish += basic == "bullish"
         bearish += basic == "bearish"
     recent = [s for s in stamps if now - s <= WINDOW]
-    truncated = len(stamps) >= SAMPLE_SIZE and bool(stamps) and now - min(stamps) <= WINDOW
+    truncated = len(stamps) >= SAMPLE_SIZE*max(1, int(pages)) and bool(stamps) and now - min(stamps) <= WINDOW
     meta = raw.get("symbol") if isinstance(raw.get("symbol"), dict) else {}
     return {"symbol": symbol, "source": "stocktwits", "source_family": "stocktwits",
             "mentions": len(recent), "messages_1h": len(recent), "authors_1h": len(authors),
             "bullish_1h": bullish, "bearish_1h": bearish,
-            "messages_sampled": len(stamps),
+            "messages_sampled": len(stamps), "pages": max(1, int(pages)),
             "sample_span_seconds": (max(stamps) - min(stamps)) if stamps else None,
             "truncated_1h": truncated,
             "watchlist_count": research._count(meta.get("watchlist_count")),
             "observed_at": now, "url": STREAM_URL.format(symbol=symbol),
-            "detail": ("Stundenzahl ist eine Untergrenze: alle 30 Stichprobennachrichten liegen in der letzten Stunde."
-                       if truncated else "Nachrichten der letzten Stunde aus der 30er-Stichprobe; keine Vollzaehlung.")}
+            "detail": (f"Stundenzahl ist eine Untergrenze: alle {len(stamps)} Stichprobennachrichten "
+                       f"({max(1, int(pages))} Seite(n)) liegen in der letzten Stunde."
+                       if truncated else f"Nachrichten der letzten Stunde aus {len(stamps)} Stichprobennachrichten "
+                       f"({max(1, int(pages))} Seite(n)); keine Vollzaehlung.")}
 
 
-def _get(url, *, session=None):
+def merge_pages(pages):
+    """Mehrere Seiten desselben Stroms zu einer Nachrichtenliste (neueste zuerst)."""
+    out = {"messages": [], "symbol": None}
+    for raw in pages:
+        if not isinstance(raw, dict):
+            continue
+        if out["symbol"] is None and isinstance(raw.get("symbol"), dict):
+            out["symbol"] = raw["symbol"]
+        out["messages"].extend(m for m in _messages(raw) if isinstance(m, dict))
+    if out["symbol"] is None:
+        out.pop("symbol")
+    return out
+
+
+def _get(url, *, session=None, now=None):
     import requests
+    now = time.time() if now is None else now
     client = session or requests.Session()
     try:
         response = client.get(url, timeout=(3.05, 10), stream=True,
@@ -132,8 +174,15 @@ def _get(url, *, session=None):
                 delay = max(900, min(7200, int(response.headers.get("Retry-After", 1800))))
             except (TypeError, ValueError):
                 delay = 1800
-            research.cache_put("backoff:stocktwits", {"status": 429}, delay)
+            research.cache_put("backoff:stocktwits", {"status": 429}, delay, now=now)
             raise Blocked("stocktwits: Rate-Limit; spaeter erneut pruefen")
+        if response.status_code == 403:
+            # 10.8.0: Am 18.09.2026 antwortete StockTwits auf Trending UND Strom mit
+            # 403 (20 Abrufe am Tag, weit unter dem Limit) -- eine Anbieter-Sperre,
+            # keine Ratengrenze. Vier Stunden Pause statt jede Stunde erneut anzuklopfen.
+            research.cache_put("backoff:stocktwits", {"status": 403, "failure_kind": "error",
+                               "detail": "StockTwits verweigert den Zugang (HTTP 403); keine Zaehlwerte"}, FORBIDDEN_PAUSE, now=now)
+            raise Blocked("stocktwits: Zugang verweigert (HTTP 403); Abrufpause")
         response.raise_for_status()
         raw = bytearray()
         for chunk in response.iter_content(chunk_size=32768):
@@ -146,16 +195,17 @@ def _get(url, *, session=None):
             client.close()
 
 
-def _guarded(key, ttl, url, parse, *, now, session=None):
+def _guarded(key, ttl, url, parse, *, now, session=None, max_age=None, fetch=None):
     old = research.cached(key, now=now)
-    if old:
+    if old and (max_age is None or now - float(old.get("saved") or 0) <= max_age):
         return old["data"]
     if research.cached("backoff:stocktwits", now=now):
         raise Blocked("stocktwits: Abrufpause")
     token = research.reserve("stocktwits", now=now)
     overall = research.reserve("data", now=now)
     try:
-        rows = parse(_get(url, session=session))
+        # ``fetch`` (10.8.0) darf Folgeseiten laden; jede Seite reserviert ihr eigenes Budget.
+        rows = parse(fetch(url, session=session) if fetch else _get(url, session=session, now=now))
         research.cache_put(key, rows, ttl, now=now)
         research.settle(token, 1); research.settle(overall, 1)
         research._social_status("stocktwits", True, now)
@@ -170,19 +220,52 @@ def _guarded(key, ttl, url, parse, *, now, session=None):
 
 
 def trending(*, now=None, session=None):
-    """Aktien der Trending-Liste (hoechstens alle 30 Minuten abgerufen)."""
+    """Aktien der Trending-Liste (hoechstens alle 15 Minuten abgerufen; bis 10.7.1: 30)."""
     now = time.time() if now is None else now
     return _guarded("stocktwits:trending", TRENDING_TTL, TRENDING_URL,
                     lambda raw: normalise_trending(raw, now=now), now=now, session=session)
 
 
-def stream(symbol, *, now=None, session=None):
-    """Stundenzaehlung fuer ein Symbol (hoechstens einmal je Stunde je Symbol)."""
+def _fetch_hour(symbol, url, *, now, session=None):
+    """Erste Seite plus bis zu MAX_EXTRA_PAGES aeltere Seiten, bis die Stunde vollstaendig ist (10.8.0).
+
+    Jede Folgeseite reserviert eigenes Budget; ohne Budget oder bei einem
+    Fehler bleibt die bisher gelesene Stichprobe (Untergrenze) gueltig.
+    """
+    pages = [_get(url, session=session, now=now)]
+    for _ in range(MAX_EXTRA_PAGES):
+        raw = pages[-1]
+        stamps = [s for s in (_stamp(m.get("created_at")) for m in _messages(raw) if isinstance(m, dict)) if s]
+        if len(stamps) < SAMPLE_SIZE or not stamps or now - min(stamps) > WINDOW:
+            break  # Stunde vollstaendig abgedeckt oder Seite unvollstaendig
+        cursor = oldest_id(raw)
+        if cursor is None:
+            break
+        try:
+            token = research.reserve("stocktwits", now=now)
+            overall = research.reserve("data", now=now)
+            pages.append(_get(f"{url}?max={cursor - 1}", session=session, now=now))
+            research.settle(token, 1); research.settle(overall, 1)
+        except Exception as exc:
+            LOG.debug("StockTwits-Folgeseite fuer %s nicht geladen: %s", symbol, exc)
+            break
+    return merge_pages(pages) if len(pages) > 1 else pages[0], len(pages)
+
+
+def stream(symbol, *, now=None, session=None, active=False):
+    """Stundenzaehlung fuer ein Symbol: einmal je Stunde, fuer aktive Karten alle 15 Minuten (10.8.0)."""
     now = time.time() if now is None else now
     if not research.TICKER.fullmatch(str(symbol or "")):
         raise ValueError("Ungueltiges Symbol")
-    row = _guarded("stocktwits:stream:" + symbol, STREAM_TTL, STREAM_URL.format(symbol=symbol),
-                   lambda raw: normalise_stream(symbol, raw, now=now), now=now, session=session)
+
+    def fetch(url, *, session=None):
+        raw, pages = _fetch_hour(symbol, url, now=now, session=session)
+        return {"raw": raw, "pages": pages}
+
+    row = _guarded("stocktwits:stream:" + symbol, STREAM_TTL_ACTIVE if active else STREAM_TTL,
+                   STREAM_URL.format(symbol=symbol),
+                   lambda got: normalise_stream(symbol, got["raw"], now=now, pages=got["pages"]),
+                   now=now, session=session, max_age=STREAM_TTL_ACTIVE if active else None, fetch=fetch)
     if row.get("observed_at") == now:
         # Frische Messung in die eigene Zeitreihe (Stundenmedian-Basislinie).
         try:
@@ -225,4 +308,4 @@ def activity(row, baseline=None):
                   "(ohne Basislinie noetig: >= 20 und >= 10 Konten)")
 
 
-__all__ = ["trending", "stream", "activity", "normalise_trending", "normalise_stream"]
+__all__ = ["trending", "stream", "activity", "normalise_trending", "normalise_stream", "merge_pages", "oldest_id"]

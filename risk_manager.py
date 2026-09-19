@@ -713,7 +713,7 @@ class RiskState:
 
     def basis_review(self) -> dict:
         """Current evidence, including blockers hidden by a closed market."""
-        from risk_basis_review import status
+        from risk_basis_status import status
         return status(self._payload(), **getattr(self, "_basis_observation", {}))
 
     def _update_equity_guard_unlocked(self, equity: float, basis_key: str,

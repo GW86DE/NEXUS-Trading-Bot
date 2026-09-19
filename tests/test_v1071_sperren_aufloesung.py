@@ -403,5 +403,6 @@ def test_verdrahtung_der_vier_fixe():
     assert 'if r["fee"] is None or not r["fee_currency"]:' in tl
     accounting = (ROOT / "okx_accounting.py").read_text(encoding="utf-8")
     assert "def _ist_rest_split(row)" in accounting and "elif _ist_rest_split(row):" in accounting
-    freigabe = (ROOT / "handelsfreigabe.py").read_text(encoding="utf-8")
+    import handelsfreigabe as _hf  # 10.8.0: liegt in nexus/application/, Alias an der Wurzel
+    freigabe = Path(_hf.__file__).read_text(encoding="utf-8")
     assert "LEDGERABGLEICH_OFFEN" in freigabe and "from etoro_reconciliation import buchungsluecken" in freigabe

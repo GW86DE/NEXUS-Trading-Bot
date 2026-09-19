@@ -62,8 +62,7 @@ _stop = threading.Event()
 _thread_lock = threading.Lock()
 
 
-def digest(value):
-    return sha256(store.encode(value).encode()).hexdigest()
+digest = store.digest  # 10.8.0 (Schritt 2): kanonischer Hash liegt in store
 
 
 def utc(stamp):
@@ -256,6 +255,15 @@ def _refresh_monitoring(con, settings, now):
     return effective
 
 
+def request_confirmation(symbol, profile_source, *, now=None):
+    """Punkt 3 (10.8.0): X-Bestaetigungssuche anfordern (Fassade; keine Netzanfrage hier)."""
+    now = time.time() if now is None else now
+    with store.db(readonly=True) as con:
+        if not _settings(con)["enabled"]:
+            return {"accepted": False, "reason": "X-Recherche nicht eingerichtet"}
+    return candidate_research.request_confirmation(symbol, profile_source, now=now)
+
+
 def record_candidate_validation(symbol, profile_source, *, now=None):
     """Enroll only a cached, dated FMP single-stock identity. No paid calls.
 
@@ -306,14 +314,25 @@ def _reserve(kind, query, context, window, now):
         if con.execute("SELECT 1 FROM requests WHERE request_key=?", (request_key,)).fetchone():
             return None
         if kind == "search":
-            targeted = context == candidate_research.CONTEXT
-            count = con.execute("SELECT count(*) FROM requests WHERE day=? AND kind='search' AND (context=?)=?",
-                                (day, candidate_research.CONTEXT, int(targeted))).fetchone()[0]
-            if count >= (CANDIDATE_SEARCHES_PER_DAY if targeted else GENERAL_SEARCHES_PER_DAY):
+            targeted = context in (candidate_research.CONTEXT, candidate_research.CONFIRM_CONTEXT)
+            if context == candidate_research.CONFIRM_CONTEXT:
+                # 10.8.0: Bestaetigungssuchen zaehlen gegen ihr eigenes Tageslimit.
+                count = con.execute("SELECT count(*) FROM requests WHERE day=? AND kind='search' AND context=?",
+                                    (day, context)).fetchone()[0]
+                limit = candidate_research.CONFIRMATIONS_PER_DAY
+            elif targeted:
+                count = con.execute("SELECT count(*) FROM requests WHERE day=? AND kind='search' AND context=?",
+                                    (day, context)).fetchone()[0]
+                limit = CANDIDATE_SEARCHES_PER_DAY
+            else:
+                count = con.execute("SELECT count(*) FROM requests WHERE day=? AND kind='search' AND context NOT IN (?,?)",
+                                    (day, candidate_research.CONTEXT, candidate_research.CONFIRM_CONTEXT)).fetchone()[0]
+                limit = GENERAL_SEARCHES_PER_DAY
+            if count >= limit:
                 return None
             if targeted:
                 plan = candidate_research.plan(con, now)
-                if not plan or query != plan['query']:
+                if not plan or query != plan['query'] or plan.get('context', candidate_research.CONTEXT) != context:
                     return None
         else:
             count = con.execute("SELECT count(*) FROM requests WHERE day=? AND kind='counts'", (day,)).fetchone()[0]
@@ -327,7 +346,7 @@ def _reserve(kind, query, context, window, now):
         con.execute("INSERT INTO requests(id,request_key,kind,query_hash,context,started,month,day,reserved,status) VALUES(?,?,?,?,?,?,?,?,?,?)",
                     (request_id, request_key, kind, query_hash, context, now, month, day, cost, "RESERVED"))
         request = {"id": request_id, "query_hash": query_hash, "kind": kind, "context": context, "cost": cost}
-        if context == candidate_research.CONTEXT:
+        if context in (candidate_research.CONTEXT, candidate_research.CONFIRM_CONTEXT):
             candidate_research.reserve_receipt(con, request, query, now)
         return request
 
@@ -498,7 +517,7 @@ def _posts(request, body, now):
             contexts.add(request["context"])
             for symbol in contexts:
                 con.execute("INSERT OR IGNORE INTO post_context VALUES(?,?,?,?)", (identity, request["query_hash"], symbol, "search"))
-            if request['context'] == candidate_research.CONTEXT:
+            if request['context'] in (candidate_research.CONTEXT, candidate_research.CONFIRM_CONTEXT):
                 for symbol in candidate_research.matched_symbols(con, request, text, symbols):
                     con.execute("INSERT OR IGNORE INTO post_context VALUES(?,?,?,?)",
                                 (identity, request['query_hash'], symbol, 'candidate:' + request['id']))
@@ -651,7 +670,8 @@ def tick(*, now=None, session=None):
         # candidate_research) und zwei Makro-/Accountsuchen (12-Stunden-Slot).
         with store.db(readonly=True) as con:
             candidate_plan = candidate_research.plan(con, now)
-        if candidate_plan and _call("search", candidate_plan['query'], candidate_research.CONTEXT,
+        if candidate_plan and _call("search", candidate_plan['query'],
+                candidate_plan.get('context', candidate_research.CONTEXT),
                 now-DAY, now-30, candidate_plan['slot'], now, session):
             return True
         slot = int(now // (12*3600))

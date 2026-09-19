@@ -1,7 +1,7 @@
 # NEXUS Trading-Bot
 
 **Regelbasierter Trading-Bot für eToro-Aktien und OKX-Spot-Krypto auf dem Raspberry Pi 5.**
-Aktueller Stand: **10.7.1** (`10.7.1-LOCK-RESOLUTION-AND-LEDGER-RECEIPTS`), September 2026.
+Aktueller Stand: **10.8.0** (`10.8.0-ARCHITEKTUR-LEITPLANKEN-UND-PULSAR-BESTAETIGUNG`), September 2026.
 
 NEXUS handelt standardmäßig auf **Demo-/Paper-Konten**. Er analysiert Kerzen,
 Markt- und Kontodaten, kauft nach festen Regeln mit Stop-Loss und Take-Profit
@@ -75,6 +75,8 @@ universe/                  Universumsauswahl Aktien/Krypto
 pulsar/                    PULSAR: Social-/News-Aufmerksamkeit, Hype-Spur, Messung
 market_intelligence/       X-Recherche mit Monatsbudget (nie Entscheider)
 webui/                     FastAPI-Oberfläche (lokal, CSP script-src 'self', kein CDN)
+nexus/                     Zielpaket des Architektur-Umbaus (10.8.0): Schichtenkarte, Importgraph,
+                           Weichen; domain/ und application/ nehmen Module beim Anfassen auf
 NEXUS_10_Diagnose.py       Passives Diagnosewerkzeug (rein lesend)
 volltest.py                Vollständiger Testlauf, Pflicht vor jedem Dienststart nach Update
 ```
@@ -82,6 +84,15 @@ volltest.py                Vollständiger Testlauf, Pflicht vor jedem Dienststar
 Zwei Dienste laufen auf dem Pi: `tradingbot-pi5` (Bot) und `tradingbot-webui`
 (Oberfläche). Der Bot schreibt Laufzeitstatus und Zustandsdateien; die WebUI
 liest sie und schreibt Einstellungen – sie hat selbst keine Brokerverbindung.
+
+**Architektur-Leitplanken (seit 10.8.0):** `nexus/architektur/schichten.json`
+ordnet jedes Modul einer Schicht zu (konfiguration, domain, ports, state,
+adapters, application, interfaces). `tests/test_v1080_architektur.py` baut den
+Importgraphen per `ast` und vergleicht mit `validation/ARCHITEKTUR_BASELINE.json`:
+Import-Zyklen, Schichtverstöße und Module über 1.500 Zeilen dürfen nur sinken.
+Umgezogene Module (`ledger_result`, `okx_receipt_math`, `handelsfreigabe`,
+`risk_levels`) behalten ihren alten Importpfad über eine `sys.modules`-Weiche
+(`nexus/weiche.py`). Hintergrund und Plan: `NEXUS_Architektur_Audit_2026-09-19.md`.
 
 ## Broker
 
@@ -176,7 +187,7 @@ freigegebenen Benutzer. Einrichtung: `TELEGRAM_EINRICHTUNG_DE.txt`.
 ## Diagnose
 
 ```bash
-bash ~/Georg/TradingBot_v10.7.1_NEXUS/NEXUS_10.7.1_Diagnose_Starten.sh --minuten 30
+bash ~/Georg/TradingBot_v10.8.0_NEXUS/NEXUS_10.8.0_Diagnose_Starten.sh --minuten 30
 ```
 
 Sammelt Startstand, beobachtet 30 Minuten, sammelt Endstand: Zustandsdateien,
@@ -269,16 +280,18 @@ pulsar/                  Research, Evidence, Messung, Quellen (StockTwits, FINRA
 market_intelligence/     X-Abfragen, Budget, Konten-Registry
 webui/                   FastAPI-App, Templates, statische Skripte (ECharts lokal)
 tests/                   Testbestand inkl. Fixtures mit echten (anonymisierten) Belegen
-validation/              Testnachweise je Version
+validation/              Testnachweise je Version, Architektur-Baseline
+nexus/                   Paketskelett des Umbaus (architektur/, domain/, application/, …)
 docs/history/            Historische Berichte früherer Versionen
 offline_test_bootstrap/  Netzwerkwächter für Tests
 ```
 
 ## Dokumentation
 
-- Aktuelle Version: `CHANGELOG_v10.7.1_NEXUS.txt`,
-  `INSTALLATIONSANLEITUNG_NEXUS_10.7.1_DE.md`,
-  `NEXUS_10.7.1_IMPLEMENTATION_REPORT.md`, `NEXUS_10.7.1_Pruefbericht.md`.
+- Aktuelle Version: `CHANGELOG_v10.8.0_NEXUS.txt`,
+  `INSTALLATIONSANLEITUNG_NEXUS_10.8.0_DE.md`,
+  `NEXUS_10.8.0_IMPLEMENTATION_REPORT.md`, `NEXUS_10.8.0_Pruefbericht.md`,
+  `NEXUS_Architektur_Audit_2026-09-19.md` (Audit, Soll-Architektur, Migrationsplan).
 - Architektur und Hintergrund: `ARCHITEKTUR_V8_NEXUS_DE.md`,
   `FREQTRADE_MODUS_NEXUS_9.0_DE.md`, `RISIKOPRUEFUNG_NEXUS_9.0_DE.md`,
   `KRYPTO_UNIVERSUM_UND_TRADEANALYSE_NEXUS_9.0.1_DE.md`, `PULSAR_9.8.7_DE.md`,

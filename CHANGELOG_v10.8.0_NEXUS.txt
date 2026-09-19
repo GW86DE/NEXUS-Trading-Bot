@@ -1,0 +1,218 @@
+NEXUS 10.8.0 -- Architektur-Leitplanken (Schritte 0-2) und fuenf PULSAR-/Luna-Punkte
+=====================================================================================
+Stand: 19.09.2026. Basis 10.7.1 (auf dem Pi installiert, Diagnose 21:23 UTC:
+alle Sperren geloest, CSCO abgerechnet, OKX BTC/ETH/XRP frei).
+
+ANLASS
+------
+Zwei Auftraege vom 19.09.2026:
+
+1. Architektur-Audit (Graphify, 10 Pruefpunkte, Bericht
+   NEXUS_Architektur_Audit_2026-09-19.md) mit Migrationsplan in 10 Schritten.
+   Georg: "Fang mit 0-2 direkt an. Nimm die offenen Punkte direkt mit und
+   baue es um." Der CSCO-Vorfall (10.7.0) entstand genau in der Verflechtung,
+   die der Audit zeigt: drei Stellen registrierten Risikobelege, keine kannte
+   die andere.
+2. Der SanDisk-Fall vom 18.09. (Hype-Alarm 21:21 Uhr, keine Nominierung, weil
+   die Karte erst 15:50 NY stabil wurde -- nach dem Einstiegsfenster). Die
+   Diagnose zeigt die Ursache: alle fuenf Karten mit "Quote aelter als 15
+   Minuten", StockTwits in Abrufpause, Volumenzaehlung nur stundenweise.
+
+Kein Verhalten der Kaufkaskade, der Risikopruefung oder der Buchhaltung
+aendert sich. PULSAR, X, GPT und StockTwits haben weiterhin keine
+Orderbefugnis; jede Nominierung braucht Georgs Telegram-Bestaetigung.
+
+
+TEIL A -- ARCHITEKTUR (SCHRITTE 0-2 DES MIGRATIONSPLANS)
+=========================================================
+
+SCHRITT 0: LEITPLANKEN, DIE AB JETZT NUR NOCH BESSER WERDEN DUERFEN
+--------------------------------------------------------------------
+NEU nexus/architektur/importgraph.py: baut den Modul-Importgraphen des
+Quellbaums selbst per ``ast`` (kein Graphify, kein Fremdpaket, laeuft auf dem
+Pi). Spaete Importe in Funktionen zaehlen mit. Tarjan-Komponenten, kurze
+Kreise fuer lesbare Meldungen, Zeilenzahlen.
+
+NEU nexus/architektur/schichten.json + schichten.py: jedes der 336 Module
+steht in genau einer Schicht (konfiguration, domain, ports, state, adapters,
+application, interfaces; alias fuer Weichen) mit erlaubten Importrichtungen.
+Ein Alias zaehlt fuer Importeure wie sein Ziel.
+
+NEU validation/ARCHITEKTUR_BASELINE.json: gemessener Stand nach Schritt 2
+(2 Zyklus-Komponenten mit 21 Modulen, 93 Schichtverstoesse, 9 Grossmodule
+ueber 1.500 Zeilen mit ihren Zeilenzahlen, Adapter-nach-Kern-Kanten,
+PULSAR-Kanten nach aussen).
+
+NEU tests/test_v1080_architektur.py (33 Tests): jedes Modul hat eine Schicht;
+Zyklen sind Teilmengen der Baseline und werden nur weniger; Schichtverstoesse
+nur Teilmenge der Baseline; harte Regeln: domain importiert nur domain und
+config, die WebUI importiert keinen Broker-Adapter; Grossmodule nur aus der
+Ausnahmeliste und hoechstens +5 %; die Baseline passt zum Baum. Ein neues
+Modul ohne Schicht macht den Volltest rot -- bewusst.
+
+SCHRITT 2: SECHS KURZE IMPORT-ZYKLEN GEBROCHEN (VOR SCHRITT 1)
+-------------------------------------------------------------
+Vorher: 8 Zyklus-Komponenten mit 44 Modulen (eigener AST-Graph). Nachher: 2
+Komponenten mit 21 Modulen -- der PULSAR/ai_router-Ring (11) und der
+OKX-Buchhaltungs-/trade_ledger-Ring (10), beide dokumentiert (Schritte 4-5, 9).
+Jeder Schnitt zieht gemeinsame Helfer nach unten; kein Verhalten aendert sich,
+alte Importpfade bleiben als Re-Export erhalten:
+
+- repair_okx_* <-> nexus_update: NEU installer_host.py (UNITS, UpdateError,
+  Host); nexus_update re-exportiert.
+- risk_basis_review <-> risk_manager, etoro_risk_maintenance <-> risk_basis_review:
+  NEU risk_basis_status.py (scope, status).
+- risk_pots <-> risk_levels: NEU risk_grenzen.py (TopfGrenzen).
+- etoro_protection_repair <-> broker/etoro: NEU etoro_protection_readback.py
+  (digest, fresh, merge_breakdown).
+- etoro_fee_recovery <-> etoro_reconciliation <-> etoro_cancellations: NEU
+  etoro_nachlauf.py; background_tick(..., nachlauf=SCHRITTE) bekommt Storno
+  und Gebuehrennachlauf als Parameter statt als Import.
+- fmp_data/fmp_service <-> fmp_reference: NEU fmp_kontext.py (research_context,
+  record_use); second_opinion und PULSAR importieren von dort.
+- nasdaq_halt_feed <-> news_sources: NEU news_model.py (NewsItem, _clean_text,
+  _safe_dt); news_sources re-exportiert.
+- market_intelligence account_registry <-> service: digest liegt in store.
+- approved_universe <-> config: approved_universe liest den Katalog aus dem
+  geladenen config (sys.modules) statt config zu importieren.
+
+SCHRITT 1: PAKET nexus/ MIT WEICHEN -- SICHERE VARIANTE
+-------------------------------------------------------
+NEU nexus/{domain,application,ports,adapters,state,interfaces}/ (Skelett),
+nexus/pfade.py (Projektwurzel, Zustandsordner) und nexus/weiche.py:
+``umleiten(__name__, "nexus.domain.ledger_result")`` traegt das neue Modul
+unter dem alten Namen in sys.modules ein -- EIN Modulobjekt, kein Zwilling;
+``import ledger_result`` und ``monkeypatch.setattr(ledger_result, ...)``
+funktionieren unveraendert, Installer-Dateilisten finden die alte Datei.
+
+Physisch umgezogen (je mit 4-zeiligem Alias am alten Ort):
+- ledger_result.py       -> nexus/domain/ledger_result.py
+- okx_receipt_math.py    -> nexus/domain/okx_receipt_math.py
+- handelsfreigabe.py     -> nexus/application/handelsfreigabe.py
+- risk_levels.py         -> nexus/application/risk_levels.py
+  (Zustandsdatei risiko_stufen.json bleibt im Projektordner: _root() nutzt
+  nexus.pfade.zustandsordner(), nicht mehr Path(__file__) -- sonst waere die
+  gewaehlte Einsatzstufe nach dem Update stillschweigend weg; Test dafuer.)
+
+Die uebrigen Module wandern ab jetzt "beim Anfassen". Grund: 150 Module auf
+einmal heisst 150x __file__-Pfade, Volltest-Listen und Installer-Manifeste --
+genau das Risiko, das bei der Installation nicht mehr gewollt ist.
+
+
+TEIL B -- DIE FUENF FREIGEGEBENEN PUNKTE
+========================================
+
+1. FMP-QUOTE NACHLADEN BEI "OFFEN" (pulsar/worker.refresh_quotes)
+-----------------------------------------------------------------
+BEFUND. Der /quote-Cache lebt 15 Minuten, der PULSAR-Zyklus laeuft alle 15
+Minuten: Karten wurden regelmaessig mit einem Quote bewertet, der aelter als
+15 Minuten war ("Quote aelter als 15 Minuten" auf allen fuenf Karten der
+Diagnose vom 18.09.). Kurs- und Volumenbestaetigung standen dann auf OFFEN,
+obwohl der Markt laengst bestaetigt hatte.
+
+NEU. Steht nach der Bewertung Kurs- ODER Volumenbestaetigung einer Karte mit
+Ausloeser auf OFFEN und die NY-Sitzung ist offen, holt PULSAR EINEN frischen
+Quote (fmp_reference.quote(..., max_age=120): Cache nur, wenn juenger als 2
+Minuten), baut die Karte neu und bewertet sie im selben Zyklus erneut.
+Hoechstens fuenf Karten je Zyklus, ein Abruf je Karte, ueber die bestehende
+FMP-Naht mit Budget und Nutzungsnachweis. Ausserhalb der Sitzung und bei
+PULSAR AUS: nichts. Fehler lassen die Karte unveraendert.
+fmp_service.request(..., max_age=...) ist die einzige Aenderung am FMP-Kern.
+
+2. STOCKTWITS: SEITEN NACHLADEN, 15-MINUTEN-TAKT, BUDGET 400
+-------------------------------------------------------------
+- Ist die Stundenzahl nur eine Untergrenze (alle 30 Nachrichten der ersten
+  Seite juenger als eine Stunde), laedt der Strom bis zu drei aeltere Seiten
+  ueber den max-Cursor nach, bis die Stunde vollstaendig ist. Jede Seite
+  reserviert eigenes Budget; weiter nur Zaehlwerte, kein Text, keine
+  Autorenkennung.
+- Aktive Karten (Ausloeser/Hype-Kandidat) werden alle 15 Minuten gezaehlt
+  statt einmal je Stunde (stream(..., active=True)); die Trending-Liste alle
+  15 statt 30 Minuten.
+- Budget 150 -> 400 je Tag, 800 -> 2000 je Woche (Anbieterlimit: 200 je
+  Stunde ohne Anmeldung; die Tagesgrenze bleibt weit darunter).
+- HTTP 403: Am 18.09. antwortete StockTwits auf Trending UND Strom mit 403
+  (20 Abrufe am Tag, weit unter jedem Limit) -- eine Anbieter-Sperre, keine
+  Ratengrenze. Ab jetzt vier Stunden Pause mit klarer Meldung ("StockTwits
+  verweigert den Zugang (HTTP 403)") statt jede Stunde erneut anzuklopfen.
+  OFFEN: Ob und wann der oeffentliche Zugang wieder antwortet, zeigt erst der
+  Betrieb; die Zaehlwerte bleiben bis dahin UNKNOWN. Alternativen stehen in
+  Georgs Dokument zum StockTwits-Zugang (Drittanbieter).
+
+3. X-BESTAETIGUNGSSUCHE AUF ABRUF (market_intelligence, pulsar/evidence)
+-------------------------------------------------------------------------
+Eine Karte im Zustand AUSLOESER mit genau EINER der drei Bestaetigungen und
+offenem Einstiegsfenster fordert sofort EINE X-Suche fuer das Symbol an
+(request_confirmation; ~0,05 USD, hoechstens 8 je Tag, einmal je Symbol und
+Tag). Der X-Worker zieht sie beim naechsten Tick (30 s) vor die Slot-Suchen;
+eigener Kontext __PULSAR_CONFIRM__ mit eigenem Tageslimit, dasselbe
+Monatsbudget (15 EUR) bleibt die harte Grenze. Das Ergebnis zaehlt im
+naechsten Zyklus nach der X-Spike-Regel (>= 8 Beitraege von >= 5 Konten,
+hoechstens 24 h alt) als ZWEITE Social-Familie -- nie als Ausloeser, nie als
+eigener vierter Bestaetigungsplatz, nie fuer eine X-Entdeckung (die hat X
+schon). Ohne eingerichtetes X: nicht angenommen.
+
+4. ETORO-15-MINUTEN-KERZEN FUER AKTIVE KARTEN
+---------------------------------------------
+- Der Handelskern ruft fuer aktive Karten (Ausloeser/Hype-Kandidat, hoechstens
+  fuenf, nur bei offener Sitzung) 15-Minuten-Kerzen von eToro ab
+  (etoro_chart_store.ergaenze_fuer_karten, pulsar/core.aktive_karten_instrumente):
+  dieselbe Ruhezeit je Reihe (15 min) und dasselbe Lesebudget wie fuer
+  Trades -> hoechstens 20 Abrufe je Stunde. Instrumente loest weiterhin der
+  Broker auf (qualifiziere), hoechstens einmal je 6 h je Symbol. PULSAR
+  bekommt keinen Broker: es liest den Speicher (lade_neueste, ueber
+  DEMO/LIVE hinweg -- Kerzen sind Marktdaten).
+- pulsar/volume_watch.intraday_from_store: abgeschlossene 15-Minuten-Kerzen,
+  Frische (juengste Kerze <= 45 min), Tagesdurchschnitt DERSELBEN Quelle
+  (20 Sitzungen, mindestens 10). from_hourly rechnet unveraendert -- die
+  Rechnung haengt nicht von der Kerzenlaenge ab.
+- Volumen: relatives Volumen aus den eToro-Kerzen (Methode
+  ETORO_15M_CUMULATIVE_VS_20_SESSIONS) geht vor dem Quote; Verhaeltnisse
+  sind skalenfrei.
+- Kursbestaetigung: frische eToro-Kerzen (Kursplus >= 5 % zum Vortagesschluss,
+  heutiges Volumen >= 1 Tagesdurchschnitt DERSELBEN Quelle) BESTAETIGEN sofort;
+  sagen sie Nein, entscheidet der frische FMP-Quote wie bisher -- die Kerzen
+  koennen eine Bestaetigung nur hinzufuegen, nie wegnehmen. Ohne eigenen
+  Tagesdurchschnitt gibt es aus eToro-Kerzen KEINE Volumenaussage: eToro
+  zaehlt Volumen nicht wie FMP, deshalb wird nie gegen den FMP-Durchschnitt
+  gerechnet. Gleiche Schwellen wie bisher.
+- OFFEN (Betrieb): die Volumenqualitaet der eToro-Aktienkerzen ist offline
+  nicht pruefbar (der Kerzenspeicher ist nicht Teil der Diagnose; der
+  Stundenkerzen-Volumenscan seit 10.5.0 lieferte bis 18.09. keinen Treffer).
+  Die Karte zeigt intraday_source, intraday_saved_at und
+  intraday_avg_day_volume; die naechste Diagnose zeigt, was eToro liefert.
+
+5. LUNA-TAGESBUDGET 200
+-----------------------
+config.AI_LUNA_MAX_CALLS_PER_DAY 40 -> 200 (ai_budget/ai_status/nexus_setup
+folgen). settings_migration._migrate_v1080_luna_tagesbudget hebt beim Update
+einen Wert bis 50 (alter Standard 40, eingerichtet 50) einmalig auf 200 und
+markiert das; ein spaeter bewusst kleiner gesetzter Wert bleibt stehen.
+NEU in der WebUI: Einstellungen -> "System / Research - OpenAI - Luna / Terra"
+-> Feld "Luna-Anfragen pro Tag" (0..5000; 0 = Luna aus). Der USD-Deckel
+(Tagesbudget USD, bei Georg 5 USD) bleibt die harte Grenze.
+
+
+TESTS
+-----
+NEU tests/test_v1080_architektur.py (33) und tests/test_v1080_pulsar_bestaetigung.py
+(22). Angepasst: tests/test_v989_fmp.py (fmp_kontext), test_v1071 (Pin ueber
+__file__), test_v980_webui (Datenfeldliste). Baseline-Zahlen und Sammellaeufe:
+validation/NEXUS_10.8.0_TEST_EVIDENCE.json, NEXUS_10.8.0_Pruefbericht.md.
+
+DATEIEN (neu)
+-------------
+nexus/__init__.py, nexus/weiche.py, nexus/pfade.py, nexus/architektur/{__init__,
+importgraph,schichten}.py, nexus/architektur/schichten.json, nexus/domain/
+{__init__,ledger_result,okx_receipt_math}.py, nexus/application/{__init__,
+handelsfreigabe,risk_levels}.py, nexus/{ports,adapters,state,interfaces}/__init__.py,
+validation/ARCHITEKTUR_BASELINE.json, installer_host.py, risk_basis_status.py,
+risk_grenzen.py, etoro_protection_readback.py, etoro_nachlauf.py, fmp_kontext.py,
+news_model.py, NEXUS_Architektur_Audit_2026-09-19.md, NEXUS_10_8_0_Diagnose.py,
+NEXUS_10.8.0_Diagnose_Starten.sh.
+
+UNVERAENDERT
+------------
+Kaufkaskade, Risikopruefung, Buchhaltung, Sperrliste, Broker-Verhalten,
+Diagnose 1.9.0. UNKNOWN bleibt UNKNOWN. Kein TLS-Bypass. CSP script-src 'self'.
+Keine Klarnamen in Diagnose-Exporten.

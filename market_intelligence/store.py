@@ -6,6 +6,7 @@ the provider spending cap too; unrelated clients cannot be metered locally.
 """
 from contextlib import contextmanager
 from pathlib import Path
+from hashlib import sha256
 import json
 import os
 import sqlite3
@@ -16,6 +17,12 @@ ROOT = Path(os.environ.get("TRADINGBOT_TEST_STATE_DIR") or Path(__file__).resolv
 
 def encode(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def digest(value):
+    # 10.8.0 (Schritt 2): kanonischer Inhalts-Hash liegt hier, damit die
+    # Kontenliste ihn ohne Rueckgriff auf service nutzen kann (Import-Zyklus).
+    return sha256(encode(value).encode()).hexdigest()
 
 
 def atomic_json(name, value):

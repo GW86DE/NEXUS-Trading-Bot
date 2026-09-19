@@ -59,7 +59,7 @@ class AIBudget:
     def grenze(self, stufe):
         return max(0, int(getattr(self.cfg,
             'AI_LUNA_MAX_CALLS_PER_DAY' if stufe == 'luna' else 'AI_TERRA_MAX_CALLS_PER_DAY',
-            40 if stufe == 'luna' else 8)))
+            200 if stufe == 'luna' else 8)))
 
     def kostengrenze(self):
         value = float(getattr(self.cfg, 'AI_MAX_COST_PER_DAY_USD', .50))

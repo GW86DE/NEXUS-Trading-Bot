@@ -226,26 +226,8 @@ def financials(client,symbol,*,purpose='automatic'):
     return result
 
 
-def research_context(symbol):
-    """Cache-only context for an existing NEXUS GPT review; never extra calls."""
-    import fmp_reference
-    from fmp_service import settings
-    client=fmp_reference.client()
-    if not client.konfiguriert:return {}
-    symbol=str(symbol).strip().upper()
-    out={'role':'OPTIONAL_RESEARCH_ONLY','detail':'FMP-Referenzdaten; keine Brokerkurse oder Ausfuehrungs-/Buchungsbelege'}
-    history=client.store.cached('history:'+symbol)
-    if history:out['daily']=daily_metrics(history['data'].get('rows',[]))
-    mode,declared=settings()
-    if mode=='STARTER' or mode=='AUTO' and declared=='STARTER':
-        annual=client.store.cached('annual:'+symbol)
-        if annual:
-            out['annual']=annual_context(annual['data'])
-            out['annual']['fetched_at']=annual['saved']
-        macro=client.store.cached('market_context')
-        if macro:out['market_context']=macro['data']
-    return out
-
+# 10.8.0 (Schritt 2): research_context liegt in fmp_kontext (oberhalb von
+# fmp_reference); dieses Modul greift nicht mehr nach oben (Import-Zyklus).
 
 def refresh_market_context(client, *, now=None):
     """Hourly secondary FX/crypto context; no rates enter accounting."""

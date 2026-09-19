@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Versionsgebundener, rein lesender Einstieg fuer NEXUS 10.7.1 Diagnose 1.9.0."""
+"""Versionsgebundener, rein lesender Einstieg fuer NEXUS 10.8.0 Diagnose 1.9.0."""
 from pathlib import Path
 
-EXPECTED_VERSION = "10.7.1-NEXUS"
+EXPECTED_VERSION = "10.8.0-NEXUS"
 HERE = Path(__file__).resolve().parent
 try:
     observed = (HERE / "VERSION.txt").read_text(encoding="utf-8").strip()

@@ -27,12 +27,10 @@ import time
 import urllib.request
 from datetime import datetime, timezone
 
-UNITS = ('tradingbot-pi5.service', 'tradingbot-webui.service')
+# 10.8.0 (Schritt 2): Host, UNITS und UpdateError liegen in installer_host, damit die
+# Reparaturskripte den Installer nicht mehr importieren muessen (Import-Zyklus).
+from installer_host import UNITS, UpdateError, Host  # noqa: F401
 STATE = 'nexus_update_state.json'
-
-
-class UpdateError(RuntimeError):
-    pass
 
 
 def write_json(path, data):
@@ -87,51 +85,6 @@ def fresh_runtime(data, after, now, broker):
             and str(data.get('broker') or broker).lower() == broker
             and str(data.get('state') or '').upper() not in {
                 'STOPPED','STOPPING','OFFLINE','ERROR','ACCOUNTING_RECOVERY_REQUIRED'})
-
-
-class Host:
-    def command(self, args, *, cwd=None, capture=False, timeout=1800):
-        # Commands contain only paths/options, NEVER credentials.
-        print('+ '+ ' '.join(str(x) for x in args), flush=True)
-        try:
-            r = subprocess.run([str(x) for x in args], cwd=cwd, check=True,
-                               stdout=subprocess.PIPE if capture else None,
-                               stderr=subprocess.PIPE if capture else None,
-                               text=True, encoding='utf-8', errors='replace', timeout=timeout)
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
-            raise UpdateError('Schritt fehlgeschlagen: '+str(args[0])+' (Details im Installationsprotokoll)') from exc
-        return r.stdout if capture else ''
-
-    def states(self):
-        result = {}
-        for unit in UNITS:
-            text = self.command(['systemctl','show',unit,'--no-pager',
-                                 '-p','WorkingDirectory','-p','ExecStart','-p','ActiveState',
-                                 '-p','UnitFileState','-p','FragmentPath'], capture=True, timeout=15)
-            result[unit] = dict(line.split('=',1) for line in text.splitlines() if '=' in line)
-        return result
-
-    def stop(self):
-        self.command(['sudo','systemctl','stop',*UNITS], timeout=180)
-        if any(x.get('ActiveState') not in {'inactive','failed'} for x in self.states().values()):
-            raise UpdateError('Nicht alle Dienste sind gestoppt')
-
-    def other_writers(self, source):
-        for entry in Path('/proc').iterdir():
-            if not entry.name.isdigit() or int(entry.name) == os.getpid():
-                continue
-            try:
-                cwd = (entry/'cwd').resolve()
-                cmd = (entry/'cmdline').read_bytes().split(b'\0')
-            except (OSError, RuntimeError):
-                continue
-            entrypoints = {b'nexus_start.py',b'pi_service.py',b'live_trader.py',b'webui_start.py',b'gui_app.py'}
-            related_script = any(Path(os.fsdecode(x)).name.encode() in entrypoints for x in cmd[1:])
-            related_cwd = source.parent == cwd.parent or cwd == source
-            absolute_script = any(os.fsdecode(x).startswith(str(source.parent)+'/') for x in cmd[1:])
-            if any(b'python' in x for x in cmd[:1]) and (cwd == source or (related_script and (related_cwd or absolute_script))):
-                raise UpdateError('Zusaetzlicher Python-Writer im Quellordner, PID '+entry.name+
-                                  '. Zugehoeriges Botfenster schliessen, nichts pauschal killen.')
 
 
 def check_demo_config(source):

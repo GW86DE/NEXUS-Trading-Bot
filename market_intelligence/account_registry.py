@@ -50,8 +50,7 @@ PRIMARY_DOMAINS = (
 
 
 def _digest(value):
-    from .service import digest
-    return digest(value)
+    return store.digest(value)
 
 
 def _is_primary(domain):

@@ -37,7 +37,7 @@ def choose_financials(sources,symbol,now,sec):
         return {'profit':sec['net_income']['value'],'cashflow':sec['operating_cashflow']['value']},reason + ('; FMP-Jahresdaten als Kontext, keine Doppelwertung' if fmp else '')
     if fmp:
         r=fmp['latest']
-        from fmp_service import record_use
+        from fmp_kontext import record_use
         record_use('PULSAR_FMP_FINANZWERTUNG',symbol,r)
         return {'profit':r['net_income'],'cashflow':r['operating_cashflow']},'FMP: gepruefte USD-Jahresbelege bis '+r['end']+'; Jahresdaten, keine Quartalsaktualitaet'
     return None,reason+'; passende aktuelle FMP-Jahresbelege ebenfalls nicht verfuegbar'

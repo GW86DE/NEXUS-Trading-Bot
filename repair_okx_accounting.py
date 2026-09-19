@@ -165,7 +165,7 @@ def main():
     os.umask(0o077)
     if args.apply:
         if not args.workers_stopped:raise SystemExit('--workers-stopped ist Pflicht fuer --apply')
-        from nexus_update import Host
+        from installer_host import Host
         Host().other_writers(args.source.resolve())
     result=repair(args.source,apply=args.apply,workers_stopped=args.workers_stopped,receipts=args.receipts)
     if args.output:

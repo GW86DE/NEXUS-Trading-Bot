@@ -339,6 +339,7 @@ def migrate_from(source: Path, target: Path = ROOT, overwrite: bool = False, *, 
             skipped.append(f"{alt} -> {neu}")
 
     _migrate_v831_crypto_strategy_evidence(source, target, copied, skipped)
+    _migrate_v1080_luna_tagesbudget(target, copied, skipped)
     _force_paper(target)
     _migration_report(target, source, copied, skipped)
     if strict and failed:
@@ -411,6 +412,39 @@ def _migrate_v831_crypto_strategy_evidence(source: Path, target: Path,
         logging.getLogger(__name__).warning(
             "8.3.1-Kryptostrategien konnten nicht sicher migriert werden: %s", exc)
         skipped.append("crypto_positions.json: Strategiezuordnung")
+
+
+LUNA_TAGESBUDGET_ALT_MAX = 50
+LUNA_TAGESBUDGET_NEU = 200
+
+
+def _migrate_v1080_luna_tagesbudget(target: Path, copied: list[str], skipped: list[str]) -> None:
+    """Hebt ein altes Luna-Tagesbudget (Standard 40, eingerichtet 50) einmalig auf 200.
+
+    10.8.0: Luna kostet je Anfrage Bruchteile eines Cents, und PULSAR sowie
+    die Zweitmeinung liefen an Tagen mit vielen Karten ins 50er-Limit. Der
+    USD-Deckel bleibt die harte Grenze. Angehoben wird nur ein Wert bis 50
+    (alte Standards); ein spaeter bewusst kleiner gesetzter Wert bleibt
+    stehen, weil die Markierung den zweiten Lauf verhindert.
+    """
+    path = Path(target) / "ai_router_settings.json"
+    if not path.exists():
+        return
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or data.get("luna_max_calls_per_day_angehoben"):
+            return
+        alt = int(data.get("luna_max_calls_per_day", 40) or 0)
+        if alt > LUNA_TAGESBUDGET_ALT_MAX:
+            return
+        data["luna_max_calls_per_day"] = LUNA_TAGESBUDGET_NEU
+        data["luna_max_calls_per_day_angehoben"] = {"vorher": alt, "version": "10.8.0"}
+        from safe_persistence import atomic_write_json
+        atomic_write_json(path, data)
+        copied.append(f"ai_router_settings.json: Luna-Tagesbudget {alt} -> {LUNA_TAGESBUDGET_NEU}")
+    except Exception as exc:
+        logging.getLogger(__name__).warning("Luna-Tagesbudget nicht angehoben: %s", exc)
+        skipped.append("ai_router_settings.json: Luna-Tagesbudget")
 
 
 def _migration_report(target: Path, source: Path, copied: list[str], skipped: list[str]) -> None:

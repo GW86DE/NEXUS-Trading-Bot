@@ -11,10 +11,13 @@ import time
 from . import store
 
 CONTEXT = '__PULSAR_RESEARCH__'
+# 10.8.0: Bestaetigungssuche auf Abruf -- eigener Kontext, eigenes Tageslimit.
+CONFIRM_CONTEXT = '__PULSAR_CONFIRM__'
 DAY = 86400
 # 10.3.0: Fuenf Suchslots pro Tag (statt drei) -- das Budget der entfallenen
 # X-Tageszaehlungen traegt die schnellere Hype-Erkennung.
 SEARCHES_PER_DAY = 5
+CONFIRMATIONS_PER_DAY = 8
 INTERVAL = DAY // SEARCHES_PER_DAY
 MAX_QUEUE = 12
 POSITIVE = re.compile(r'\b(bullish|undervalued|upside|outperform|earnings beat|raises guidance|unterbewertet)\b', re.I)
@@ -62,7 +65,87 @@ def _queue(con, now):
             if 0 <= now-r['selected_at'] <= DAY and 0 <= now-r['profile_observed_at'] <= DAY]
 
 
+def _validated_row(symbol, profile_source, now, origin):
+    """Warteschlangenzeile nur aus einer datierten, typisierten FMP-Einzelaktien-Identitaet."""
+    source = profile_source or {}
+    profile = source.get('data') or {}
+    stamp = source.get('observed_at')
+    if (not isinstance(symbol, str) or not re.fullmatch(r'[A-Z][A-Z0-9.\-]{0,11}', symbol)
+            or source.get('provider') != 'FMP' or source.get('kind') != 'profile'
+            or profile.get('symbol') != symbol
+            or profile.get('isEtf') is not False or profile.get('isFund') is not False
+            or type(stamp) not in (int, float) or not math.isfinite(stamp)
+            or not 0 <= now-stamp <= DAY
+            or not re.fullmatch(r'[a-f0-9]{64}', str(source.get('id', '')))):
+        return None
+    name = re.sub(r'[^A-Za-z0-9 .&\-]', ' ', str(profile.get('companyName') or ''))
+    name = ' '.join(name.split())[:70]
+    if len(name) < 6 or not re.search('[A-Za-z]', name):
+        name = ''
+    return {'symbol': symbol, 'company_name': name, 'selected_at': now,
+            'profile_observed_at': stamp, 'profile_source_id': source['id'], 'origin': str(origin)[:40]}
+
+
+def request_confirmation(symbol, profile_source, *, now=None):
+    """Punkt 3 (10.8.0): EINE X-Bestaetigungssuche fuer ein Symbol anfordern.
+
+    PULSAR ruft das fuer einen Ausloeser mit genau einer Bestaetigung im
+    Einstiegsfenster. Hier wird nichts abgerufen: Die Zeile kommt mit
+    ``confirm_requested_at`` in die bestehende Warteschlange; ``plan`` zieht
+    sie beim naechsten Tick des X-Workers vor die Slot-Suchen. Tageslimit
+    ``CONFIRMATIONS_PER_DAY``; das Monatsbudget bleibt die harte Grenze
+    (``service._reserve``). Ohne gueltige Identitaet: nicht angenommen.
+    """
+    now = time.time() if now is None else now
+    row = _validated_row(symbol, profile_source, now, 'PULSAR_BESTAETIGUNG')
+    if row is None:
+        return {'accepted': False, 'reason': 'FMP-Einzelaktien-Identitaet nicht belegt'}
+    with store.db() as con:
+        day_start = now - (now % DAY)
+        used = con.execute("SELECT count(*) FROM requests WHERE context=? AND started>=?",
+                           (CONFIRM_CONTEXT, day_start)).fetchone()[0]
+        old = {r['symbol']: r for r in store.value(con, 'pulsar_research_queue', [])}
+        pending = sum(1 for r in old.values() if r.get('confirm_requested_at')
+                      and not r.get('confirm_attempted_at') and 0 <= now-r['confirm_requested_at'] <= DAY)
+        if used + pending >= CONFIRMATIONS_PER_DAY:
+            return {'accepted': False, 'reason': f'X-Bestaetigungssuchen heute ausgeschoepft ({CONFIRMATIONS_PER_DAY})'}
+        prior = old.get(symbol, {})
+        if prior.get('confirm_requested_at') and 0 <= now-prior['confirm_requested_at'] <= DAY:
+            return {'accepted': False, 'reason': 'heute bereits angefordert'}
+        old[symbol] = {**prior, **row, 'first_selected_at': prior.get('first_selected_at', now),
+                       'confirm_requested_at': now, 'confirm_attempted_at': None}
+        queue = sorted((r for r in old.values() if 0 <= now-r['selected_at'] <= DAY),
+                       key=lambda r: -r['selected_at'])[:MAX_QUEUE]
+        store.put(con, 'pulsar_research_queue', queue)
+    return {'accepted': True, 'reason': 'angefordert; der X-Worker sucht beim naechsten Tick',
+            'daily_used': used + pending + 1, 'daily_limit': CONFIRMATIONS_PER_DAY}
+
+
+def _confirm_plan(con, now):
+    due = [r for r in _queue(con, now) if r.get('confirm_requested_at') and not r.get('confirm_attempted_at')
+           and 0 <= now-r['confirm_requested_at'] <= DAY]
+    if not due:
+        return None
+    day_start = now - (now % DAY)
+    used = con.execute("SELECT count(*) FROM requests WHERE context=? AND started>=?",
+                       (CONFIRM_CONTEXT, day_start)).fetchone()[0]
+    if used >= CONFIRMATIONS_PER_DAY:
+        return None
+    due.sort(key=lambda r: (r['confirm_requested_at'], r['symbol']))
+    row = due[0]
+    terms = ['$' + row['symbol']]
+    if row['company_name']:
+        terms.append('"' + row['company_name'] + '"')
+    return {'query': '(' + ' OR '.join(terms) + ') -is:retweet', 'symbols': [row['symbol']],
+            'candidates': [row], 'slot': 'confirm:' + row['symbol'] + ':' + str(int(row['confirm_requested_at'])),
+            'context': CONFIRM_CONTEXT}
+
+
 def plan(con, now):
+    # 10.8.0: eine angeforderte Bestaetigungssuche geht vor die Slot-Suchen.
+    confirm = _confirm_plan(con, now)
+    if confirm:
+        return confirm
     slot_start = int(now // INTERVAL) * INTERVAL
     if con.execute("SELECT 1 FROM requests WHERE context=? AND started>=?", (CONTEXT, slot_start)).fetchone():
         return None
@@ -78,7 +161,7 @@ def plan(con, now):
             terms.append('"' + row['company_name'] + '"')
     return {'query': '(' + ' OR '.join(terms) + ') -is:retweet',
             'symbols': [r['symbol'] for r in candidates], 'candidates': candidates,
-            'slot': str(int(now // INTERVAL))}
+            'slot': str(int(now // INTERVAL)), 'context': CONTEXT}
 
 
 def reserve_receipt(con, request, query, now):
@@ -97,6 +180,9 @@ def reserve_receipt(con, request, query, now):
     for row in queue:
         if row['symbol'] in receipt['symbols']:
             row.update(last_attempt=now, request_id=request['id'], query_hash=request['query_hash'])
+            if request.get('context') == CONFIRM_CONTEXT:
+                row['confirm_attempted_at'] = now
+                row['confirm_request_id'] = request['id']
     store.put(con, 'pulsar_research_queue', queue)
 
 
@@ -145,6 +231,8 @@ def for_symbol(con, symbol, now):
              'PROCESSED' if usable else 'NO_MATCHING_SAMPLE' if fresh else request['status'])
     return {'symbol': symbol, 'company_name': row['company_name'], 'origin': row['origin'],
         'selected_at': row['selected_at'], 'profile_source_id': row['profile_source_id'],
+        'confirmation': {k: row.get(k) for k in ('confirm_requested_at', 'confirm_attempted_at', 'confirm_request_id')}
+        if row.get('confirm_requested_at') else None,
         'state': state, 'request_id': row.get('request_id'), 'query': receipt.get('query'),
         'query_hash': row.get('query_hash'), 'last_attempt': row.get('last_attempt'),
         'processed_at': request['finished'] if request else None,
@@ -163,6 +251,7 @@ def snapshot(con, now):
     receipts = store.value(con, 'pulsar_research_requests', [])
     return {'mode': 'PULSAR_CANDIDATE_RESEARCH', 'source_family': 'X', 'trade_effect': False,
         'queue_size': len(queue), 'max_queue': MAX_QUEUE, 'searches_per_day_max': SEARCHES_PER_DAY,
+        'confirmations_per_day_max': CONFIRMATIONS_PER_DAY,
         'symbols_per_search_max': 2, 'next_slot_at': (int(now//INTERVAL)+1)*INTERVAL,
         'plan_due': plan(con, now),
         'candidates': [for_symbol(con, r['symbol'], now) for r in queue],

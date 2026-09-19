@@ -1,0 +1,126 @@
+{
+  "release": "10.8.0-NEXUS",
+  "build": "10.8.0-ARCHITEKTUR-LEITPLANKEN-UND-PULSAR-BESTAETIGUNG",
+  "based_on": "10.7.1-NEXUS (auf dem Pi installiert; Diagnose 18.09.2026 21:23 UTC: alle Sperren geloest)",
+  "package_revision": 1,
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "approval": "Georg 19.09.2026: 'Fang mit 0-2 direkt an. Nimm die offenen Punkte direkt mit und baue es um. Danach direkt das Update auf Graphify' -- Versionsnummer '10.8.0 bestaetigt'",
+  "trigger": "Architektur-Audit 19.09.2026 (Graphify, 10 Pruefpunkte, Migrationsplan Schritte 0-10) und SanDisk-Auswertung 18.09. (Hype-Alarm 21:21, Karte erst 15:50 NY stabil; Diagnose: alle fuenf Karten 'Quote aelter als 15 Minuten', StockTwits 403, Volumen nur stundenweise)",
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "node": "v18.4.0 (PyPI nodejs-bin) fuer die Frontendsuite"
+  },
+  "architecture_baseline": {
+    "file": "validation/ARCHITEKTUR_BASELINE.json",
+    "method": "nexus/architektur/importgraph.py: AST-Importgraph des Quellbaums ohne Tests (auch Importe in Funktionen), Tarjan-Komponenten; Schichtenkarte nexus/architektur/schichten.json",
+    "before_step_2": {"modules": 316, "edges": 1079, "cycle_components": 8, "cycle_modules": 44, "largest_component": 11},
+    "after_step_2": {"modules": 336, "edges": 1090, "cycle_components": 2, "cycle_modules": 21, "largest_component": 11,
+                     "remaining_components": ["PULSAR/ai_router (11): ai_budget, ai_router, pulsar.analysis, evidence, measurement, research, research_history, short_interest, source_coordination, sources, stocktwits",
+                                              "OKX-Buchhaltung (10): broker.okx, decision_analytics, decision_journal, execution_lifecycle, okx_accounting, okx_external_settlement, okx_protection_journal, okx_reference_valuation, okx_residual_inventory, trade_ledger"]},
+    "layer_violations": 93,
+    "layer_violation_kinds": {"application->adapters": 71, "adapters->application": 13, "konfiguration->state": 4, "state->application": 3, "application->interfaces": 1, "state->adapters": 1},
+    "adapter_to_core_edges": 6,
+    "webui_to_broker_edges": 0,
+    "pulsar_outward_edges": 35,
+    "modules_over_1500_lines": 9,
+    "fan_out": {"live_trader": 82, "crypto_engine": 48, "webui.app": 31},
+    "graphify_audit_10_7_1_for_reference": {"cycles": 6, "largest_component": 27, "adapter_to_core": 31, "webui_core_modules": 47, "modules_over_1500": 8, "brokerfehler_edges": 249,
+                                            "note": "andere Zaehlmethode (Funktions-/Klassenknoten, Tests einbezogen); nicht direkt vergleichbar"}
+  },
+  "checks": {
+    "static_hygiene_full": {
+      "method": "volltest._static_hygiene() komplett auf frischem Spiegel der versionierten Arbeitskopie",
+      "issues": 0
+    },
+    "release_checklist": {"missing_required_files": 0, "findings": 0},
+    "node_frontend_suite_local": {
+      "tests": 30,
+      "passed": 30,
+      "failed": 0,
+      "note": "keine JS-Aenderung in 10.8.0 (nur settings.html: ein Feld)"
+    },
+    "new_suite_architektur": {
+      "module": "tests/test_v1080_architektur.py",
+      "tests": 33,
+      "passed": 33,
+      "belegt": [
+        "jedes Modul steht in genau einer Schicht; Karte ohne verwaiste Eintraege; Regeln kennen jede Schicht",
+        "Zyklen: jede heutige Komponente ist Teilmenge einer Baseline-Komponente; Anzahl und Modulzahl nur sinkend",
+        "Schichtverstoesse nur Teilmenge der Baseline (93); Adapter->Kern und PULSAR->aussen nur sinkend",
+        "harte Regeln: domain importiert nur domain/config; WebUI importiert keinen Broker-Adapter",
+        "Grossmodule nur aus der Ausnahmeliste, hoechstens +5 %; Baseline-Kennzahlen passen zum Baum",
+        "Weiche liefert EIN Modulobjekt fuer ledger_result, okx_receipt_math, handelsfreigabe, risk_levels; Alias <= 6 Zeilen; Paketskelett vollstaendig",
+        "risk_levels.path() bleibt im Projektordner (Einsatzstufe ueberlebt den Umzug)",
+        "13 kurze Zyklen gebrochen (keine gegenseitigen Importe mehr); Helfer greifen nicht nach oben; Re-Exporte fuer alte Importpfade; background_tick(nachlauf=...)"
+      ]
+    },
+    "new_suite_pulsar_bestaetigung": {
+      "module": "tests/test_v1080_pulsar_bestaetigung.py",
+      "tests": 22,
+      "passed": 22,
+      "belegt": [
+        "Punkt 4: from_hourly rechnet mit 15-Minuten-Kerzen (rvol 4,0 gegen 20 Sitzungen); intraday_from_store liefert nur abgeschlossene Kerzen, Frische und den Tagesdurchschnitt derselben Quelle; build_card nimmt eToro-Kerzen fuer Volumen und Kurs; ohne Reihe bleibt der Quote-Weg",
+        "Punkt 4: frische eToro-Kerzen bestaetigen skalenfrei (2,8x des eigenen Durchschnitts), ohne eigenen Durchschnitt keine Volumenaussage, ein Nein der Kerzen faellt auf den Quote zurueck, beide Nein werden gemeinsam gemeldet",
+        "Punkt 4: ergaenze_fuer_karten hoechstens 5 Reihen je Aufruf, 15 min Ruhe je Reihe, nur eToro-Aktien; lade_neueste nimmt die juengste Reihe ueber Konten hinweg; aktive_karten_instrumente nur AUSLOESER/HYPE_KANDIDAT, nur in offener Sitzung, Broker loest Identitaet auf (gemerkt, auch Fehlschlag); Kern ruft nach den Trades ab; PULSAR ohne Broker",
+        "Punkt 1: refresh_quotes laedt nur OFFENE Karten mit Ausloeser in offener Sitzung, hoechstens fuenf, max_age 120 s; danach BELEGT/HYPE_KANDIDAT; belegte Karten, Sitzung zu, PULSAR AUS: kein Abruf; Fehler lassen die Karte unveraendert; fmp_service.request(max_age) umgeht einen aelteren Cache",
+        "Punkt 2: Folgeseiten ueber max-Cursor bis die Stunde vollstaendig ist (36 statt 30 Nachrichten), jede Seite reserviert Budget; hoechstens 3 Folgeseiten; aktive Karte 15-min-Takt, sonst Stunde; 403 = vier Stunden Pause mit UNKNOWN-Wirkung; Budget 400/2000; nur Zaehlwerte",
+        "Punkt 3: request_confirmation nimmt nur belegte Einzelaktien an, einmal je Symbol und Tag, hoechstens 8 je Tag; plan zieht die Bestaetigung vor die Slot-Suchen (eigener Kontext); Ergebnis PROCESSED mit 9 Posts/6 Konten; ohne eingerichtetes X nicht angenommen",
+        "Punkt 3: X-Bestaetigung zaehlt als zweite Social-Familie (1 -> 2 Bestaetigungen, HYPE_KANDIDAT), nie als Ausloeser, kein vierter Platz; zu duenn/veraltet/offen: benannte Luecke; X-Entdeckung bekommt keine zweite X-Familie; Worker fordert nur fuer AUSLOESER mit genau einer Bestaetigung im Fenster an, einmal je Tag",
+        "Punkt 5: Standard 200, Migration hebt 50 und fehlenden Eintrag einmalig auf 200 (markiert), laesst 30 (nach Anhebung) und 120 stehen; WebUI-Feld liest/schreibt 0..5000, USD-Deckel unveraendert"
+      ]
+    },
+    "adjusted_tests": {
+      "tests/test_v989_fmp.py": "research_context wird ueber fmp_kontext gepatcht (Zyklus fmp_data <-> fmp_reference gebrochen)",
+      "tests/test_v1071_sperren_aufloesung.py": "Pin auf handelsfreigabe liest den Quelltext ueber __file__ (Modul liegt in nexus/application/)",
+      "tests/test_v980_webui.py": "Datenfeldliste um openai.luna_max_calls_per_day ergaenzt",
+      "tests/test_v1019_report_repairs.py, tests/test_v976_release_and_diagnose.py": "Versionspins 10.8.0"
+    },
+    "full_isolated_run_1": {
+      "date": "2026-09-19",
+      "method": "231 Module je in eigenem Prozess (6 parallel), Netzwerkwaechter aktiv, Node auf PATH, Spiegel der Arbeitskopie vor der letzten Schichtenkarten-Aktualisierung",
+      "modules": 231,
+      "modules_green": 191,
+      "passed": 3288,
+      "failed": 63,
+      "errors": 7,
+      "skipped": 9,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": 13,
+      "red_modules_without_network_event": 27,
+      "diff_to_10_7_1_run": {"neu_rot": ["test_v1080_architektur (3 Tests: Scratch-Datei im Spiegel, Wrapper-Umbenennung in der Schichtenkarte, nexus_update ohne fcntl)"], "neu_gruen": ["test_v100_execution_recovery"]},
+      "note": "Die drei roten Architektur-Tests zeigten die Leitplanke bei der Arbeit (ein nicht einsortiertes Modul); Karte und Baseline wurden auf dem versionierten Stand neu erzeugt, der fcntl-Fall im Re-Export-Test benannt. Alle uebrigen roten Module sind die dokumentierten Windows-Artefakte (fcntl, flock, Symlinks, systemd, Installerpfade)."
+    },
+    "full_isolated_run_2": {
+      "date": "2026-09-19",
+      "method": "Wiederholung auf dem finalen versionierten Baum (Pins, Wrapper, Listen, Schichtenkarte, Baseline 10.8.0)",
+      "modules": 231,
+      "modules_green": 192,
+      "passed": 3291,
+      "failed": 60,
+      "errors": 7,
+      "skipped": 9,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": 13,
+      "red_modules_without_network_event": 26,
+      "diff_to_run_1": {"neu_rot": [], "neu_gruen": ["test_v1080_architektur"]},
+      "diff_to_10_7_1_run": {"neu_rot": [], "neu_gruen": ["test_v100_execution_recovery"]},
+      "note": "3291 = 3235 (10.7.1) + 33 + 22 neue Tests + 1 (test_v100_execution_recovery, in 10.7.1 unter Last einmal rot). Alle 26 roten Module sind die dokumentierten Windows-Artefakte (fcntl, flock, Symlinks, systemd, Installerpfade) und identisch mit 10.7.1."
+    },
+    "per_test_comparison_with_posix_shims": {
+      "method": "Bauskript: alle Module je Prozess mit fcntl/pwd/grp-Shims, junitxml, Vergleich JE TEST gegen NEXUS_10.7.1_Quellpaket.zip; neu rote Tests werden einmal allein wiederholt; bleibt einer rot, bricht der Bau ab",
+      "result": "siehe Bauprotokoll (Zeile 'Je-Test-Vergleich OK': alt = 10.7.1-Paket, neu = 10.8.0; neu rot allein muss 0 sein)"
+    },
+    "network_guard": {
+      "method": "PULSAR-Worker-Module, 10.6.0-/10.7.0-/10.7.1-Suiten und die beiden 10.8.0-Suiten unter dem Waechter des Volltests (Bauskript)",
+      "http_or_dns_events": 0
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (Pi-Update, Pflicht vor Dienststart) -- inklusive tests/test_v1080_architektur.py auf dem Pi",
+    "Startkontrolle: 'ai_router_settings.json: Luna-Tagesbudget 50 -> 200'; Einsatzstufe je Broker unveraendert",
+    "PULSAR in offener NY-Sitzung: quote_refreshed_at auf OFFENEN Karten; intraday_source/intraday_avg_day_volume, sobald eToro-Kerzen vorliegen (Volumenqualitaet der eToro-Aktienkerzen ist offline nicht pruefbar)",
+    "StockTwits: antwortet der Zugang wieder (18.09.: HTTP 403 auf Trending und Strom)? Bis dahin Quelle in 4-h-Pause, Zaehlwerte UNKNOWN",
+    "X: erste Bestaetigungssuche (Karte x_confirmation, Diagnose confirmations_per_day_max 8) innerhalb des 15-EUR-Monatsbudgets"
+  ]
+}

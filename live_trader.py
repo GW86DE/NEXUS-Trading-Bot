@@ -4442,6 +4442,13 @@ def run():
                     ergaenze_fuer_trades(broker, instrument_by_symbol)
                 except Exception:
                     logger.debug("Chartreihen fuer Trades nicht ergaenzt", exc_info=True)
+                # 10.8.0: 15-Minuten-Kerzen fuer aktive PULSAR-Karten (<= 5 Reihen je
+                # Zyklus, 15 min Ruhe je Reihe); PULSAR liest sie nur aus dem Speicher.
+                try:
+                    from etoro_chart_store import ergaenze_fuer_karten
+                    ergaenze_fuer_karten(broker, pulsar_core.aktive_karten_instrumente(broker, instrument_by_symbol))
+                except Exception:
+                    logger.debug("Chartreihen fuer PULSAR-Karten nicht ergaenzt", exc_info=True)
             if scanner_connection_failure or resync_required:
                 continue
 

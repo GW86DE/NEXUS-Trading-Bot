@@ -34,7 +34,7 @@ def inspect_feed(root, now):
     The returned items MUST NOT imply a complete feed when complete=False.
     Trading consumers use trading_evidence(); parse() remains the strict API.
     """
-    from news_sources import NewsItem, _clean_text, _safe_dt
+    from news_model import NewsItem, _clean_text, _safe_dt
     if now.tzinfo is None:
         raise ValueError('Nasdaq-Pruefzeit benoetigt Zeitzone')
     build = _safe_dt(root.findtext('./channel/lastBuildDate'))

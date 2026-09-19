@@ -164,6 +164,9 @@ def snapshot() -> dict:
             "luna_model": str(router.get("luna_model") or "gpt-5.6-luna"),
             "terra_model": str(router.get("terra_model") or "gpt-5.6-terra"),
             "max_cost_per_day_usd": float(router.get("max_cost_per_day_usd", 0.50)),
+            # 10.8.0: Luna-Tagesbudget als Feld (vorher nur per nexus_setup oder Datei).
+            "luna_max_calls_per_day": int(router.get("luna_max_calls_per_day",
+                getattr(config, "AI_LUNA_MAX_CALLS_PER_DAY", 200)) or 0),
         },
         # GPT-Second-Opinion: nur beratend, ohne Wartestatus/Orderfreigabe.
         "second_opinion": {
@@ -381,6 +384,9 @@ def save(payload: dict) -> dict:
         key: openai[key] for key in ("luna_model", "terra_model", "max_cost_per_day_usd")
         if key in openai
     }
+    if "luna_max_calls_per_day" in openai:
+        # Ganzzahl, nie negativ; 0 = Luna aus. Der USD-Deckel bleibt unabhaengig davon.
+        router["luna_max_calls_per_day"] = max(0, min(5000, int(openai["luna_max_calls_per_day"] or 0)))
     if "enabled" in openai:
         router["enabled"] = bool(openai["enabled"])
     if router:

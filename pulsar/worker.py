@@ -209,7 +209,8 @@ def gather_market(symbol, *, profile_evidence=None):
     if current["mode"] != "AUS" and current.get("stocktwits"):
         try:
             from .stocktwits import stream as stocktwits_stream
-            packet["stocktwits"] = stocktwits_stream(symbol)
+            # 10.8.0: aktive Karten (Ausloeser/Hype-Kandidat) alle 15 min statt je Stunde.
+            packet["stocktwits"] = stocktwits_stream(symbol, active=symbol in research.aktive_symbole())
         except Exception as exc:
             packet["errors"].append("StockTwits: " + str(exc)[:180])
     if current["mode"] != "AUS" and current.get("finra"):
@@ -332,10 +333,16 @@ def build_card(attention, market, tradestie=None, *, now=None):
                               "previous_short_shares", "average_daily_volume", "days_to_cover", "market")}}
         si_source["id"] = _source_id(si_source)
         sources.append(si_source)
-    from .volume_watch import from_quote
+    from .volume_watch import from_quote, from_hourly, intraday_from_store, INTRADAY_METHOD
     quote_data = next((s.get("data") for s in sources if isinstance(s, dict) and s.get("provider") == "FMP"
                        and s.get("kind") == "quote" and isinstance(s.get("data"), dict)), None)
-    volume = from_quote(quote_data, now=now)
+    # 10.8.0: 15-Minuten-Kerzen von eToro (aktive Karten, vom Kern gesichert) tragen
+    # Volumen UND Kursbestaetigung; der Quote ist der Rueckfall. Ohne Reihe: wie bisher.
+    etoro_intraday = intraday_from_store(symbol, now=now) if not market.get("intraday") else \
+        {"rows": [], "intraday": [], "fresh": False, "saved_at": None, "source": "FMP", "avg_day_volume": None}
+    volume = from_hourly(etoro_intraday["rows"], now=now, method=INTRADAY_METHOD) if etoro_intraday["fresh"] else None
+    if not volume or volume.get("status") != "OK":
+        volume = from_quote(quote_data, now=now)
     seed_volume = attention.get("volume_discovery") or (attention if attention.get("source") == "volume_watch" else None)
     if volume.get("status") != "OK" and seed_volume and seed_volume.get("rvol") is not None:
         volume = {"status": "OK", "rvol": seed_volume["rvol"], "gain": seed_volume.get("gain"),
@@ -351,7 +358,8 @@ def build_card(attention, market, tradestie=None, *, now=None):
                    and str(r["date"])[:10] < today],
                   key=lambda r: r["date"])
     intraday = []
-    for row in market.get("intraday") or []:
+    intraday_source = "FMP" if market.get("intraday") else etoro_intraday["source"] if etoro_intraday["intraday"] else "FMP"
+    for row in market.get("intraday") or etoro_intraday["intraday"]:
         if not isinstance(row, dict):
             continue
         try:
@@ -462,7 +470,9 @@ def build_card(attention, market, tradestie=None, *, now=None):
         "correlated_sources": bool(tradestie), "market": {"price": price, "market_cap": cap,
             "turnover_usd": turnover, "currency": currency or None, "changes": changes,
             "daily_metrics": market.get("daily_metrics", {})},
-        "bars": bars, "intraday": intraday, "sector": str(profile.get("sector") or ""),
+        "bars": bars, "intraday": intraday, "intraday_source": intraday_source,
+        "intraday_saved_at": etoro_intraday.get("saved_at"), "intraday_avg_day_volume": etoro_intraday.get("avg_day_volume"),
+        "sector": str(profile.get("sector") or ""),
         "sources": sources, "evidence_hash": control.digest(packet),
         "fmp_context": fmp_context,
         "provider_status": market.get("provider_status", {}),
@@ -798,6 +808,17 @@ class Worker:
             for stage in ("precheck", "analysis", "countercheck"):
                 card[stage] = protect_review(card.get(stage) or {}, card)
             card.update(evaluate(card))
+        # 10.8.0 Punkt 1: Steht Kurs- oder Volumenbestaetigung auf OFFEN, holt PULSAR
+        # in offener NY-Sitzung EINEN frischen FMP-Quote je Karte (hoechstens fuenf
+        # je Zyklus) und bewertet neu -- statt bis zum naechsten Zyklus zu warten.
+        for card in refresh_quotes(cards, markets):
+            apply_text(card, card.get("precheck") or {}, "luna")
+            for stage in ("precheck", "analysis", "countercheck"):
+                card[stage] = protect_review(card.get(stage) or {}, card)
+            card.update(evaluate(card))
+        # 10.8.0 Punkt 3: Ausloeser mit genau einer Bestaetigung im Einstiegsfenster ->
+        # sofort EINE X-Bestaetigungssuche anfordern (der X-Worker fuehrt sie aus).
+        request_x_confirmations(cards)
         cards = [research.save_assessment(r) for r in cards]
         # 10.5.0 Vorwaertsmessung: jeder Ausloeser wird mit Kurs festgehalten,
         # unabhaengig davon, ob gehandelt wird. Fehler beruehren die Karten nicht.
@@ -824,6 +845,120 @@ class Worker:
             "errors": errors, "observed_at": time.time(), "count": len(cards),
             "schedule": scan_schedule(self.last_cycle)}, 3600)
         control.heartbeat(self.session)
+
+
+QUOTE_REFRESH_MAX_CARDS = 5
+QUOTE_REFRESH_MAX_AGE = 120
+
+
+def _quote_offen(card):
+    """Kurs- oder Volumenbestaetigung OFFEN bei vorhandenem Ausloeser."""
+    checks = {c.get("name"): c.get("status") for c in card.get("checks") or []}
+    return bool((card.get("hype") or {}).get("trigger")) and (
+        checks.get("kursbestaetigung") == "OFFEN" or checks.get("volumen") == "OFFEN")
+
+
+def refresh_quotes(cards, markets, *, now=None):
+    """Punkt 1 (10.8.0): frischen FMP-Quote fuer OFFENE Karten in offener Sitzung nachladen.
+
+    Nur wenn die NY-Sitzung laeuft (sonst gibt es keinen neuen Stand), nur fuer
+    Karten mit Ausloeser und OFFENER Kurs-/Volumenbestaetigung, hoechstens
+    ``QUOTE_REFRESH_MAX_CARDS`` je Zyklus, ein Abruf je Karte. Ein Quote, der
+    schon juenger als zwei Minuten ist, wird nicht erneut abgerufen. Liefert
+    die neu gebauten Karten (Aufrufer bewertet sie neu). Fehler lassen die
+    Karte unveraendert; es wird nichts erfunden.
+    """
+    from .volume_watch import session_fraction
+    now = time.time() if now is None else now
+    fraction = session_fraction(now)
+    if fraction is None or not 0 < fraction < 1:
+        return []
+    if control.settings()["mode"] == "AUS":
+        return []
+    import fmp_reference
+    client = fmp_reference.client()
+    if not client.konfiguriert:
+        return []
+    from fmp_service import consumer
+    refreshed = []
+    with consumer("pulsar"):
+        for card in cards:
+            if len(refreshed) >= QUOTE_REFRESH_MAX_CARDS:
+                break
+            symbol = card.get("symbol")
+            market = markets.get(symbol)
+            if not market or not _quote_offen(card):
+                continue
+            try:
+                value = client.quote(symbol, max_age=QUOTE_REFRESH_MAX_AGE)
+                hit = client.cached_source("/quote", {"symbol": symbol})
+                stamp = (hit or {}).get("saved", 0)
+                if not stamp:
+                    raise RuntimeError("FMP-Abrufzeit nicht belegt")
+                source = {"provider": "FMP", "kind": "quote", "symbol": symbol, "observed_at": stamp,
+                          "data": value, "url": "https://financialmodelingprep.com/stable/quote"}
+                source["id"] = _source_id(source)
+                market["sources"] = [s for s in market.get("sources") or []
+                                     if not (isinstance(s, dict) and s.get("provider") == "FMP" and s.get("kind") == "quote")]
+                market["sources"].append(source)
+                market["quote"] = value
+                updated = build_card(card["attention"], market, card.get("tradestie"), now=now)
+                updated.update(attention_rank=card.get("attention_rank"), precheck=card.get("precheck") or {},
+                               instrument_type_evidence=card.get("instrument_type_evidence", {}))
+                for stage in ("analysis", "countercheck"):
+                    if card.get(stage):
+                        updated[stage] = card[stage]
+                updated["quote_refreshed_at"] = now
+                card.update(updated)
+                refreshed.append(card)
+            except Exception as exc:
+                card.setdefault("errors", []).append("Quote-Nachladen: " + str(exc)[:160])
+                LOG.info("PULSAR-Quote fuer %s nicht nachgeladen: %s", symbol, exc)
+    return refreshed
+
+
+def request_x_confirmations(cards, *, now=None):
+    """Punkt 3 (10.8.0): X-Bestaetigungssuche fuer Ausloeser mit genau EINER Bestaetigung.
+
+    Bedingungen: Karte im Zustand AUSLOESER, genau eine der drei
+    Bestaetigungen belegt, Einstiegsfenster offen, X eingerichtet, noch keine
+    Anforderung fuer das Symbol heute. Die Suche selbst fuehrt der X-Worker
+    ueber das bestehende Budget aus (market_intelligence.candidate_research);
+    ihr Ergebnis zaehlt im naechsten Zyklus als zweite Social-Familie -- nie
+    als eigene Bestaetigung, nie als Ausloeser.
+    """
+    now = time.time() if now is None else now
+    try:
+        from .core import entry_window
+        if not entry_window():
+            return []
+    except Exception:
+        return []
+    from market_intelligence import request_confirmation
+    requested = []
+    for card in cards:
+        hype = card.get("hype") or {}
+        if card.get("state") != "AUSLOESER" or int(hype.get("confirmed_count") or 0) != 1:
+            continue
+        families = (hype.get("confirmations") or {}).get("zweite_social_familie", {}).get("families") or []
+        if "X" in families:
+            continue
+        symbol = card.get("symbol")
+        key = "x_confirm:" + str(symbol)
+        if research.cached(key, now=now):
+            continue
+        profile_source = next((s for s in card.get("sources") or [] if isinstance(s, dict)
+                               and s.get("provider") == "FMP" and s.get("kind") == "profile"), None)
+        try:
+            result = request_confirmation(symbol, profile_source, now=now)
+        except Exception as exc:
+            LOG.info("X-Bestaetigungssuche fuer %s nicht angefordert: %s", symbol, exc)
+            continue
+        research.cache_put(key, {"at": now, "result": result}, 86400, now=now)
+        card.setdefault("x_confirmation", {}).update(requested_at=now, **result)
+        if result.get("accepted"):
+            requested.append(symbol)
+    return requested
 
 
 def update_measurements(*, now=None):

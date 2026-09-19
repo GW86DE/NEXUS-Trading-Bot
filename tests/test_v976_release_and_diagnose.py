@@ -68,7 +68,7 @@ def test_actual_release_has_no_mutable_source_files():
     manifest = json.loads((root/'MANIFEST_SHA256.json').read_text())
     assert not set(manifest).intersection(PERSISTENT_FILES)
     assert not (root/'bot_zustand.txt').exists()
-    assert (root/'VERSION.txt').read_text().strip() == '10.7.1-NEXUS'
+    assert (root/'VERSION.txt').read_text().strip() == '10.8.0-NEXUS'
 
 
 def test_service_version_comes_from_current_release(setup, tmp_path, monkeypatch):

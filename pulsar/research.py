@@ -24,8 +24,10 @@ URLS = {"apewisdom": "https://apewisdom.io/api/v1.0/filter/all-stocks",
         # 10.5.0: zweite Social-Familie; eigener Abrufweg in pulsar/stocktwits.py.
         "stocktwits": "https://api.stocktwits.com/api/2/trending/symbols.json"}
 TICKER = re.compile(r"^[A-Z][A-Z0-9]{0,9}(?:[.-][A-Z0-9]{1,4})?$")
+# 10.8.0: StockTwits 150 -> 400 je Tag (aktive Karten alle 15 min, Seiten bei
+# Untergrenze), weiter deutlich unter dem Anbieterlimit von 200 je Stunde.
 LIMITS = {"social": (80, 400), "data": (300, 1500), "web_search": (4, 16), "web_jobs": (2, 8),
-          "stocktwits": (150, 800), "finra": (40, 200)}
+          "stocktwits": (400, 2000), "finra": (40, 200)}
 APE_FILTERS = {"all-stocks", "stocks", "wallstreetbets", "investing", "options"}
 
 
@@ -458,6 +460,15 @@ def save_assessment(card, *, now=None):
 def latest_cards(limit=5):
     latest = cached("top5", stale=True)
     return (latest["data"] if latest else [])[:max(1, min(int(limit), 5))]
+
+
+AKTIVE_ZUSTAENDE = ("AUSLOESER", "HYPE_KANDIDAT")
+
+
+def aktive_symbole():
+    """Symbole der aktiven Karten (Ausloeser/Hype-Kandidat) der juengsten Bewertung (10.8.0)."""
+    return {str(c.get("symbol") or "").upper() for c in latest_cards()
+            if c.get("state") in AKTIVE_ZUSTAENDE and c.get("symbol")}
 
 
 def reserve_enrichment(symbol, *, now=None):

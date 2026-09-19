@@ -90,14 +90,14 @@ def approved_stock_rows() -> list[dict]:
 def _katalog_index() -> dict:
     """Symbol -> Metadaten aus dem kanonischen Aktienkatalog (v9.3).
 
-    Absichtlich traege importiert: config importiert dieses Modul selbst.
+    10.8.0 (Schritt 2): Der Katalog wird aus dem bereits geladenen config
+    gelesen, ohne config zu importieren. config baut STOCK_SYMBOLS ueber
+    dieses Modul auf -- der frueher hier stehende ``import config`` war die
+    Rueckrichtung desselben Import-Zyklus. Ist config (noch) nicht geladen,
+    ist der Index leer, genau wie bei einem fehlenden Katalog.
     """
-    try:
-        from universe_catalog import expand_stocks  # noqa: F401
-        import config
-        rows = getattr(config, "STOCK_CATALOG_SYMBOLS", []) or []
-    except Exception:
-        return {}
+    import sys
+    rows = getattr(sys.modules.get("config"), "STOCK_CATALOG_SYMBOLS", None) or []
     return {str(x.get("symbol", "")).upper(): dict(x) for x in rows
             if isinstance(x, dict) and x.get("symbol")}
 

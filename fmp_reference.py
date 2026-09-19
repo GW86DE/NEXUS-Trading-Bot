@@ -49,10 +49,10 @@ class FMPReferenz:
 
     # -- Kernaufruf ---------------------------------------------------------
     def _get(self, pfad: str, params: Optional[dict] = None, *,
-             purpose: str = "automatic") -> Any:
+             purpose: str = "automatic", max_age: Optional[float] = None) -> Any:
         try:
             data = request(self.store, self.session, self._key, pfad, params,
-                           timeout=self.timeout, purpose=purpose)
+                           timeout=self.timeout, purpose=purpose, max_age=max_age)
             self._merke(True, "FMP-Abruf oder gemeinsamer Cache verfuegbar")
             return data
         except RuntimeError as exc:
@@ -88,16 +88,17 @@ class FMPReferenz:
                          purpose=purpose)
         return list(rows or []) if isinstance(rows, list) else []
 
-    def _single(self, path, symbol, purpose):
+    def _single(self, path, symbol, purpose, max_age=None):
         symbol = str(symbol).strip().upper()
-        rows = self._get(path, {"symbol": symbol}, purpose=purpose)
+        rows = self._get(path, {"symbol": symbol}, purpose=purpose, max_age=max_age)
         row = rows[0] if isinstance(rows, list) and len(rows) == 1 else rows if isinstance(rows, dict) else {}
         if not isinstance(row, dict) or row.get("symbol") != symbol:
             raise RuntimeError("FMP: Antwort nicht eindeutig dem angefragten Ticker zugeordnet")
         return dict(row)
 
-    def quote(self, symbol: str, *, purpose: str = "automatic") -> dict:
-        return self._single("/quote", symbol, purpose)
+    def quote(self, symbol: str, *, purpose: str = "automatic", max_age: Optional[float] = None) -> dict:
+        """Aktueller Quote; ``max_age`` (Sekunden) erzwingt einen frischeren Stand als der Cache (10.8.0)."""
+        return self._single("/quote", symbol, purpose, max_age=max_age)
 
     def profil(self, symbol: str, *, purpose: str = "automatic") -> dict:
         return self._single("/profile", symbol, purpose)

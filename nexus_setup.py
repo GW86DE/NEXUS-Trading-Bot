@@ -289,7 +289,7 @@ def ai_einrichten() -> None:
     print("\n-- Budget --")
     router["enabled"] = _ja_nein("KI-Router aktivieren?", bool(router.get("enabled", True)))
     router["luna_max_calls_per_day"] = int(_frage(
-        "Luna-Anfragen pro Tag", str(router.get("luna_max_calls_per_day", 40))))
+        "Luna-Anfragen pro Tag", str(router.get("luna_max_calls_per_day", 200))))
     router["terra_max_calls_per_day"] = int(_frage(
         "Terra-Anfragen pro Tag", str(router.get("terra_max_calls_per_day", 8))))
     router["max_cost_per_day_usd"] = float(_frage(

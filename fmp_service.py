@@ -298,7 +298,7 @@ def _retry(response,default=60):
     return max(1,min(86400,seconds)) if math.isfinite(seconds) else default
 
 
-def request(store, session, key, path, params=None, *, timeout=12, purpose='automatic', origin=None, cache=True):
+def request(store, session, key, path, params=None, *, timeout=12, purpose='automatic', origin=None, cache=True, max_age=None):
     if not key:raise RuntimeError('FMP API-Key fehlt')
     query=dict(params or {})
     if 'apikey' in query or path not in ENDPOINTS:raise FMPTarifFehlt('FMP: Datenart im Free-/Starter-Profil nicht freigegeben')
@@ -309,6 +309,8 @@ def request(store, session, key, path, params=None, *, timeout=12, purpose='auto
         if not store.permits(path,probe=purpose=='manual'):
             raise FMPTarifFehlt('FMP '+path+': im Tarif nicht verfuegbar oder Berechtigungspruefung pausiert')
         hit=store.cached(cachekey) if cache else None
+        if hit and max_age is not None and time.time()-float(hit.get('saved') or 0)>float(max_age):
+            hit=None  # 10.8.0: Aufrufer verlangt einen frischeren Stand (PULSAR-Quote bei OFFEN)
         if hit:
             store.metric('cache_hits');return hit['data']
         cap,ttl=ENDPOINTS[path]
@@ -375,11 +377,5 @@ def request(store, session, key, path, params=None, *, timeout=12, purpose='auto
             if response is not None and hasattr(response,'close'):response.close()
 
 
-def record_use(kind,symbol,facts):
-    """Optional effectiveness log; a reporting failure never changes a decision."""
-    try:
-        from fmp_reference import client
-        ref=client()
-        if ref.konfiguriert:ref.store.record_use(kind,symbol,facts)
-    except Exception as exc:
-        __import__('logging').getLogger(__name__).info('FMP-Nutzungsnachweis nicht gespeichert (%s)',type(exc).__name__)
+# 10.8.0 (Schritt 2): record_use (Nutzungsnachweis ueber die gemeinsame Instanz)
+# liegt in fmp_kontext; dieses Modul greift nicht mehr nach oben (Import-Zyklus).

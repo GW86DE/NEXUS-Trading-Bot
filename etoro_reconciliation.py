@@ -1574,13 +1574,18 @@ def recover_all(broker, *, paper: bool, profile: str) -> list[dict]:
         account_fingerprint=fingerprint)
 
 
-def background_tick(broker, *, paper: bool, profile: str) -> list[dict]:
+def background_tick(broker, *, paper: bool, profile: str, nachlauf=()) -> list[dict]:
     """Ein gepaceter Hintergrundschritt ohne POST und ohne Schlafschleife.
 
     Pro Datensatz wird jeder exakte Anker hoechstens einmal gelesen. Ein
     voruebergehendes 404 terminalisiert nichts; der naechste Tick versucht es
     erneut. Sobald Order-/Fillbelege vorliegen, folgt derselbe exakte
     positionId-Abgleich wie beim Start- und Reconnect-Pfad.
+
+    10.8.0: ``nachlauf`` sind die Schritte nach der Brokerwahrheit (Storno-
+    abgleich, Gebuehrennachlauf; siehe ``etoro_nachlauf.SCHRITTE``). Der
+    Aufrufer uebergibt sie -- dieses Modul importiert sie nicht mehr selbst,
+    weil beide Schritte umgekehrt dieses Modul importieren (Import-Zyklus).
     """
     fingerprint = str(broker.account_fingerprint()
                       if callable(getattr(broker, "account_fingerprint", None)) else "")
@@ -1659,19 +1664,15 @@ def background_tick(broker, *, paper: bool, profile: str) -> list[dict]:
         resolve_accounting_gaps(domain)
     except Exception as exc:
         logger.warning("eToro-Diagnoseabgleich wartet auf dauerhafte Speicherung: %s", exc)
-    try:
-        from etoro_cancellations import process_one
-        process_one(broker)
-    except Exception as exc:
-        logger.warning("Stornoabgleich wartet weiter: %s", type(exc).__name__)
-    try:
-        from etoro_fee_recovery import recover_one
-        recovered = recover_one(broker, paper=paper, profile=profile,
-                                position_snapshot=position_snapshot)
-        if recovered:
-            changed.append(recovered)
-    except Exception as exc:
-        logger.warning("eToro-Gebuehrennachlauf wartet weiter: %s", type(exc).__name__)
+    for schritt in nachlauf:
+        # Jeder Schritt faengt seine Fehler selbst (etoro_nachlauf); ein
+        # unerwarteter Fehler eines Schritts darf den Tick trotzdem nicht reissen.
+        try:
+            changed.extend(schritt(broker, paper=paper, profile=profile,
+                                   position_snapshot=position_snapshot) or [])
+        except Exception as exc:
+            logger.warning("eToro-Nachlaufschritt %s wartet weiter: %s",
+                           getattr(schritt, "__name__", "?"), type(exc).__name__)
     return changed
 
 
