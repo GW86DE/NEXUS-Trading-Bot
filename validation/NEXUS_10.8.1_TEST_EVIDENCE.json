@@ -1,0 +1,97 @@
+{
+  "release": "10.8.1-NEXUS",
+  "build": "10.8.1-RESTZEILEN-SCHNAPPSCHUSS-UND-KERZENCURSOR",
+  "based_on": "10.8.0-NEXUS (auf dem Pi installiert 19.09.2026 05:46 Uhr; Startkontrolle erfolgreich, 1007 Dateien MATCH)",
+  "package_revision": 1,
+  "evidence_scope": "PACKAGING_OFFLINE_CHECKS",
+  "approval": "Georg 19.09.2026: '10.8.1 Bestaetigt' auf den Vorschlag 'kein Umbau, sechs Korrekturen an der Wurzel' aus NEXUS_Analyse_OKX_Sperre_2026-09-19.md",
+  "trigger": "Diagnosepaket 19.09.2026 12:01 UTC ('OKX ist wieder gesperrt'): XRP-Restzeile 85 mit Bestandsbeleg 'beobachtet 0' aus einem nicht lesbaren Schnappschuss (05:20 UTC), kein Rueckweg fuer Restzeilen, Staubregel am Gesamtbestand, ETH-Restzeile 86 mit LedgerZuordnungUnklar je Takt, XRP 1055 Ablehnungen in 2,5 h, Journal-Spiegel 833 MB",
+  "packaging_environment": {
+    "os": "Windows 11 x86_64",
+    "python": "3.14.7",
+    "node": "v18.4.0 (PyPI nodejs-bin) fuer die Frontendsuite"
+  },
+  "architecture_baseline": {
+    "file": "validation/ARCHITEKTUR_BASELINE.json",
+    "version": "10.8.1",
+    "after": {"modules": 336, "edges": 1092, "cycle_components": 2, "cycle_modules": 21, "largest_component": 11,
+              "layer_violations": 93, "adapter_to_core_edges": 6, "webui_to_broker_edges": 0, "pulsar_outward_edges": 35,
+              "modules_over_1500_lines": 9, "fan_out": {"live_trader": 82, "crypto_engine": 48, "webui.app": 31}},
+    "diff_to_10_8_0": {"edges": "+2 (okx_accounting -> decision_analytics fuer db_pfad; settings_migration -> config)",
+                       "crypto_engine_lines": "5939 -> 6228 (+4,9 %, innerhalb der +5 %-Toleranz; Baseline nachgezogen)",
+                       "cycles_violations": "unveraendert"}
+  },
+  "checks": {
+    "static_hygiene_full": {
+      "method": "volltest._static_hygiene() komplett auf frischem Spiegel der versionierten Arbeitskopie",
+      "issues": 0
+    },
+    "release_checklist": {"missing_required_files": 0, "findings": 0},
+    "node_frontend_suite_local": {"tests": 30, "passed": 30, "failed": 0, "note": "keine JS-Aenderung in 10.8.1"},
+    "new_suite_restzeilen": {
+      "module": "tests/test_v1081_restzeilen.py",
+      "tests": 31,
+      "passed": 31,
+      "belegt": [
+        "Fix 1: nicht lesbarer Guthabenstand bricht den Takt ab (kein Ledgerabgleich, keine Fehlmessung, kein Beleg, kein gesperrter Coin, Bereitschaft 'reconciliation' offen); positionen()-Fehler ebenso; vollstaendiger Takt gibt frei; leerer gueltiger Schnappschuss bleibt Messung",
+        "Fix 2: Ledgerzeile ohne Position -- 1 Messung nichts, 2 in 9 s nichts, 2 mit 31 s Beleg + BROKER_STATE_UNKNOWN (Zeile offen, Coin gesperrt); Wiedersicht setzt zurueck; Frist 0 verlangt zwei Messungen",
+        "Fix 3: Restzeile mit offenem Beleg heilt nach zwei Messungen >= 120 s (BALANCE_RESTORED:...:ledgerzeile;snapshots=2), Coin frei, Rest als RESIDUAL belegt abgeschlossen ohne erfundenen Verkauf; 9 s nicht; halbe Botmenge nicht; pending_balance_gap liest nur",
+        "Fix 4: Staubregel misst die Restmenge (0,001765 SUI bei 5.758 SUI Fremdbestand); verkaeuflicher Rest bleibt RESIDUAL_EXPOSURE und heilt nur den Beleg",
+        "Fix 5: EXIT anderer Linie nicht gebucht; fremd gebundener Fill vor dem Versuch ausgeschlossen (gebuchte_exit_fills); abgelehnte Buchung einmal ohne Traceback gewarnt, gemerkt, nicht wiederholt",
+        "Fix 6: _abschluss liefert decision_id/vor_signal; Vor-Signal-Sperre setzt den Kerzencursor (zweiter Scan derselben Kerze entscheidet nichts); Nach-Signal-Sperre und fehlende decision_id nicht; Journal-Spiegel rotiert ab Obergrenze (Minimum 1 MB); Migration kuerzt auf ganze Zeilen; Kopierweg uebernimmt nur den Schwanz; Quelle unangetastet; Verdrahtung und Diagnose-AUDITS",
+        "Pins: DECISION_JOURNAL_MAX_MB 20, OKX_POSITION_MISSING_CONFIRM_SECONDS 30, OKX_POSITION_RESTORED_CONFIRM_SECONDS 120; Engine-Zaehler vorhanden"
+      ]
+    },
+    "adjusted_tests": {
+      "tests/test_v1017_okx_boundary.py::test_ledger_only_missing_never_closed": "zwei Messungen mit Frist 0 (Aussage 'nie geschlossen' unveraendert)",
+      "tests/test_v1080_architektur.py": "Baseline-Versionspin 10.8.1",
+      "tests/test_v1019_report_repairs.py, tests/test_v976_release_and_diagnose.py": "Versionspins 10.8.1"
+    },
+    "full_isolated_run_1": {
+      "date": "2026-09-19",
+      "method": "232 Module je in eigenem Prozess (6 parallel), Netzwerkwaechter aktiv, Node auf PATH; Code fertig, Pins/Wrapper/Schichtenkarte/Baseline 10.8.1, vor den Begleitdokumenten (30 neue Tests)",
+      "modules": 232,
+      "modules_green": 193,
+      "passed": 3321,
+      "failed": 60,
+      "errors": 7,
+      "skipped": 9,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": 13,
+      "red_modules_without_network_event": 26,
+      "diff_to_10_8_0_run_2": {"neu_rot": [], "neu_gruen": []},
+      "note": "3321 = 3291 (10.8.0) + 30 neue Tests. Alle 26 roten Module sind die dokumentierten Windows-Artefakte (fcntl, flock, Symlinks, systemd, Installerpfade), identisch mit 10.8.0."
+    },
+    "full_isolated_run_2": {
+      "date": "2026-09-19",
+      "method": "Wiederholung auf dem finalen versionierten Baum (Begleitdokumente, Kopierweg der Journal-Migration, 31 neue Tests)",
+      "modules": 232,
+      "modules_green": 193,
+      "passed": 3322,
+      "failed": 60,
+      "errors": 7,
+      "skipped": 9,
+      "http_or_dns_events": 0,
+      "socket_only_events_windows_socketpair": 13,
+      "red_modules_without_network_event": 26,
+      "diff_to_run_1": {"neu_rot": [], "neu_gruen": []},
+      "diff_to_10_8_0_run_2": {"neu_rot": [], "neu_gruen": []},
+      "note": "3322 = 3291 (10.8.0) + 31 neue Tests. Alle 26 roten Module sind die dokumentierten Windows-Artefakte (fcntl, flock, Symlinks, systemd, Installerpfade, Manifest nur zur Bauzeit), identisch mit 10.8.0 und Lauf 1."
+    },
+    "per_test_comparison_with_posix_shims": {
+      "method": "Bauskript: alle Module je Prozess mit fcntl/pwd/grp-Shims, junitxml, Vergleich JE TEST gegen NEXUS_10.8.0_Quellpaket.zip; neu rote Tests werden einmal allein wiederholt; bleibt einer rot, bricht der Bau ab",
+      "result": "siehe Bauprotokoll (Zeile 'Je-Test-Vergleich OK': alt = 10.8.0-Paket, neu = 10.8.1; neu rot allein muss 0 sein)"
+    },
+    "network_guard": {
+      "method": "PULSAR-Worker-Module, 10.6.0-/10.7.0-/10.7.1-/10.8.0-Suiten und tests/test_v1081_restzeilen.py unter dem Waechter des Volltests (Bauskript)",
+      "http_or_dns_events": 0
+    }
+  },
+  "pending_on_target": [
+    "volltest.py vollstaendig (Pi-Update, Pflicht vor Dienststart) -- inklusive tests/test_v1081_restzeilen.py auf dem Pi",
+    "Migration: Systemprotokoll 'decision_journal.jsonl: nur die letzten ... MB von 833 MB uebernommen'",
+    "Trade 85: Bestandsbeleg RESOLVED (BALANCE_RESTORED:...:ledgerzeile;snapshots=2) nach >= 120 s, Telegram-Meldung, XRP nicht mehr in blocked_symbols; Staubabschluss der Zeile, sofern die Abstammungslinie von Trade 81 belegt ist",
+    "ETH-Reste 86/91: Staubklassifizierung oder RESIDUAL_EXPOSURE mit einmaligem Grund im Log; kein 'konnte nicht ins Ledger geschrieben werden' mehr je Takt",
+    "Entscheidungsjournal: XRP hoechstens eine BLOCKED/NO_SIGNAL-Entscheidung je 5-Minuten-Kerze; Spiegel <= 20 MB"
+  ]
+}

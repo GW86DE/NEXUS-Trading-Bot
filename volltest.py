@@ -39,6 +39,10 @@ HYGIENE_EXCLUDED_DIRS = {
 }
 
 REQUIRED_RELEASE_FILES = (
+    "CHANGELOG_v10.8.1_NEXUS.txt", "INSTALLATIONSANLEITUNG_NEXUS_10.8.1_DE.md",
+    "NEXUS_10.8.1_IMPLEMENTATION_REPORT.md", "NEXUS_10.8.1_Pruefbericht.md",
+    "NEXUS_Analyse_OKX_Sperre_2026-09-19.md", "tests/test_v1081_restzeilen.py",
+    "NEXUS_10_8_1_Diagnose.py", "NEXUS_10.8.1_Diagnose_Starten.sh",
     "CHANGELOG_v10.8.0_NEXUS.txt", "INSTALLATIONSANLEITUNG_NEXUS_10.8.0_DE.md",
     "NEXUS_10.8.0_IMPLEMENTATION_REPORT.md", "NEXUS_10.8.0_Pruefbericht.md",
     "NEXUS_Architektur_Audit_2026-09-19.md", "validation/ARCHITEKTUR_BASELINE.json",
@@ -52,7 +56,6 @@ REQUIRED_RELEASE_FILES = (
     "news_model.py", "installer_host.py", "risk_basis_status.py", "risk_grenzen.py",
     "etoro_nachlauf.py", "etoro_protection_readback.py", "fmp_kontext.py",
     "tests/test_v1080_architektur.py", "tests/test_v1080_pulsar_bestaetigung.py",
-    "NEXUS_10_8_0_Diagnose.py", "NEXUS_10.8.0_Diagnose_Starten.sh",
     "CHANGELOG_v10.7.1_NEXUS.txt", "INSTALLATIONSANLEITUNG_NEXUS_10.7.1_DE.md",
     "NEXUS_10.7.1_IMPLEMENTATION_REPORT.md", "NEXUS_10.7.1_Pruefbericht.md",
     "tests/test_v1071_sperren_aufloesung.py",

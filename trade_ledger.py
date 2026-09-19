@@ -480,6 +480,30 @@ def _canonical_exit_event_rows(con, *, broker: str, account: str,
     return [rows_by_id[key] for key in sorted(rows_by_id)]
 
 
+def gebuchte_exit_fills(*, broker: str, account: str, instrument: str,
+                        fill_ids: list[str], paper: bool = True) -> dict[str, int]:
+    """10.8.1: ``{fill_id: trade_id}`` fuer bereits verbuchte Exit-Fills.
+
+    Der Positionsabgleich fragt VOR einer Historienbuchung, ob ein
+    Verkaufsfill schon einer anderen Ledgerzeile gehoert. Bis 10.8.0 fiel das
+    erst in ``trade_close`` auf -- als ``LedgerZuordnungUnklar`` mit
+    Traceback, in jedem Takt aufs Neue (ETH-Restzeile 86 gegen den Verkauf
+    von Trade 90 am 19.09.2026). Reine Leseabfrage ueber denselben
+    kanonischen Anker (Broker, Konto, Instrument, Umgebung, Fill-ID).
+    """
+    ids = [str(x) for x in (fill_ids or []) if str(x)]
+    if not ids:
+        return {}
+    init_ledger()
+    with _LOCK, closing(_connect()) as con:
+        rows = _canonical_exit_event_rows(
+            con, broker=str(broker or "").lower(), account=str(account or "")[:64],
+            instrument=str(instrument or "")[:160], fill_ids=ids, event_id="",
+            paper=bool(paper))
+    return {str(r.get("fill_id") or ""): int(r.get("trade_id") or 0)
+            for r in rows if str(r.get("fill_id") or "") and r.get("trade_id")}
+
+
 class LedgerZuordnungUnklar(RuntimeError):
     """Der Verkauf ist echt, laesst sich aber keiner Ledgerzeile zuordnen.
 

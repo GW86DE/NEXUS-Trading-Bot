@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import shutil
 import sqlite3
 from pathlib import Path
@@ -193,8 +194,40 @@ def _kopiere(name: str, src: Path, dst: Path) -> None:
                 dst_con.close()
         finally:
             src_con.close()
+    elif name == _journal_name() and src.stat().st_size > _journal_obergrenze():
+        # 10.8.1: Vom JSONL-Spiegel des Entscheidungsjournals wandern nur die
+        # letzten ganzen Zeilen mit (833 MB am 19.09.2026 auf dem Pi). Die
+        # SQLite-Datenbank ist die vollstaendige Quelle; die Quelle im alten
+        # Ordner bleibt unangetastet.
+        dst.write_bytes(_journal_schwanz(src, _journal_obergrenze()))
     else:
         shutil.copy2(src, dst)
+
+
+def _journal_name() -> str:
+    import config as _cfg
+    return str(getattr(_cfg, "DECISION_JOURNAL_FILE", "decision_journal.jsonl"))
+
+
+def _journal_obergrenze() -> int:
+    """Obergrenze des JSONL-Spiegels in Bytes (``DECISION_JOURNAL_MAX_MB``, mind. 1 MB)."""
+    import config as _cfg
+    try:
+        return int(max(1.0, float(getattr(_cfg, "DECISION_JOURNAL_MAX_MB", 20) or 20)) * 1024 * 1024)
+    except (TypeError, ValueError):
+        return 20 * 1024 * 1024
+
+
+def _journal_schwanz(src: Path, limit: int) -> bytes:
+    """Die letzten ganzen Zeilen einer JSONL-Datei, hoechstens ``limit`` Bytes."""
+    size = src.stat().st_size
+    with src.open("rb") as stream:
+        stream.seek(max(0, size - limit))
+        rest = stream.read()
+    if size <= limit:
+        return rest
+    cut = rest.find(b"\n")
+    return rest[cut + 1:] if cut >= 0 else b""
 
 
 STRICT_STATE_FILES = (
@@ -340,6 +373,7 @@ def migrate_from(source: Path, target: Path = ROOT, overwrite: bool = False, *, 
 
     _migrate_v831_crypto_strategy_evidence(source, target, copied, skipped)
     _migrate_v1080_luna_tagesbudget(target, copied, skipped)
+    _migrate_v1081_journal_kompakt(source, target, copied, skipped)
     _force_paper(target)
     _migration_report(target, source, copied, skipped)
     if strict and failed:
@@ -445,6 +479,41 @@ def _migrate_v1080_luna_tagesbudget(target: Path, copied: list[str], skipped: li
     except Exception as exc:
         logging.getLogger(__name__).warning("Luna-Tagesbudget nicht angehoben: %s", exc)
         skipped.append("ai_router_settings.json: Luna-Tagesbudget")
+
+
+def _migrate_v1081_journal_kompakt(source: Path, target: Path,
+                                   copied: list[str], skipped: list[str]) -> None:
+    """Haelt den uebernommenen JSONL-Spiegel des Entscheidungsjournals klein.
+
+    10.8.1: Bis 10.8.0 wuchs ``decision_journal.jsonl`` unbegrenzt (833 MB
+    auf dem Pi am 19.09.2026). ``_kopiere`` uebernimmt seit 10.8.1 nur noch
+    die letzten ganzen Zeilen; hier wird eine trotzdem zu grosse ZIELDATEI
+    (aelterer Kopierweg, ``--source``-Wiederholung) auf ganze Zeilen
+    gekuerzt und das Ergebnis im Migrationsbericht genannt. Die Quelle im
+    alten Ordner bleibt unangetastet.
+    """
+    name = _journal_name()
+    path = Path(target) / name
+    try:
+        if not path.is_file():
+            return
+        limit = _journal_obergrenze()
+        size = path.stat().st_size
+        if size > limit:
+            tail = _journal_schwanz(path, limit)
+            tmp = path.with_suffix(path.suffix + ".kompakt")
+            tmp.write_bytes(tail)
+            os.replace(tmp, path)
+            copied.append(f"{name}: Spiegel von {size // (1024 * 1024)} MB auf "
+                          f"{len(tail) // (1024 * 1024)} MB gekuerzt")
+            return
+        quelle = Path(source) / name
+        if quelle.is_file() and quelle.stat().st_size > limit:
+            copied.append(f"{name}: nur die letzten {size // (1024 * 1024)} MB von "
+                          f"{quelle.stat().st_size // (1024 * 1024)} MB uebernommen")
+    except Exception as exc:
+        logging.getLogger(__name__).warning("Entscheidungsjournal-Spiegel nicht gekuerzt: %s", exc)
+        skipped.append(f"{name}: Spiegel nicht gekuerzt")
 
 
 def _migration_report(target: Path, source: Path, copied: list[str], skipped: list[str]) -> None:

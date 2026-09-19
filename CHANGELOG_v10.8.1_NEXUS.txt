@@ -1,0 +1,167 @@
+NEXUS 10.8.1 -- Restzeilen, Schnappschuss und Kerzencursor
+==========================================================
+Stand: 19.09.2026. Basis 10.8.0 (auf dem Pi installiert 19.09. 05:46 Uhr,
+"UPDATE UND STARTKONTROLLE ERFOLGREICH", 1007 Dateien MATCH).
+
+ANLASS
+------
+Diagnose 19.09.2026 12:01 UTC ("OKX ist wieder gesperrt"), ausfuehrlich in
+NEXUS_Analyse_OKX_Sperre_2026-09-19.md. Befund: Das OKX-Konto war NICHT
+gesperrt (handelsbereit, BTC-Position 89 geschuetzt, ETH-Trade 90 sauber
+verkauft, +0,96 EUR). Gesperrt war allein XRP, und zwar so:
+
+  05:20:10 UTC  OKX vier Minuten nicht erreichbar. Der Guthabenstand war
+                nicht lesbar; der Positionsabgleich lief mit LEEREM
+                Schnappschuss weiter. Die offene XRP-Restzeile 85 (0,0000532
+                XRP, Lot-Rest des Take-Profit-Verkaufs vom 18.09.) bekam
+                SOFORT einen Bestandsbeleg "beobachtet 0". Positionen im Buch
+                schuetzt seit 10.6.0 die Zwei-Messungen-Regel -- Ledgerzeilen
+                ohne Position schuetzte nichts.
+  05:24 UTC     Konto wieder da: 50.000,0000532 XRP. Der Beleg blieb offen,
+                weil es fuer Restzeilen keinen Rueckweg gab (10.6.0 kannte nur
+                Positionen im Buch) und die Staubregel den Rest am
+                GESAMTBESTAND (50.000 XRP = 115.000 EUR) statt an der
+                Botmenge (ein Zehntel Cent) mass.
+  10:00-12:37   XRP 1055-mal abgelehnt (alle 8 s), weil eine Sperre VOR der
+                Signalpruefung den Kerzencursor nicht setzt. Journal 833 MB.
+  ab 10:21 UTC  Nach dem ETH-Verkauf von Trade 90 hielt die aeltere
+                ETH-Restzeile 86 denselben registrierten EXIT fuer ihren
+                eigenen und lief in jedem Takt in "LedgerZuordnungUnklar" --
+                mit Traceback.
+
+Nichts davon stammt aus dem 10.8.0-Umbau; alle vier Mechanismen sind aelter.
+
+SECHS KORREKTUREN AN DER WURZEL (KEIN UMBAU)
+-------------------------------------------
+1. Ein nicht lesbarer Schnappschuss ist keine Messung (crypto_engine).
+   Schlaegt guthaben_schnappschuss() fehl (BrokerFehler), bricht der
+   Positionsabgleich den Takt ab: kein Ledgerabgleich, keine Fehlmessung,
+   kein Beleg, keine Klassifizierung, keine Freigabe. Die
+   Bereitschaftsbedingung "reconciliation" bleibt offen, bis ein
+   vollstaendiger Durchlauf sie wieder bestaetigt (Neueinstiege zu, Stops
+   und Broker-Schutz laufen im naechsten Takt weiter). Dasselbe gilt, wenn
+   positionen() selbst fehlschlaegt (bisher stiller Abbruch ohne
+   Bereitschaftsmeldung). Ein LEERER, aber gueltiger Schnappschuss bleibt
+   wie in 10.6.0 eine (erste) Messung.
+
+2. Zwei-Messungen-Regel auch fuer Ledgerzeilen ohne Position.
+   Ein Bestandsbeleg (mark_balance_gap) fuer eine offene Ledgerzeile ohne
+   Position und ohne Bestand entsteht erst nach zwei Messungen in Folge UND
+   dem Mindestalter der ersten (OKX_POSITION_MISSING_CONFIRM_SECONDS = 30 s,
+   0 = sofort, zwei Messungen bleiben Pflicht). Bis dahin: INFO-Zeile,
+   Abgleichsstatus BESTAND_FEHLT_UNBESTAETIGT, nichts gebucht, nichts
+   gesperrt. Der Zaehler _fehlender_ledger_bestand (seit 9.x nur geleert,
+   nie gezaehlt) traegt jetzt (Anzahl, erste Fehlmessung).
+
+3. Rueckweg "Bestand wieder da" fuer Ledgerzeilen (loest Trade 85).
+   Traegt eine Ledgerzeile ohne Position einen offenen Beleg und deckt der
+   Kontobestand die gebuchte Menge in zwei bestaetigten Messungen mit
+   Mindestabstand (OKX_POSITION_RESTORED_CONFIRM_SECONDS = 120 s), wird der
+   Beleg ueber resolve_balance_gap_restored geschlossen (resolution
+   "BALANCE_RESTORED:<Menge>@<Zeit>:ledgerzeile;snapshots=n"). Die Zeile
+   bleibt offen und wird weiterhin nie automatisch verkauft; der Coin ist
+   fuer Neueinstiege wieder frei. Telegram meldet die Aufloesung.
+   Im Staubpfad wird der Beleg VOR der Restklassifizierung geloest -- eine
+   geschlossene Restzeile koennte ihn nie mehr aufloesen (weder ueber den
+   Rueckweg noch ueber die Abstammungslinie, die einen Verkaufsbeleg
+   verlangt); bis dahin bleibt die Zeile RESIDUAL_EXPOSURE.
+   NEU okx_accounting.pending_balance_gap(row): nur lesen, legt keine
+   Datenbank an.
+
+4. Staubregel auf die Restmenge der Zeile.
+   rest = min(Kontobestand, gebuchte Menge); rest * Kurs <= OKX_DUST_VALUE_LIMIT
+   fuehrt zur belegten Restklassifizierung (okx_residual_inventory.classify
+   prueft weiterhin: Bestand >= Botmenge, Rest nicht verkaeuflich, Regeln
+   frisch, Abstammungslinie mit belegtem Verkauf). Ein Rest ueber der Grenze
+   bleibt RESIDUAL_EXPOSURE. Ablehnungsgruende von classify werden je Zeile
+   nur bei Aenderung als WARNING protokolliert (sonst DEBUG).
+
+5. Fill-Historie nur in der eigenen Abstammungslinie (historical_exit).
+   Eine registrierte EXIT-Order zaehlt fuer eine Ledgerzeile nur, wenn ihre
+   Metadaten zur Linie passen (entry_order_id, ersatzweise decision_id);
+   Altregistrierungen ohne Linienangabe behalten den alten Weg. Fills, die
+   laut trade_exit_events bereits einem ANDEREN Trade gehoeren, werden vor
+   dem Buchungsversuch ausgeschlossen (NEU trade_ledger.gebuchte_exit_fills).
+   Lehnt der Ledger eine Buchung fachlich ab (LedgerZuordnungUnklar), wird
+   das je (Trade, Order) gemerkt, EINMAL ohne Traceback gewarnt und nicht
+   wiederholt; technische Fehler behalten den Traceback.
+
+6. Eine Entscheidung je Kerze; Journal-Spiegel rotiert.
+   _abschluss liefert decision_id und vor_signal (keine Kerzenzeit im
+   Protokoll); scan() setzt bei einer Sperre VOR der Signalpruefung den
+   Kerzencursor auf die letzte abgeschlossene 5-Minuten-Kerze -- im
+   Freqtrade-Modus eine Entscheidung je Kerze statt alle 8 Sekunden. Eine
+   Sperre NACH der Signalpruefung (Spread, Orderbuch, Kosten) setzt wie
+   bisher keinen Cursor. Der JSONL-Spiegel des Entscheidungsjournals
+   rotiert ab DECISION_JOURNAL_MAX_MB (20) nach decision_journal.1.jsonl
+   (wie decision_sources.jsonl); die SQLite-Datenbank bleibt die
+   vollstaendige Quelle. Beim Update uebernimmt die Migration vom Spiegel
+   nur die letzten ganzen Zeilen (<= 20 MB) statt 833 MB zu kopieren; eine
+   trotzdem zu grosse Zieldatei wird nachtraeglich gekuerzt; die Quelle im
+   alten Ordner bleibt unangetastet. Die Diagnose nimmt
+   decision_journal.1.jsonl mit.
+
+WAS NACH DEM UPDATE VON SELBST PASSIERT
+---------------------------------------
+Trade 85 (XRP-Rest, Beleg PENDING seit 05:20 UTC): Im ersten Takt nach dem
+Start zaehlt die Wiedersicht (Konto >= 0,0000532 XRP); nach der zweiten
+bestaetigten Messung (>= 120 s) ist der Beleg RESOLVED, XRP ist frei, und
+der Rest wird als belegter Staub (RESIDUAL) abgeschlossen -- vorausgesetzt,
+die Abstammungslinie (Trade 81 mit Take-Profit-Fills) ist wie in der
+Diagnose vollstaendig. ETH-Reste 86 und 91 (5,26e-08 / 8,49e-08 ETH):
+dieselbe Staubklassifizierung ohne Beleg im ersten Takt, sofern ihre
+Abstammungslinie belegt ist; sonst bleiben sie RESIDUAL_EXPOSURE und der
+Grund steht einmal im Log. Kein Traceback mehr aus historical_exit fuer
+Zeile 86. XRP-Entscheidungen: eine je 5-Minuten-Kerze.
+BTC-Rest 84 bleibt EXTERNAL_OBSERVE, solange BTC-Position 89 im Buch liegt
+(bewusst unveraendert).
+
+TESTS
+-----
+NEU tests/test_v1081_restzeilen.py (31 Tests, Testdoubles, kein Netz):
+Schnappschuss-Abbruch ohne Beleg und mit offener Bereitschaft; leerer
+Schnappschuss bleibt Messung; eine/zwei Fehlmessungen (9 s / 31 s / Frist 0);
+Wiedersicht setzt den Zaehler zurueck; Restzeile mit Beleg heilt nach zwei
+Messungen (>= 120 s) und wird als Staub belegt abgeschlossen, in 9 s nicht,
+mit halber Botmenge nicht; Staubregel misst die Restmenge (5.758 SUI
+Fremdbestand); verkaeuflicher Rest bleibt Exposure und heilt nur den Beleg;
+pending_balance_gap liest nur; Exit einer anderen Linie wird nicht gebucht;
+bereits gebundener Fill wird ausgeschlossen; abgelehnte Buchung einmal
+gewarnt, gemerkt, nicht wiederholt; _abschluss-Vertrag; Vor-Signal-Sperre
+setzt den Cursor (zweiter Scan derselben Kerze entscheidet nichts),
+Nach-Signal-Sperre nicht, ohne decision_id nicht; Spiegel rotiert ab der
+Obergrenze (Minimum 1 MB); Migration kuerzt auf ganze Zeilen, Kopierweg
+uebernimmt nur den Schwanz, kleine Spiegel bleiben; Verdrahtung und Pins.
+ANGEPASST tests/test_v1017_okx_boundary.py::test_ledger_only_missing_never_closed
+(zwei Messungen mit Frist 0), tests/test_v1080_architektur.py (Baseline-
+Version 10.8.1), Versionspins in test_v1019/test_v976.
+
+ARCHITEKTUR
+-----------
+Schichtenkarte und Baseline nachgezogen (NEXUS_10_8_1_Diagnose einsortiert,
+Baseline-Version 10.8.1): 336 Module, 1.092 Kanten (+2: okx_accounting ->
+decision_analytics fuer db_pfad, settings_migration -> config), weiterhin
+2 Zyklus-Komponenten / 21 Module, 93 Schichtverstoesse, Adapter->Kern 6,
+WebUI->Broker 0, PULSAR->aussen 35, 9 Grossmodule. crypto_engine waechst um
+289 Zeilen (5.939 -> 6.228, +4,9 %, innerhalb der +5 %-Toleranz der
+10.8.0-Baseline; Baseline nachgezogen, Ausnahmeliste unveraendert) -- der Umzug der OKX-Abgleichslogik
+ist Schritt 6/7 des Migrationsplans.
+
+KONFIGURATION
+-------------
+NEU DECISION_JOURNAL_MAX_MB = 20. Unveraendert: OKX_POSITION_MISSING_CONFIRM_SECONDS
+= 30, OKX_POSITION_RESTORED_CONFIRM_SECONDS = 120, OKX_DUST_VALUE_LIMIT (1.0).
+
+DATEIEN (neu)
+-------------
+tests/test_v1081_restzeilen.py, NEXUS_Analyse_OKX_Sperre_2026-09-19.md,
+NEXUS_10_8_1_Diagnose.py, NEXUS_10.8.1_Diagnose_Starten.sh,
+validation/NEXUS_10.8.1_TEST_EVIDENCE.json, CHANGELOG/INSTALLATIONSANLEITUNG/
+IMPLEMENTATION_REPORT/Pruefbericht 10.8.1.
+
+UNVERAENDERT
+------------
+Kaufkaskade, Risikopruefung, Stops/Ziele, Sperrliste, Broker-Verhalten,
+Diagnose 1.9.0, PULSAR. Kein Verkauf wird erfunden; UNKNOWN bleibt UNKNOWN;
+Restzeilen werden nie automatisch verkauft; kein TLS-Bypass; CSP script-src
+'self'; keine Klarnamen in Diagnose-Exporten.

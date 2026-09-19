@@ -55,7 +55,8 @@ def baseline():
 # --- Schritt 0: Leitplanken -------------------------------------------------
 
 def test_baseline_traegt_version_und_stand(baseline):
-    assert baseline["version"] == "10.8.0"
+    # Die Baseline wird je Version nachgezogen (Bauwerkzeuge/baseline_erzeugen.py).
+    assert baseline["version"] == "10.8.1"
     assert baseline["stand"] == "2026-09-19"
     for k in ("zyklen", "schichtverstoesse", "grossmodule", "kennzahlen"):
         assert k in baseline

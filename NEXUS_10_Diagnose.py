@@ -65,7 +65,8 @@ INBOX_METADATA_COLUMNS = frozenset(('event_key', 'broker', 'account_fingerprint'
     'received_at_utc', 'message_type', 'kind', 'position_id', 'instrument_id', 'validation',
     'state', 'deliveries', 'processed_at_utc'))
 AUDITS = ('ai_usage_audit.jsonl', 'ai_usage_audit.1.jsonl', 'decision_journal.jsonl',
-          'decision_sources.jsonl', 'universe_audit.jsonl', 'telegram_command_audit.jsonl')
+          'decision_journal.1.jsonl', 'decision_sources.jsonl', 'universe_audit.jsonl',
+          'telegram_command_audit.jsonl')
 LOG_NAMES = ('trading_bot.log', 'trading_bot.log.1', 'trading_bot.log.2', 'nexus_update.log', 'webui.log')
 CREDENTIALS = ('okx_credentials.json', 'etoro_credentials.json', 'massive_credentials.json',
                'telegram_credentials.json', 'news_sources_credentials.json', 'openai_ai_settings.json',

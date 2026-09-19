@@ -350,6 +350,35 @@ def repair_explained_gaps(account, environment):
         return repair_gaps_explained_by_lineage(con, account, environment)
 
 
+def pending_balance_gap(row):
+    """Offener (PENDING) Bestandsbeleg dieser Ledgerzeile -- nur lesen.
+
+    10.8.1: Der Positionsabgleich muss wissen, ob eine Ledgerzeile ohne
+    Position noch einen offenen Beleg traegt, BEVOR er sie als Staubrest
+    schliesst. Eine geschlossene Zeile kann ihren Beleg ueber den Rueckweg
+    nie mehr aufloesen (``resolve_balance_gap_restored`` lehnt sie ab), und
+    ohne Verkaufsbeleg auch nicht ueber die Abstammungslinie.
+    Liefert die Belegzeile als dict oder None. Keine Schreibzugriffe, kein
+    Anlegen der Datenbank.
+    """
+    import trade_ledger as tl
+    from decision_analytics import db_pfad
+    try:
+        trade_id = int(row.get('trade_id') or 0)
+    except (TypeError, ValueError, AttributeError):
+        return None
+    if not trade_id or not db_pfad().exists():
+        return None
+    with tl._LOCK, closing(tl._connect()) as con:
+        names = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        if 'okx_balance_gaps' not in names:
+            return None
+        found = con.execute(
+            "SELECT * FROM okx_balance_gaps WHERE trade_id=? AND status='PENDING'",
+            (trade_id,)).fetchone()
+        return dict(found) if found else None
+
+
 def resolve_balance_gap_restored(row, observed, *, detail=''):
     """Close a balance gap because the holding itself is measurably back.
 

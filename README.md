@@ -1,7 +1,7 @@
 # NEXUS Trading-Bot
 
 **Regelbasierter Trading-Bot für eToro-Aktien und OKX-Spot-Krypto auf dem Raspberry Pi 5.**
-Aktueller Stand: **10.8.0** (`10.8.0-ARCHITEKTUR-LEITPLANKEN-UND-PULSAR-BESTAETIGUNG`), September 2026.
+Aktueller Stand: **10.8.1** (`10.8.1-RESTZEILEN-SCHNAPPSCHUSS-UND-KERZENCURSOR`), September 2026.
 
 NEXUS handelt standardmäßig auf **Demo-/Paper-Konten**. Er analysiert Kerzen,
 Markt- und Kontodaten, kauft nach festen Regeln mit Stop-Loss und Take-Profit
@@ -187,7 +187,7 @@ freigegebenen Benutzer. Einrichtung: `TELEGRAM_EINRICHTUNG_DE.txt`.
 ## Diagnose
 
 ```bash
-bash ~/Georg/TradingBot_v10.8.0_NEXUS/NEXUS_10.8.0_Diagnose_Starten.sh --minuten 30
+bash ~/Georg/TradingBot_v10.8.1_NEXUS/NEXUS_10.8.1_Diagnose_Starten.sh --minuten 30
 ```
 
 Sammelt Startstand, beobachtet 30 Minuten, sammelt Endstand: Zustandsdateien,
@@ -288,9 +288,10 @@ offline_test_bootstrap/  Netzwerkwächter für Tests
 
 ## Dokumentation
 
-- Aktuelle Version: `CHANGELOG_v10.8.0_NEXUS.txt`,
-  `INSTALLATIONSANLEITUNG_NEXUS_10.8.0_DE.md`,
-  `NEXUS_10.8.0_IMPLEMENTATION_REPORT.md`, `NEXUS_10.8.0_Pruefbericht.md`,
+- Aktuelle Version: `CHANGELOG_v10.8.1_NEXUS.txt`,
+  `INSTALLATIONSANLEITUNG_NEXUS_10.8.1_DE.md`,
+  `NEXUS_10.8.1_IMPLEMENTATION_REPORT.md`, `NEXUS_10.8.1_Pruefbericht.md`,
+  `NEXUS_Analyse_OKX_Sperre_2026-09-19.md` (Diagnose der XRP-Sperre, Grundlage von 10.8.1),
   `NEXUS_Architektur_Audit_2026-09-19.md` (Audit, Soll-Architektur, Migrationsplan).
 - Architektur und Hintergrund: `ARCHITEKTUR_V8_NEXUS_DE.md`,
   `FREQTRADE_MODUS_NEXUS_9.0_DE.md`, `RISIKOPRUEFUNG_NEXUS_9.0_DE.md`,

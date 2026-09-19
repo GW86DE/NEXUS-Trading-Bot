@@ -537,6 +537,10 @@ BUNDLE_TRADE_MESSAGES = False
 # ---------------------------------------------------------------------------
 LOG_FILE = "trading_bot.log"
 DECISION_JOURNAL_FILE = "decision_journal.jsonl"
+# 10.8.1: Der JSONL-Spiegel des Entscheidungsjournals rotiert ab dieser
+# Groesse nach decision_journal.1.jsonl (die SQLite-Datenbank bleibt die
+# vollstaendige Quelle). Am 19.09.2026 war der Spiegel auf dem Pi 833 MB gross.
+DECISION_JOURNAL_MAX_MB = 20
 DECISION_DB_FILE = "decision_history.sqlite"
 LOG_LEVEL = "INFO"
 # Pi: rotierende Datei statt unbegrenzt wachsendem Log. Das begrenzt
@@ -1100,7 +1104,7 @@ NEWS_SOURCE_GDELT_TIMEOUT_SECONDS = 30
 # vollstaendig funktionsfaehig und der Nutzer muss nichts neu eintragen.
 # ===========================================================================
 
-VERSION_NEXUS = "10.8.0-NEXUS"
+VERSION_NEXUS = "10.8.1-NEXUS"
 
 # OKX-Ausfuehrungssicherheit: Ticker-last ist kein ausfuehrbarer Preis.
 OKX_EXECUTION_BOOK_DEPTH = 100

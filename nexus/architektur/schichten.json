@@ -1,6 +1,6 @@
 {
  "_erklaerung": [
-  "Schichtenkarte des NEXUS-Quellbaums (10.8.0, Schritt 1). Jedes Modul steht in genau einer Schicht.",
+  "Schichtenkarte des NEXUS-Quellbaums (seit 10.8.0, Schritt 1; Stand 10.8.1). Jedes Modul steht in genau einer Schicht.",
   "Erlaubte Importrichtungen stehen in 'regeln' (Schicht -> importierbare Schichten; '*' = alle).",
   "Ein Alias (Weiche auf ein umgezogenes Modul) zaehlt fuer Importeure wie sein Ziel.",
   "tests/test_v1080_architektur.py prueft: jedes Modul ist einsortiert, und die Menge der",
@@ -245,7 +245,7 @@
    "zusatz_strategien"
   ],
   "interfaces": [
-   "NEXUS_10_8_0_Diagnose",
+   "NEXUS_10_8_1_Diagnose",
    "NEXUS_10_Diagnose",
    "NEXUS_9_8_7_Statuspruefung",
    "NEXUS_9_8_8_Statuspruefung",

@@ -569,7 +569,20 @@ class CryptoEngine:
         # Zweifache Bestaetigung fuer offene Ledger-Zeilen, zu denen weder
         # Positionsbuch noch Brokerbestand existieren. Ein einzelner leerer
         # Snapshot darf die Historie nicht schliessen.
-        self._fehlender_ledger_bestand: dict[int, int] = {}
+        # 10.8.1: je trade_id (Anzahl Fehlmessungen, erste Fehlmessung ISO).
+        # Bis 10.8.0 wurde der Zaehler nur geleert, nie gezaehlt -- die erste
+        # Fehlmessung buchte sofort einen Bestandsbeleg (XRP-Rest 85 am
+        # 19.09.2026, 05:20 UTC, aus einem nicht lesbaren Schnappschuss).
+        self._fehlender_ledger_bestand: dict[int, tuple[int, str]] = {}
+        # 10.8.1: Rueckweg fuer Ledgerzeilen ohne Position -- (Anzahl
+        # Wiedersichten, erste Wiedersicht ISO) je trade_id.
+        self._wiedergesehener_ledger_bestand: dict[int, tuple[int, str]] = {}
+        # 10.8.1: (trade_id, ordId) einer Historienbuchung, die der Ledger
+        # abgelehnt hat. Ein Neuversuch bringt keine neuen Daten.
+        self._historie_abgelehnt: set[tuple[int, str]] = set()
+        # 10.8.1: letzter Ablehnungsgrund je Restzeile -- Warnung nur bei
+        # Aenderung, sonst DEBUG.
+        self._rest_abgelehnt: dict[int, str] = {}
         # Handelsbereitschaft: neue Kaeufe erst nach Anlaufsperre und wenn
         # alle fachlichen Voraussetzungen erfuellt sind (v8.1.4).
         from trading_ready import Handelsbereitschaft
@@ -1023,8 +1036,21 @@ class CryptoEngine:
             if hasattr(broker, "guthaben_schnappschuss"):
                 self._guthaben_dieser_runde = dict(broker.guthaben_schnappschuss())
         except BrokerFehler as exc:
+            # 10.8.1: Ein nicht lesbarer Guthabenstand ist KEINE Messung.
+            # Bis 10.8.0 lief der Durchlauf mit leerem Schnappschuss weiter:
+            # ``positionen()`` lieferte dann eine leere Liste, jede Position
+            # zaehlte eine Fehlmessung, und jede offene Ledgerzeile ohne
+            # Position bekam SOFORT einen Bestandsbeleg (XRP-Rest 85 am
+            # 19.09.2026, 05:20:10 UTC -- vier Minuten OKX-Ausfall, danach
+            # zwei Stunden XRP-Sperre). Ohne Schnappschuss wird in diesem
+            # Takt weder geheilt noch gebucht noch gesperrt; Stops und
+            # Broker-Schutz brauchen ihn nicht und laufen im naechsten Takt
+            # weiter. Bis zum naechsten vollstaendigen Abgleich bleiben
+            # Neueinstiege zu -- ein abgebrochener Abgleich ist kein Abgleich.
             logger.warning("Guthabenstand fuer diesen Durchlauf nicht lesbar: %s", exc)
             bericht["diagnostic_errors"].append("OKX_BALANCE_SNAPSHOT_UNAVAILABLE")
+            self._abgleich_abgebrochen(bericht, f"Guthabenstand nicht lesbar: {exc}")
+            return bericht
 
         try:
             try:
@@ -1033,7 +1059,9 @@ class CryptoEngine:
                 position_rows = broker.positionen()
             bestaende = {p.symbol.upper(): p for p in position_rows}
         except BrokerFehler as exc:
-            return {"ok": False, "grund": f"Bestaende nicht abrufbar: {exc}"}
+            bericht["diagnostic_errors"].append("OKX_POSITIONS_UNAVAILABLE")
+            self._abgleich_abgebrochen(bericht, f"Bestaende nicht abrufbar: {exc}")
+            return bericht
         try:
             bericht["verwaiste_schutzorders_entfernt"] = int(
                 broker.verwaiste_orders_aufraeumen()
@@ -1547,10 +1575,134 @@ class CryptoEngine:
                                  f"{bericht['geprueft']} Positionen geprueft"))
         return bericht
 
+    def _abgleich_abgebrochen(self, bericht: dict, grund: str) -> None:
+        """10.8.1: Abbruch des Positionsabgleichs ohne gueltige Messung.
+
+        Es wird nichts gebucht und nichts gesperrt -- aber auch nichts
+        freigegeben. Die Bereitschaftsbedingung ``reconciliation`` bleibt
+        offen, bis ein vollstaendiger Durchlauf sie wieder bestaetigt.
+        """
+        bericht["ok"] = False
+        bericht["grund"] = grund
+        bericht["abgebrochen"] = True
+        try:
+            self.bereitschaft.melde("reconciliation", False,
+                                    f"Abgleich abgebrochen: {grund}"[:160])
+        except Exception:
+            logger.debug("Bereitschaft nach Abgleichsabbruch nicht gemeldet", exc_info=True)
+
+    def _ledger_frist(self, name: str, standard: float) -> float:
+        """Bestaetigungsfrist auch ohne vollstaendig gebaute Engine lesbar."""
+        try:
+            return max(0.0, float(getattr(getattr(self, "cfg", config), name, standard)))
+        except (TypeError, ValueError):
+            return float(standard)
+
+    def _ledger_fehlmessung(self, trade_id: int) -> tuple[bool, int, str]:
+        """10.8.1: Eine Fehlmessung fuer eine Ledgerzeile ohne Position zaehlen.
+
+        Liefert (bestaetigt, anzahl, seit). Bestaetigt ist der Fehlbestand
+        erst nach zwei Messungen in Folge UND dem Mindestalter der ersten
+        (``OKX_POSITION_MISSING_CONFIRM_SECONDS``) -- dieselbe Regel, die
+        seit 10.6.0 fuer Positionen im Buch gilt. Bis 10.8.0 buchte die
+        erste Fehlmessung sofort einen Bestandsbeleg.
+        """
+        zaehler = getattr(self, "_fehlender_ledger_bestand", None)
+        if zaehler is None:
+            zaehler = self._fehlender_ledger_bestand = {}
+        alt = zaehler.get(trade_id)
+        try:
+            anzahl = int(alt[0]) + 1
+            seit = str(alt[1] or "")
+        except (TypeError, ValueError, IndexError):
+            anzahl, seit = 1, ""
+        if not seit:
+            seit = datetime.now(timezone.utc).isoformat()
+        zaehler[trade_id] = (anzahl, seit)
+        frist = self._ledger_frist("OKX_POSITION_MISSING_CONFIRM_SECONDS", 30.0)
+        return self._messungen_bestaetigt(anzahl, seit, frist), anzahl, seit
+
+    def _ledger_bestandsbeleg_geloest(self, trade: dict, konto: float,
+                                      symbol: str) -> bool:
+        """10.8.1: Rueckweg fuer Ledgerzeilen ohne Position.
+
+        True heisst: Fuer diese Zeile ist kein Bestandsbeleg offen -- entweder
+        gab es keinen, oder er wurde soeben aufgeloest, weil der Bestand die
+        gebuchte Menge in zwei bestaetigten Messungen mit Mindestabstand
+        (``OKX_POSITION_RESTORED_CONFIRM_SECONDS``) wieder deckt. False heisst:
+        Der Beleg bleibt offen; die Zeile darf in diesem Takt nicht als
+        Staubrest geschlossen werden, sonst waere der Beleg unaufloesbar.
+
+        Der Rueckweg 10.6.0 (``_bestand_zurueckgewonnen``) kannte nur
+        Positionen im Buch. Ein Lot-Rest hat kein Buch -- sein Beleg vom
+        19.09.2026 (Trade 85, beobachtet "0" aus einem nicht lesbaren
+        Schnappschuss) blieb deshalb bei 50.000 XRP im Konto fuer immer offen.
+        """
+        zaehler = getattr(self, "_wiedergesehener_ledger_bestand", None)
+        if zaehler is None:
+            zaehler = self._wiedergesehener_ledger_bestand = {}
+        trade_id = int(trade.get("trade_id") or 0)
+        try:
+            from okx_accounting import pending_balance_gap
+            beleg = pending_balance_gap(trade)
+        except Exception as exc:
+            logger.debug("Bestandsbeleg %s nicht lesbar: %s", trade_id, exc)
+            zaehler.pop(trade_id, None)
+            return False
+        if beleg is None:
+            zaehler.pop(trade_id, None)
+            return True
+        menge = float(trade.get("menge") or 0.0)
+        if not _ist_positiv(konto) or not _ist_positiv(menge) or konto < menge:
+            zaehler.pop(trade_id, None)
+            return False
+        alt = zaehler.get(trade_id)
+        try:
+            anzahl = int(alt[0]) + 1
+            seit = str(alt[1] or "")
+        except (TypeError, ValueError, IndexError):
+            anzahl, seit = 1, ""
+        if not seit:
+            seit = datetime.now(timezone.utc).isoformat()
+        zaehler[trade_id] = (anzahl, seit)
+        frist = self._ledger_frist("OKX_POSITION_RESTORED_CONFIRM_SECONDS", 120.0)
+        if not self._messungen_bestaetigt(anzahl, seit, frist):
+            logger.info(
+                "Krypto %s (Ledger %s): Konto weist %s aus und deckt die gebuchte "
+                "Menge %s (%s. Messung seit %s). Der Bestandsbeleg bleibt bis zur "
+                "Bestaetigung offen.", symbol, trade_id, f"{konto:g}", f"{menge:g}",
+                anzahl, seit)
+            return False
+        try:
+            from okx_accounting import resolve_balance_gap_restored
+            geloest = resolve_balance_gap_restored(
+                trade, konto, detail=f"ledgerzeile;snapshots={anzahl}")
+        except Exception as exc:
+            logger.warning("Krypto %s (Ledger %s): Bestandsbeleg nicht aufloesbar: %s",
+                           symbol, trade_id, exc)
+            zaehler.pop(trade_id, None)
+            return False
+        zaehler.pop(trade_id, None)
+        if geloest:
+            self._melde(
+                f"Krypto {symbol}: Bestandsbeleg der Ledgerzeile {trade_id} aufgeloest -- "
+                f"das Konto weist {konto:g} {symbol} aus und deckt die gebuchte Menge "
+                f"{menge:g} in zwei bestaetigten Messungen; es gibt keinen Verkaufsbeleg. "
+                f"{symbol} ist fuer Neueinstiege wieder frei.", wichtig=True)
+        return True
+
     def _offene_ledger_abgleichen(self, bestaende: dict) -> dict:
         """Offene OKX-Ledgerzeilen gegen Buch und echten Bestand pruefen."""
         import trade_ledger
 
+        # 10.8.1: Der Abgleich laeuft auch auf einer nur teilweise gebauten
+        # Engine (Migration, Diagnose, Reparaturtests). Die Zaehler muessen
+        # dann trotzdem existieren.
+        for name, leer in (("_fehlender_ledger_bestand", {}),
+                           ("_wiedergesehener_ledger_bestand", {}),
+                           ("_historie_abgelehnt", set()), ("_rest_abgelehnt", {})):
+            if getattr(self, name, None) is None:
+                setattr(self, name, leer)
         buch_positionen = {str(p.symbol).upper(): p for p in self.buch.alle()}
         geschlossen: list[int] = []
         residual: list[dict] = []
@@ -1628,6 +1780,12 @@ class CryptoEngine:
             # Bots, wenn seine konkrete ordId zuvor persistent registriert
             # wurde. Ein beliebiger SELL desselben Symbols bleibt fremd.
             registry = self._order_registry()
+            trade_entry_order = str(trade.get("entry_order_id") or "")
+            trade_decision = str(trade.get("decision_id") or "")
+            abgelehnt = getattr(self, "_historie_abgelehnt", None)
+            if abgelehnt is None:
+                abgelehnt = self._historie_abgelehnt = set()
+            this_trade_id = int(trade.get("trade_id") or 0)
             for row in sells:
                 oid = str(row.get("ordId") or "")
                 meta = registry.metadata(oid) if oid else {}
@@ -1637,10 +1795,26 @@ class CryptoEngine:
                         and (not current_fingerprint
                              or not str(meta.get("account_fingerprint") or "")
                              or str(meta.get("account_fingerprint")) == current_fingerprint)):
+                    # 10.8.1: Eigentum reicht nicht -- die Verkaufsorder muss
+                    # zu DIESER Abstammungslinie gehoeren. Am 19.09.2026
+                    # verkaufte der Bot ETH-Trade 90; die aeltere ETH-Restzeile
+                    # 86 hielt denselben registrierten EXIT fuer ihren eigenen
+                    # und lief in jedem Takt gegen "Broker-Exitanker gehoert zu
+                    # einer anderen expliziten trade_id". Ohne Linienangabe in
+                    # den Metadaten (Altregistrierung) bleibt der alte Weg.
+                    meta_entry = str(meta.get("entry_order_id") or "")
+                    meta_decision = str(meta.get("decision_id") or "")
+                    if meta_entry and trade_entry_order:
+                        if meta_entry != trade_entry_order:
+                            continue
+                    elif meta_decision and trade_decision:
+                        if meta_decision != trade_decision:
+                            continue
                     proven_orders.add(oid)
             if not proven_orders:
                 return None
-            sells = [r for r in sells if str(r.get("ordId") or "") in proven_orders]
+            sells = [r for r in sells if str(r.get("ordId") or "") in proven_orders
+                     and (this_trade_id, str(r.get("ordId") or "")) not in abgelehnt]
             if not sells:
                 return None
             group = trade_ledger.trade_group(
@@ -1667,10 +1841,29 @@ class CryptoEngine:
                     # mengenbasiert uebersprungen werden.
                     legacy_already += float(closed.get("menge") or 0)
             remaining_skip = max(0.0, legacy_already)
+            # 10.8.1: Ein Fill, den der Ledger bereits einem ANDEREN Trade
+            # zugeordnet hat, ist fuer diese Zeile kein Verkauf. Bis 10.8.0
+            # fiel das erst in trade_close auf -- als Fehler mit Traceback,
+            # in jedem Takt aufs Neue.
+            fremd_gebucht: dict[str, int] = {}
+            try:
+                fremd_gebucht = trade_ledger.gebuchte_exit_fills(
+                    broker="okx",
+                    account=str(trade.get("broker_account_fingerprint") or ""),
+                    instrument=str(trade.get("broker_position_id") or ""),
+                    fill_ids=[okx_fill_identity(r, current_fingerprint) for r in sells],
+                    paper=bool(trade.get("paper", 1)))
+            except Exception:
+                logger.debug("Exit-Fill-Zuordnung nicht lesbar", exc_info=True)
             unbooked: list[tuple[dict, float, float, float]] = []
             for row in sells:
                 composite_id = okx_fill_identity(row, current_fingerprint)
                 if composite_id in booked_fill_ids:
+                    continue
+                gebucht_fuer = fremd_gebucht.get(composite_id)
+                if gebucht_fuer and gebucht_fuer != this_trade_id:
+                    logger.debug("Ledger %s: Fill %s gehoert bereits Trade %s",
+                                 this_trade_id, composite_id, gebucht_fuer)
                     continue
                 qty = float(row.get("fillSz") or 0)
                 if remaining_skip >= qty - 1e-12:
@@ -1721,8 +1914,22 @@ class CryptoEngine:
                     notiz="Paginiert aus /trade/fills-history rekonstruiert",
                     critical=True)
             except Exception as exc:
-                logger.warning("OKX-Historienfill %s konnte nicht ins Ledger geschrieben werden: %s",
-                               trade.get("symbol"), exc, exc_info=True)
+                # 10.8.1: Einmal warnen, dann merken. Ein fachlich unklarer
+                # Verkauf wird durch Wiederholung nicht klarer, und ein
+                # Traceback je Takt (833 MB Journal am 19.09.2026) hilft
+                # niemandem. Technische Fehler behalten den Traceback.
+                from trade_ledger import LedgerZuordnungUnklar
+                for oid in used_order_ids:
+                    abgelehnt.add((this_trade_id, oid))
+                if isinstance(exc, LedgerZuordnungUnklar):
+                    logger.warning(
+                        "OKX-Historienfill %s (Ledger %s, Order %s) vom Ledger abgelehnt: %s "
+                        "-- kein weiterer Versuch fuer diese Order.",
+                        trade.get("symbol"), this_trade_id,
+                        ",".join(used_order_ids) or "?", exc)
+                else:
+                    logger.warning("OKX-Historienfill %s konnte nicht ins Ledger geschrieben werden: %s",
+                                   trade.get("symbol"), exc, exc_info=True)
                 return None
             return ({"trade_id": int(closed_id or trade.get("trade_id") or 0),
                      "symbol": str(trade.get("symbol") or ""),
@@ -1826,7 +2033,27 @@ class CryptoEngine:
             konto_preis = float(getattr(bestand, "market_price", 0.0) or 0.0) if bestand else 0.0
             dust_limit = float(getattr(getattr(self, "cfg", config),
                                        "OKX_DUST_VALUE_LIMIT", 1.0))
-            if _ist_positiv(konto) and konto_preis > 0 and konto * konto_preis <= dust_limit:
+            ledger_menge = float(trade.get("menge") or 0.0)
+            # 10.8.1: Die Staubfrage stellt sich fuer die BOTMENGE dieser Zeile,
+            # nicht fuer den Gesamtbestand des Kontos. Bis 10.8.0 wurde der
+            # XRP-Rest 85 (0,0000532 XRP, ein Zehntel Cent) an 50.000 XRP
+            # Fremdbestand gemessen und blieb deshalb fuer immer "Exposure".
+            rest = min(konto, ledger_menge) if _ist_positiv(ledger_menge) else konto
+            if _ist_positiv(konto) and konto_preis > 0 and rest * konto_preis <= dust_limit:
+                self._fehlender_ledger_bestand.pop(trade_id, None)
+                if not self._ledger_bestandsbeleg_geloest(trade, konto, symbol):
+                    # Beleg noch offen: erst der bestaetigte Rueckweg loest ihn.
+                    # Eine jetzt geschlossene Restzeile liesse ihn fuer immer
+                    # offen -- und den Coin fuer immer gesperrt.
+                    trade_ledger.set_reconciliation_status(
+                        trade_id, "RESIDUAL_EXPOSURE",
+                        notiz=("Restmenge im Konto vorhanden; Bestandsbeleg wartet auf "
+                               "die zweite bestaetigte Messung"))
+                    residual.append({"trade_id": trade_id, "symbol": symbol,
+                                     "ledger_menge": ledger_menge, "broker_menge": konto,
+                                     "status": "RESIDUAL_EXPOSURE",
+                                     "bestandsbeleg": "PENDING"})
+                    continue
                 try:
                     from okx_residual_inventory import classify
                     meta = broker.client.instrument(trade['broker_position_id'])
@@ -1835,10 +2062,22 @@ class CryptoEngine:
                         checked_at=datetime.now(timezone.utc).isoformat())
                     if classify(trade_id, allow_open=True, market_rules=rules):
                         geschlossen.append(trade_id)
-                        self._fehlender_ledger_bestand.pop(trade_id, None)
+                    if getattr(self, "_rest_abgelehnt", None):
+                        self._rest_abgelehnt.pop(trade_id, None)
                 except (ValueError, AttributeError, BrokerFehler) as exc:
                     # A balance-only disappearance must keep a real result gap.
-                    logger.warning('Rest %s bleibt im Abgleich: %s', symbol, exc)
+                    # 10.8.1: Derselbe Grund wird nicht in jedem Takt gewarnt.
+                    grund = f"{type(exc).__name__}: {exc}"
+                    merker = getattr(self, "_rest_abgelehnt", None)
+                    if merker is None:
+                        merker = self._rest_abgelehnt = {}
+                    if merker.get(trade_id) != grund:
+                        merker[trade_id] = grund
+                        logger.warning('Rest %s (Ledger %s) bleibt im Abgleich: %s',
+                                       symbol, trade_id, exc)
+                    else:
+                        logger.debug('Rest %s (Ledger %s) bleibt im Abgleich: %s',
+                                     symbol, trade_id, exc)
                 continue
 
             # Ein migrierter Alteintrag ohne irgendeinen Eigentumsbeweis darf
@@ -1865,16 +2104,41 @@ class CryptoEngine:
 
             if _ist_positiv(konto):
                 self._fehlender_ledger_bestand.pop(trade_id, None)
+                # 10.8.1: Ein offener Bestandsbeleg dieser Zeile loest sich,
+                # sobald der Bestand die gebuchte Menge in zwei bestaetigten
+                # Messungen wieder deckt. Die Zeile selbst bleibt offen und
+                # wird weiterhin nicht automatisch verkauft.
+                beleg_offen = not self._ledger_bestandsbeleg_geloest(trade, konto, symbol)
                 trade_ledger.set_reconciliation_status(
                     trade_id, "RESIDUAL_EXPOSURE",
                     notiz=("Coin-Guthaben vorhanden, aber kein Eintrag im OKX-Positionsbuch; "
                            "wird nicht automatisch verkauft"))
-                residual.append({
+                eintrag = {
                     "trade_id": trade_id, "symbol": symbol,
-                    "ledger_menge": float(trade.get("menge") or 0.0),
+                    "ledger_menge": ledger_menge,
                     "broker_menge": konto,
                     "status": "RESIDUAL_EXPOSURE",
-                })
+                }
+                if beleg_offen:
+                    eintrag["bestandsbeleg"] = "PENDING"
+                residual.append(eintrag)
+                continue
+
+            # 10.8.1: Zwei Messungen in Folge plus Mindestalter -- wie fuer
+            # Positionen im Buch seit 10.6.0. Vorher genuegte EINE leere
+            # Messung fuer einen Bestandsbeleg, der den Coin sperrte.
+            if getattr(self, "_wiedergesehener_ledger_bestand", None):
+                self._wiedergesehener_ledger_bestand.pop(trade_id, None)
+            bestaetigt, anzahl, seit = self._ledger_fehlmessung(trade_id)
+            if not bestaetigt:
+                logger.info(
+                    "Krypto %s (Ledger %s): Bestand fehlt im Schnappschuss (%s. Messung, "
+                    "seit %s). Es wird nichts gebucht und nichts gesperrt, bis eine "
+                    "zweite Messung mit Mindestabstand den Befund bestaetigt.",
+                    symbol, trade_id, anzahl, seit)
+                residual.append({"trade_id": trade_id, "symbol": symbol,
+                                 "status": "BESTAND_FEHLT_UNBESTAETIGT",
+                                 "messungen": anzahl, "seit": seit})
                 continue
 
             from okx_accounting import mark_balance_gap
@@ -1891,6 +2155,9 @@ class CryptoEngine:
         for trade_id in list(self._fehlender_ledger_bestand):
             if trade_id not in gesehen:
                 self._fehlender_ledger_bestand.pop(trade_id, None)
+        for trade_id in list(getattr(self, "_wiedergesehener_ledger_bestand", {}) or {}):
+            if trade_id not in gesehen:
+                self._wiedergesehener_ledger_bestand.pop(trade_id, None)
         if geschlossen:
             self._melde(
                 "Krypto: verwaiste offene Historieneintraege wurden nach zwei "
@@ -4978,6 +5245,22 @@ class CryptoEngine:
                 bericht["gekauft"].append(symbol)
             else:
                 bericht["abgelehnt"][symbol] = ergebnis.get("grund", "")
+                # 10.8.1: Eine Sperre VOR der Signalpruefung (Bestandsbeleg,
+                # Exposure, Wiedereinstiegssperre, Bereitschaft, Universum)
+                # gilt fuer die ganze Kerze. Bis 10.8.0 wurde der Cursor nur
+                # nach KEIN_SIGNAL gesetzt; XRP lief am 19.09.2026 deshalb
+                # 1055-mal in 2,5 Stunden in dieselbe Sperre -- alle 8 s eine
+                # Entscheidung, 833 MB Journal. Jetzt: eine je Kerze.
+                if (strategy_mode == FREQTRADE_SAMPLE and cutoff is not None
+                        and ergebnis.get("vor_signal") and ergebnis.get("decision_id")):
+                    try:
+                        from datetime import timedelta
+                        self._freqtrade_cursor().mark(
+                            symbol, cutoff - timedelta(minutes=5),
+                            int(ergebnis["decision_id"]))
+                    except Exception:
+                        logger.debug("Kerzencursor nach Vor-Signal-Sperre nicht gesetzt",
+                                     exc_info=True)
         return bericht
 
     def pruefe_kandidat(self, symbol: str, *, _route: dict | None = None) -> dict:
@@ -5702,6 +5985,7 @@ class CryptoEngine:
                    *, gekauft: bool = False, execution=None) -> dict:
         protokoll.abschliessen(ergebnis, grund)
         source_payload = protokoll.als_dict()
+        decision_id = None
         try:
             from decision_journal import record_decision
             status = ("APPROVED" if gekauft else
@@ -5729,7 +6013,12 @@ class CryptoEngine:
                     self._freqtrade_cursor().mark(protokoll.symbol, candle, decision_id)
         except Exception:
             logger.debug("Entscheidungsjournal nicht schreibbar", exc_info=True)
-        return {"gekauft": gekauft, "grund": grund, "protokoll": protokoll.als_dict()}
+        # 10.8.1: Der Scan braucht die Entscheidungs-ID und die Information,
+        # ob die Sperre VOR der Signalpruefung fiel (dann gibt es noch keine
+        # Kerzenzeit im Protokoll). Nur so kann er den Kerzencursor setzen.
+        return {"gekauft": gekauft, "grund": grund, "protokoll": protokoll.als_dict(),
+                "decision_id": decision_id,
+                "vor_signal": "candle_timestamps" not in protokoll.daten}
 
     @staticmethod
     def _decision_payload(protokoll: Entscheidungsprotokoll, *, status: str,

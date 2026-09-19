@@ -20,12 +20,24 @@ def record_decision(**payload):
         payload["decision_snapshot"]["decision_id"] = int(decision_id)
     # Keep a best-effort JSONL mirror for backwards compatible CLI tools. It is
     # not the authoritative database and may fail without affecting trading.
+    # 10.8.1: rotiert wie decision_sources.jsonl -- bis 10.8.0 wuchs der
+    # Spiegel unbegrenzt (833 MB am 19.09.2026 auf dem Pi).
     try:
+        if PATH.exists() and PATH.stat().st_size > max_bytes():
+            PATH.replace(PATH.with_suffix(".1.jsonl"))
         with PATH.open("a",encoding="utf-8") as f:
             f.write(json.dumps(payload,ensure_ascii=False,default=str)+"\n")
     except Exception as exc:
         logger.debug("Decision-JSONL-Mirror konnte nicht geschrieben werden: %s",exc)
     return decision_id
+
+def max_bytes() -> int:
+    """Obergrenze des JSONL-Spiegels (``DECISION_JOURNAL_MAX_MB``, Standard 20)."""
+    try:
+        mb = float(getattr(config, "DECISION_JOURNAL_MAX_MB", 20) or 20)
+    except (TypeError, ValueError):
+        mb = 20.0
+    return int(max(1.0, mb) * 1024 * 1024)
 
 def latest(limit=50):
     return _latest_sqlite(limit=limit)

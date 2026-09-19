@@ -1,15 +1,15 @@
 {
  "_erklaerung": [
-  "Architektur-Baseline (10.8.0, Schritt 0). tests/test_v1080_architektur.py misst den Importgraphen",
+  "Architektur-Baseline (seit 10.8.0, Schritt 0; nachgezogen 10.8.1). tests/test_v1080_architektur.py misst den Importgraphen",
   "des Quellbaums per ast (nexus/architektur/importgraph.py) und vergleicht gegen diese Datei.",
   "Regel: Zyklen, Schichtverstoesse und Grossmodule duerfen nur SINKEN. Wer eine Zahl hier",
   "erhoeht, muss das im Changelog begruenden. Sinkt eine Zahl, wird die Baseline nachgezogen."
  ],
- "version": "10.8.0",
+ "version": "10.8.1",
  "stand": "2026-09-19",
  "kennzahlen": {
   "module": 336,
-  "kanten": 1090,
+  "kanten": 1092,
   "zyklen_komponenten": 2,
   "zyklen_module": 21,
   "groesste_komponente": 11,
@@ -531,15 +531,15 @@
   "limit_zeilen": 1500,
   "toleranz": 0.05,
   "ausnahmen": {
-   "NEXUS_10_Diagnose": 2518,
+   "NEXUS_10_Diagnose": 2519,
    "broker.etoro": 3340,
    "broker.okx": 4644,
-   "config": 1734,
-   "crypto_engine": 5939,
+   "config": 1738,
+   "crypto_engine": 6228,
    "etoro_reconciliation": 3134,
    "gui_app": 1678,
    "live_trader": 4658,
-   "trade_ledger": 2873
+   "trade_ledger": 2897
   }
  },
  "adapter_nach_kern": [

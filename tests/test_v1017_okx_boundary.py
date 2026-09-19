@@ -80,7 +80,12 @@ def test_ledger_only_missing_never_closed(engine,monkeypatch):
     p,tid=persist(engine);engine.buch.entferne(p.symbol)
     engine._fehlender_ledger_bestand={}
     engine.broker.historical_fills=lambda *a,**kw:[]
-    for _ in range(3): engine._offene_ledger_abgleichen({})
+    # 10.8.1: Auch eine Ledgerzeile ohne Position braucht zwei Messungen
+    # (Mindestabstand hier 0 s). Die erste Messung allein bucht nichts.
+    engine.cfg.OKX_POSITION_MISSING_CONFIRM_SECONDS=0
+    engine._offene_ledger_abgleichen({})
+    assert tl.trade_detail(tid)['reconciliation_status']!='BROKER_STATE_UNKNOWN'
+    for _ in range(2): engine._offene_ledger_abgleichen({})
     row=tl.trade_detail(tid)
     assert row['ausgestiegen_am'] is None and row['reconciliation_status']=='BROKER_STATE_UNKNOWN'
 
